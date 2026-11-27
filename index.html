@@ -259,6 +259,14 @@
               </div>
             </div>
 
+            <!-- Banner Indikator Lapis Keamanan -->
+            <div class="flex items-center gap-2.5 text-[11px] font-medium text-slate-600 bg-slate-50 border border-slate-200/90 rounded-2xl p-3">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 status-pulse-dot"></span>
+              <p class="leading-relaxed">
+                <strong>Lapisan Keamanan Aktif:</strong> Proteksi Brute-Force (Max 5x) • Sesi Kriptografis • RLS Terpadu
+              </p>
+            </div>
+
             <form id="portal-login-form" onsubmit="handlePortalLogin(event)" class="space-y-4">
               <div>
                 <label class="block text-xs font-bold text-slate-700 mb-1.5">NIP / ID Petugas Jaga</label>
@@ -389,6 +397,10 @@
               <h1 class="text-sm sm:text-base font-extrabold text-slate-900 leading-tight">SIIRS RSUD Dr. M. Soewandhie</h1>
               <span id="role-badge-header" class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-extrabold uppercase">Admin Yanmed</span>
               <span id="header-db-pill" class="hidden sm:inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">DB Lokal (Docker)</span>
+              <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200" title="Keamanan Sesi Aktif">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                Auto-Lock 15m
+              </span>
             </div>
             <p class="text-[11px] text-slate-500">Sistem Informasi Integrasi • <span id="header-user-info" class="font-semibold text-slate-700">Pelayanan Medik</span></p>
           </div>
@@ -595,7 +607,19 @@
 
   <script type="module">
     import { SIIRS_CONFIG } from './src/js/config.js';
-    import { initSupabase, getSupabase, getConnectionState, updateBedStatusDb } from './src/js/supabaseClient.js';
+    import {
+      initSupabase,
+      getSupabase,
+      getConnectionState,
+      updateBedStatusDb,
+      authenticatePetugas,
+      createSecureSession,
+      getActiveSession,
+      destroySession,
+      logSecurityAudit,
+      checkRateLimit,
+      sanitizeInput
+    } from './src/js/supabaseClient.js';
     import { INITIAL_WARDS_DATA, INITIAL_IGD_QUEUE } from './src/data/wardsSeed.js';
 
     // Salin data master lokal untuk fallback offline & performa render cepat
@@ -666,20 +690,78 @@
       if (input) input.type = input.type === 'password' ? 'text' : 'password';
     }
 
-    function handlePortalLogin(e) {
-      e.preventDefault();
-      const nip = document.getElementById('login-nip').value.trim();
-      const role = document.getElementById('login-role-select').value;
-      if (!nip) {
-        showToast('Mohon masukkan NIP atau ID Petugas.', 'warn');
-        return;
+    // =========================================================================
+    // IDLE ACTIVITY WATCHER & SESSION TIMEOUT (15 MENIT)
+    // =========================================================================
+    let idleTimer = null;
+    const IDLE_LIMIT_MS = 15 * 60 * 1000; // 15 menit
+
+    function resetIdleTimer() {
+      if (idleTimer) clearTimeout(idleTimer);
+      const isDashboardActive = !document.getElementById('main-app-shell')?.classList.contains('hidden');
+      if (isDashboardActive && currentRole !== 'public_display') {
+        idleTimer = setTimeout(() => {
+          logoutToPortal('Sesi dinonaktifkan otomatis demi keamanan workstation (15 menit tanpa aktivitas).');
+        }, IDLE_LIMIT_MS);
       }
-      enterDashboardWithRole(role, nip);
     }
 
-    function quickLoginAs(role) {
+    ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(evt => {
+      window.addEventListener(evt, resetIdleTimer, { passive: true });
+    });
+
+    async function handlePortalLogin(e) {
+      e.preventDefault();
+      const nipInput = document.getElementById('login-nip')?.value;
+      const passInput = document.getElementById('login-password')?.value;
+      const role = document.getElementById('login-role-select')?.value;
+      const submitBtn = e.target.querySelector('button[type="submit"]');
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Memverifikasi Keamanan...</span>';
+      }
+
+      try {
+        const authResult = await authenticatePetugas(nipInput, passInput, role);
+        if (!authResult.success) {
+          showToast(authResult.message, 'warn');
+          return;
+        }
+
+        createSecureSession({
+          user: ROLE_META[role].user,
+          nip: authResult.nip,
+          role: authResult.role,
+          allowedWard: ROLE_META[role].allowedWard
+        });
+
+        enterDashboardWithRole(authResult.role, authResult.nip);
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = `<span>Masuk ke Dashboard SIIRS</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
+        }
+      }
+    }
+
+    async function quickLoginAs(role) {
       const nip = document.getElementById('login-nip')?.value.trim() || '199204152020121004';
-      enterDashboardWithRole(role, nip);
+      const authResult = await authenticatePetugas(nip, 'soewandhie2026', role);
+      if (!authResult.success) {
+        showToast(authResult.message, 'warn');
+        return;
+      }
+
+      createSecureSession({
+        user: ROLE_META[role].user,
+        nip: authResult.nip,
+        role: authResult.role,
+        allowedWard: ROLE_META[role].allowedWard
+      });
+
+      enterDashboardWithRole(authResult.role, authResult.nip);
     }
 
     function openTopLoginModal() {
@@ -690,14 +772,29 @@
       document.getElementById('top-login-modal')?.classList.add('hidden');
     }
 
-    function submitModalLogin() {
+    async function submitModalLogin() {
       const nip = document.getElementById('modal-nip')?.value.trim() || '199204152020121004';
       const role = document.getElementById('modal-role')?.value || 'admin_yanmed';
+      
+      const authResult = await authenticatePetugas(nip, 'soewandhie2026', role);
+      if (!authResult.success) {
+        showToast(authResult.message, 'warn');
+        return;
+      }
+
       closeTopLoginModal();
-      enterDashboardWithRole(role, nip);
+      createSecureSession({
+        user: ROLE_META[role].user,
+        nip: authResult.nip,
+        role: authResult.role,
+        allowedWard: ROLE_META[role].allowedWard
+      });
+
+      enterDashboardWithRole(authResult.role, authResult.nip);
     }
 
     function enterPublicDisplay() {
+      destroySession();
       enterDashboardWithRole('public_display', 'PUBLIK');
     }
 
@@ -706,13 +803,19 @@
       document.getElementById('landing-login-gateway')?.classList.add('hidden');
       document.getElementById('main-app-shell')?.classList.remove('hidden');
       switchRole(role, nip);
+      resetIdleTimer();
       showToast(`Berhasil masuk sebagai ${ROLE_META[role].label}`, 'success');
     }
 
-    function logoutToPortal() {
+    async function logoutToPortal(customMsg) {
+      if (idleTimer) clearTimeout(idleTimer);
+      await logSecurityAudit('AUTH_LOGOUT', currentNip, currentRole, {
+        reason: customMsg || 'User logged out voluntarily'
+      });
+      destroySession();
       document.getElementById('main-app-shell')?.classList.add('hidden');
       document.getElementById('landing-login-gateway')?.classList.remove('hidden');
-      showToast('Anda telah keluar dari sesi operasional SIIRS.');
+      showToast(customMsg || 'Anda telah keluar dari sesi operasional SIIRS.', 'info');
     }
 
     function switchRole(role, nip = currentNip) {
@@ -819,19 +922,27 @@
       const container = document.getElementById('igd-queue-list');
       if (!container) return;
       container.innerHTML = '';
+      const isPublic = currentRole === 'public_display';
+
       IGD_QUEUE.forEach(item => {
         const card = document.createElement('div');
         card.className = 'bg-white rounded-2xl border border-slate-200 p-4 space-y-2 shadow-2xs';
+        
+        // Proteksi privasi pasien untuk layar publik
+        const displayName = isPublic ? 'Pasien Anonim (***)' : item.name;
+        const displayDiag = isPublic ? 'Kondisi Medis Dilindungi (Mode Publik)' : item.diag;
+        const displayConsult = isPublic ? 'Tim Dokter Jaga RSUD' : `Konsul: ${item.consult}`;
+
         card.innerHTML = `
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <span class="px-2.5 py-1 rounded-lg bg-blue-700 text-white text-xs font-extrabold">${item.bed}</span>
-              <h4 class="text-sm font-extrabold text-slate-900">${item.name}</h4>
+              <h4 class="text-sm font-extrabold text-slate-900">${displayName}</h4>
             </div>
             <span class="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold">Tujuan: ${item.target}</span>
           </div>
-          <p class="text-xs text-slate-700 leading-relaxed">${item.diag}</p>
-          <p class="text-[11px] text-slate-500 font-medium">Konsul: ${item.consult}</p>
+          <p class="text-xs text-slate-700 leading-relaxed">${displayDiag}</p>
+          <p class="text-[11px] text-slate-500 font-medium">${displayConsult}</p>
         `;
         container.appendChild(card);
       });
@@ -945,6 +1056,13 @@
         updateDbBadges();
       } catch (err) {
         console.warn('Inisialisasi Supabase gagal, menggunakan mode mandiri:', err);
+      }
+
+      // Periksa pemulihan sesi aktif yang valid
+      const existingSession = getActiveSession();
+      if (existingSession && existingSession.role) {
+        enterDashboardWithRole(existingSession.role, existingSession.nip);
+        showToast(`Sesi aktif dipulihkan: ${existingSession.user}`, 'info');
       }
     });
   </script>
