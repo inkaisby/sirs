@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SIMRS Bed & Inpatient Integration — RSUD Dr. M. Soewandhie</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            soewandhie: {
+              blue: '#0028FF',
+              navy: '#0B1F5B',
+              gold: '#FACC15',
+            }
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Custom scrollbar untuk kenyamanan navigasi tabel di mobile maupun desktop */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+
+    /* Transisi gerak halus yang tidak berlebihan & nyaman di mata */
+    @keyframes gentleFadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes subtleCardAppear {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes softPulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.45;
+      }
+    }
+
+    .motion-view-enter {
+      animation: gentleFadeUp 0.3s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    .motion-card-item {
+      opacity: 0;
+      animation: subtleCardAppear 0.28s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    .status-pulse-dot {
+      animation: softPulse 2.4s ease-in-out infinite;
+    }
+
+    /* Dukungan aksesibilitas bagi pengguna yang mengurangi animasi */
+    @media (prefers-reduced-motion: reduce) {
+      .motion-view-enter,
+      .motion-card-item,
+      .status-pulse-dot {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+    }
+
+    /* Mode Nyaman Mata (Warm Low-Glare Mode) untuk petugas jaga shift malam */
+    body.comfort-warm-mode {
+      background-color: #f4f1ea;
+      color: #292524;
+    }
+    body.comfort-warm-mode header,
+    body.comfort-warm-mode .bg-white {
+      background-color: #fbf9f5 !important;
+      border-color: #e7e2d8 !important;
+    }
+    body.comfort-warm-mode .bg-slate-50 {
+      background-color: #f4f0e8 !important;
+    }
+
+    /* Hilangkan scrollbar horizontal pada nav tab */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900 pb-20 sm:pb-8 transition-colors duration-300">
+
+  <!-- Toast Notification Container (Pengganti alert()) -->
+  <div id="toast-container" class="fixed bottom-20 sm:bottom-5 right-4 z-50 flex flex-col gap-2 max-w-sm w-full px-4 sm:px-0 pointer-events-none"></div>
+
+  <!-- ======================================================================= -->
+  <!-- PORTAL DEPAN & LOGIN GATEWAY (SEBELUM MASUK KE DASHBOARD SIMRS)          -->
+  <!-- ======================================================================= -->
+  <div id="landing-login-gateway" class="min-h-screen flex flex-col justify-between bg-gradient-to-br from-slate-50 via-blue-50/40 to-slate-100">
+    
+    <!-- Top Bar Portal -->
+    <header class="bg-white/90 backdrop-blur-md border-b border-slate-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 shrink-0 flex items-center justify-center bg-slate-50 rounded-xl border border-slate-200 p-1 shadow-2xs">
+            <svg viewBox="0 0 220 250" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" aria-label="Logo RSUD Dr. M. Soewandhie Surabaya">
+              <path d="M110 12 C138 35, 175 42, 206 42 C196 105, 196 155, 206 205 C172 205, 138 216, 110 238 C82 216, 48 205, 14 205 C24 155, 24 105, 14 42 C45 42, 82 35, 110 12 Z" fill="#0028FF" stroke="#FACC15" stroke-width="7" stroke-linejoin="round"/>
+              <path d="M110 12 C138 35, 175 42, 206 42 C196 105, 196 155, 206 205 C172 205, 138 216, 110 238 C82 216, 48 205, 14 205 C24 155, 24 105, 14 42 C45 42, 82 35, 110 12 Z" fill="none" stroke="#0F172A" stroke-width="2" stroke-linejoin="round"/>
+              <g fill="#FACC15" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
+                <path d="M104 92 C85 88, 65 95, 56 108 L46 92 L50 116 C56 128, 72 136, 86 138 L82 148 L95 140 C100 135, 104 128, 105 118 Z"/>
+                <path d="M115 92 C132 90, 148 92, 162 84 L172 76 L166 94 L174 104 L158 100 C144 104, 128 104, 115 102 Z"/>
+                <path d="M84 93 L74 74 L92 89 Z"/>
+              </g>
+              <g fill="#FACC15" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
+                <path d="M116 130 L146 136 L146 142 L124 142 L124 147 L144 147 C154 152, 158 164, 152 176 L164 174 L162 182 L146 184 C140 192, 128 196, 116 194 Z"/>
+                <path d="M104 176 C84 178, 66 184, 52 194 C66 198, 86 196, 104 191 Z"/>
+              </g>
+              <g fill="#FFFFFF" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
+                <polygon points="110,34 114,52 106,52"/>
+                <polygon points="106,52 114,52 117,184 103,184"/>
+                <line x1="108.5" y1="54" x2="107" y2="182" stroke="#0F172A" stroke-width="1.2"/>
+                <line x1="111.5" y1="54" x2="113" y2="182" stroke="#0F172A" stroke-width="1.2"/>
+                <rect x="98" y="184" width="24" height="5"/>
+                <rect x="93" y="189" width="34" height="5"/>
+                <polygon points="86,194 134,194 144,202 76,202"/>
+              </g>
+            </svg>
+          </div>
+          <div>
+            <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700 block">Pemerintah Kota Surabaya</span>
+            <h1 class="text-base sm:text-lg font-extrabold text-slate-900 leading-tight">RSUD Dr. M. Soewandhie</h1>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="openBriefingPlayer()" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition flex items-center gap-1.5">
+            <svg class="w-3.5 h-3.5 text-blue-700" fill="currentColor" viewBox="0 0 20 20"><path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/></svg>
+            <span class="hidden sm:inline">Tour Sistem</span>
+          </button>
+          <button onclick="enterPublicDisplay()" class="px-3 py-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 text-xs font-bold transition">
+            Info Bed Publik
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Hero & Portal Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        
+        <!-- Kolom Kiri: Identitas Sistem & Ringkasan Ketersediaan Bed Publik -->
+        <div class="lg:col-span-7 space-y-6 motion-view-enter">
+          <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/80 border border-blue-200 text-blue-800 text-xs font-bold">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 status-pulse-dot"></span>
+            Sistem Informasi Terintegrasi • Pelayanan Medik & Rawat Inap
+          </div>
+
+          <div class="space-y-3">
+            <h2 class="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              Portal Manajemen Ruang Inap &amp; Antrean IGD <span class="text-blue-700">Real-Time</span>
+            </h2>
+            <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
+              Platform terpusat untuk pemantauan kapasitas tempat tidur (<em>bed</em>) seluruh instalasi rawat inap, koordinasi pasien IGD Pro MRS, serta pelaporan indikator pelayanan medis di lingkungan <strong>RSUD Dr. M. Soewandhie Surabaya</strong>.
+            </p>
+          </div>
+
+          <!-- Ringkasan Live Publik (Tanpa Data Medis Pasien) -->
+          <div class="bg-white rounded-2xl border border-slate-200/90 p-5 shadow-xs space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div>
+                <h3 class="text-xs font-extrabold uppercase tracking-wider text-slate-700">Ringkasan Ketersediaan Tempat Tidur Saat Ini</h3>
+                <p class="text-[11px] text-slate-500 mt-0.5">Tampilan informasi publik teranonimasi (selaras dengan Web RS)</p>
+              </div>
+              <span id="portal-clock" class="text-xs font-mono font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg">27/11/2026</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+              <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/70">
+                <span class="text-[11px] font-semibold text-slate-500 block">Total Kapasitas</span>
+                <span id="portal-total-bed" class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1 block">384</span>
+                <span class="text-[10px] text-slate-400">22 Unit / Bangsal</span>
+              </div>
+              <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80">
+                <span class="text-[11px] font-semibold text-emerald-700 block">Bed Tersedia</span>
+                <span id="portal-avail-bed" class="text-xl sm:text-2xl font-extrabold text-emerald-700 mt-1 block">103</span>
+                <span class="text-[10px] text-emerald-600">Siap Penempatan</span>
+              </div>
+              <div class="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200/80">
+                <span class="text-[11px] font-semibold text-blue-700 block">Tingkat BOR</span>
+                <span id="portal-bor-pct" class="text-xl sm:text-2xl font-extrabold text-blue-800 mt-1 block">66,93%</span>
+                <span class="text-[10px] text-blue-600">Okupansi Inap</span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <button onclick="enterPublicDisplay()" class="text-xs font-bold text-blue-700 hover:text-blue-800 inline-flex items-center gap-1.5">
+                <span>Buka Layar Informasi Publik / Monitor Lobi</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+              </button>
+              <span class="text-[11px] text-slate-400">Sesuai standar privasi data rekam medis</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Kolom Kanan: Kartu Login Petugas RSUD -->
+        <div class="lg:col-span-5 motion-view-enter">
+          <div class="bg-white rounded-3xl border border-slate-200 shadow-lg p-6 sm:p-8 space-y-6">
+            <div class="flex items-center gap-3.5 border-b border-slate-100 pb-4">
+              <div class="w-12 h-12 rounded-2xl bg-blue-700 text-white flex items-center justify-center shadow-sm shrink-0">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+              </div>
+              <div>
+                <h3 class="text-lg font-extrabold text-slate-900">Masuk Sistem Operasional</h3>
+                <p class="text-xs text-slate-500">Autentikasi Berbasis Peran (RBAC) RSUD Dr. M. Soewandhie</p>
+              </div>
+            </div>
+
+            <form id="portal-login-form" onsubmit="handlePortalLogin(event)" class="space-y-4">
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">NIP / ID Petugas Jaga</label>
+                <input type="text" id="login-nip" value="199204152020121004" required placeholder="Masukkan NIP atau ID SIMRS" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600" />
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi</label>
+                <div class="relative">
+                  <input type="password" id="login-password" value="soewandhie2026" required placeholder="••••••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 pr-10" />
+                  <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-600 text-xs font-semibold">
+                    Lihat
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 mb-1.5">Pilih Unit / Peran Demo Presentasi</label>
+                <select id="login-role-select" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-slate-50 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
+                  <option value="admin_yanmed">Pelayanan Medik / Manajemen (Akses Penuh)</option>
+                  <option value="igd_admission">Petugas IGD &amp; Admisi (Antrean Pro MRS &amp; Inden)</option>
+                  <option value="nurse_dahlia">Perawat Ruang DAHLIA (Khusus Bangsal Dahlia)</option>
+                  <option value="nurse_teratai">Perawat Ruang TERATAI (Khusus Bangsal Teratai)</option>
+                  <option value="nurse_icu">Perawat Ruang ICU (Khusus Unit Intensif)</option>
+                </select>
+              </div>
+
+              <button type="submit" class="w-full py-3 px-4 rounded-xl bg-blue-700 hover:bg-blue-800 active:scale-[0.99] text-white font-bold text-sm shadow-md shadow-blue-700/20 transition flex items-center justify-center gap-2">
+                <span>Masuk ke Dashboard SIMRS</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+              </button>
+            </form>
+
+            <!-- Login Cepat Sekali Klik untuk Demo -->
+            <div class="pt-3 border-t border-slate-100">
+              <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Akses Cepat Demo (1-Klik):</span>
+              <div class="grid grid-cols-3 gap-2">
+                <button type="button" onclick="quickLoginAs('admin_yanmed')" class="px-2.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-[11px] font-bold transition text-center">
+                  Admin Yanmed
+                </button>
+                <button type="button" onclick="quickLoginAs('igd_admission')" class="px-2.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition text-center">
+                  Petugas IGD
+                </button>
+                <button type="button" onclick="quickLoginAs('nurse_dahlia')" class="px-2.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 text-[11px] font-bold transition text-center">
+                  Ruang Dahlia
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer Portal -->
+    <footer class="border-t border-slate-200/80 bg-white/70 py-4 px-4 text-center text-xs text-slate-500">
+      &copy; 2026 RSUD Dr. M. Soewandhie Surabaya — Sistem Informasi Manajemen Ruang Inap &amp; Integrasi Pelayanan Medik
+    </footer>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL LOGIN CEPAT (SAAT KLIK TOMBOL LOGIN DI TOP BAR / DISPLAY PUBLIK)  -->
+  <!-- ======================================================================= -->
+  <div id="top-login-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4 motion-view-enter">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h4 class="text-base font-extrabold text-slate-900">Login Petugas RSUD</h4>
+          <p class="text-xs text-slate-500">Masuk untuk mengelola data ruang inap &amp; antrean IGD</p>
+        </div>
+        <button onclick="closeTopLoginModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">NIP / ID Petugas</label>
+          <input type="text" id="modal-nip" value="199204152020121004" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-sm" />
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Peran / Unit Kerja</label>
+          <select id="modal-role" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-sm font-semibold">
+            <option value="admin_yanmed">Pelayanan Medik / Manajemen</option>
+            <option value="igd_admission">Petugas IGD &amp; Admisi</option>
+            <option value="nurse_dahlia">Perawat Ruang DAHLIA</option>
+            <option value="nurse_teratai">Perawat Ruang TERATAI</option>
+            <option value="nurse_icu">Perawat Ruang ICU</option>
+          </select>
+        </div>
+        <button onclick="submitModalLogin()" class="w-full py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm transition">
+          Masuk Sekarang
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- APLIKASI UTAMA (DASHBOARD OPERASIONAL SETELAH LOGIN / DISPLAY MODE)     -->
+  <!-- ======================================================================= -->
+  <div id="main-app-shell" class="hidden">
+    
+    <!-- Top Header Operasional -->
+    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+        
+        <!-- Logo & Nama Instansi -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 shrink-0 flex items-center justify-center bg-slate-50 rounded-xl border border-slate-200 p-1">
+            <svg viewBox="0 0 220 250" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+              <path d="M110 12 C138 35, 175 42, 206 42 C196 105, 196 155, 206 205 C172 205, 138 216, 110 238 C82 216, 48 205, 14 205 C24 155, 24 105, 14 42 C45 42, 82 35, 110 12 Z" fill="#0028FF" stroke="#FACC15" stroke-width="7" stroke-linejoin="round"/>
+              <g fill="#FACC15" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
+                <path d="M104 92 C85 88, 65 95, 56 108 L46 92 L50 116 C56 128, 72 136, 86 138 L82 148 L95 140 C100 135, 104 128, 105 118 Z"/>
+                <path d="M115 92 C132 90, 148 92, 162 84 L172 76 L166 94 L174 104 L158 100 C144 104, 128 104, 115 102 Z"/>
+              </g>
+              <g fill="#FACC15" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
+                <path d="M116 130 L146 136 L146 142 L124 142 L124 147 L144 147 C154 152, 158 164, 152 176 L164 174 L162 182 L146 184 C140 192, 128 196, 116 194 Z"/>
+                <path d="M104 176 C84 178, 66 184, 52 194 C66 198, 86 196, 104 191 Z"/>
+              </g>
+              <g fill="#FFFFFF" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
+                <polygon points="110,34 114,52 106,52"/>
+                <polygon points="106,52 114,52 117,184 103,184"/>
+                <rect x="93" y="189" width="34" height="5"/>
+                <polygon points="86,194 134,194 144,202 76,202"/>
+              </g>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <h1 class="text-sm sm:text-base font-extrabold text-slate-900 leading-tight">RSUD Dr. M. Soewandhie</h1>
+              <span id="role-badge-header" class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-extrabold uppercase">Admin Yanmed</span>
+            </div>
+            <p class="text-[11px] text-slate-500">Data Integrasi Ruang Inap &amp; IGD • <span id="header-user-info" class="font-semibold text-slate-700">Pelayanan Medik</span></p>
+          </div>
+        </div>
+
+        <!-- Kontrol Kanan: Ganti Peran, Mode Nyaman, & Logout -->
+        <div class="flex items-center gap-2 flex-wrap">
+          <select id="active-role-switcher" onchange="switchRole(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600" title="Simulasi Pergantian Peran">
+            <option value="admin_yanmed">Peran: Admin Yanmed</option>
+            <option value="igd_admission">Peran: Petugas IGD</option>
+            <option value="nurse_dahlia">Peran: Ruang Dahlia</option>
+            <option value="nurse_teratai">Peran: Ruang Teratai</option>
+            <option value="nurse_icu">Peran: Ruang ICU</option>
+            <option value="public_display">Mode: Display Publik Web RS</option>
+          </select>
+
+          <button onclick="toggleComfortMode()" id="btn-comfort-mode" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition" title="Mode Nyaman Mata">
+            ☀️ Nyaman
+          </button>
+
+          <button onclick="logoutToPortal()" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            <span>Keluar</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigasi Tab Utama -->
+      <nav id="main-nav-tabs" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-slate-100 py-2">
+        <button onclick="switchTab('dashboard')" data-tab="dashboard" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-700 text-white whitespace-nowrap transition">
+          Dashboard Keterisian
+        </button>
+        <button onclick="switchTab('igd')" data-tab="igd" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition">
+          Antrean IGD Pro MRS (16)
+        </button>
+        <button onclick="switchTab('wards')" data-tab="wards" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition">
+          Denah Bed Ruangan
+        </button>
+        <button onclick="switchTab('reports')" data-tab="reports" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition">
+          Laporan Kematian &amp; PP
+        </button>
+      </nav>
+    </header>
+
+    <!-- Konten Utama Dashboard -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      
+      <!-- Banner Info Mode Display Publik -->
+      <div id="public-mode-banner" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-emerald-600 status-pulse-dot"></span>
+          <p class="text-xs font-semibold text-emerald-900">
+            <strong>Mode Display Publik / Integrasi Web RS Aktif:</strong> Data identitas pasien, diagnosis, dan DPJP otomatis disembunyikan sesuai regulasi privasi medis.
+          </p>
+        </div>
+        <button onclick="openTopLoginModal()" class="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold transition">
+          Login Petugas untuk Edit
+        </button>
+      </div>
+
+      <!-- TAB 1: DASHBOARD KETERISIAN -->
+      <section id="tab-dashboard" class="space-y-6 motion-view-enter">
+        <!-- Kartu KPI -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <span class="text-[11px] font-bold text-slate-500 uppercase">Total Bed RS</span>
+            <p id="kpi-total" class="text-2xl font-extrabold text-slate-900 mt-1">384</p>
+            <span class="text-[11px] text-slate-400">Seluruh Instalasi</span>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <span class="text-[11px] font-bold text-rose-600 uppercase">Bed Terisi</span>
+            <p id="kpi-occupied" class="text-2xl font-extrabold text-rose-600 mt-1">257</p>
+            <span class="text-[11px] text-slate-400">Pasien Dirawat</span>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <span class="text-[11px] font-bold text-emerald-600 uppercase">Bed Tersedia</span>
+            <p id="kpi-available" class="text-2xl font-extrabold text-emerald-600 mt-1">103</p>
+            <span class="text-[11px] text-slate-400">Siap Pakai</span>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <span class="text-[11px] font-bold text-amber-600 uppercase">Pra Admisi / Inden</span>
+            <p id="kpi-inden" class="text-2xl font-extrabold text-amber-600 mt-1">32</p>
+            <span class="text-[11px] text-slate-400">Booking IGD/Poli</span>
+          </div>
+          <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-2xs">
+            <span class="text-[11px] font-bold text-indigo-600 uppercase">Pra Rujukan</span>
+            <p id="kpi-prereferral" class="text-2xl font-extrabold text-indigo-600 mt-1">6</p>
+            <span class="text-[11px] text-slate-400">Proses Rujuk</span>
+          </div>
+          <div class="bg-blue-700 p-4 rounded-2xl text-white shadow-sm">
+            <span class="text-[11px] font-bold text-blue-200 uppercase">Persentase BOR</span>
+            <p id="kpi-bor" class="text-2xl font-extrabold mt-1">66,93%</p>
+            <span class="text-[11px] text-blue-200">Update Real-Time</span>
+          </div>
+        </div>
+
+        <!-- Tabel Rekap Keterisian Per Ruang -->
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
+          <div class="p-4 sm:p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h2 class="text-sm sm:text-base font-extrabold text-slate-900">Informasi Keterisian Ruang Inap RSUD Dr. M. Soewandhie</h2>
+              <p class="text-xs text-slate-500">Klik nama ruangan untuk mengelola status masing-masing bed secara langsung</p>
+            </div>
+            <input type="text" id="search-ward-input" oninput="renderWardTable()" placeholder="Cari ruangan (misal: Dahlia, ICU)..." class="px-3 py-2 rounded-xl border border-slate-200 text-xs w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-600" />
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-extrabold text-slate-600 uppercase">
+                  <th class="py-3 px-4">Ruangan / Unit</th>
+                  <th class="py-3 px-3 text-center">Total Bed</th>
+                  <th class="py-3 px-3 text-center">Terisi</th>
+                  <th class="py-3 px-3 text-center">Pra Admisi</th>
+                  <th class="py-3 px-3 text-center">Pra Rujukan</th>
+                  <th class="py-3 px-3 text-center">Tersedia</th>
+                  <th class="py-3 px-4">Okupansi</th>
+                  <th class="py-3 px-4 text-right">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="ward-summary-tbody" class="divide-y divide-slate-100 text-xs"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: ANTREAN IGD PRO MRS -->
+      <section id="tab-igd" class="hidden space-y-4 motion-view-enter">
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-extrabold text-slate-900">List Antrean Pasien IGD Pro MRS</h2>
+            <p class="text-xs text-slate-500">Pemantauan pasien IGD yang menunggu penempatan ruang rawat inap</p>
+          </div>
+          <span class="px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-xs font-bold">
+            IGD: 19/25 Bed Terisi • 13 Pra Admisi • 6 Pra Rujukan
+          </span>
+        </div>
+        <div id="igd-queue-list" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
+      </section>
+
+      <!-- TAB 3: DENAH BED RUANGAN -->
+      <section id="tab-wards" class="hidden space-y-4 motion-view-enter">
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-extrabold text-slate-900">Visual Bed Board Interaktif</h2>
+            <p id="ward-permission-note" class="text-xs text-slate-500">Pilih ruangan untuk mengubah status tempat tidur (Kosong / Terisi / Inden / Rencana Pulang)</p>
+          </div>
+          <select id="ward-selector" onchange="renderBedBoard(this.value)" class="px-3.5 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-bold text-slate-800"></select>
+        </div>
+        <div id="bed-board-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3"></div>
+      </section>
+
+      <!-- TAB 4: LAPORAN KEMATIAN & PP -->
+      <section id="tab-reports" class="hidden space-y-4 motion-view-enter">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+          <div class="border-b border-slate-100 pb-3">
+            <h2 class="text-base font-extrabold text-slate-900">Formulir Laporan Kematian &amp; Pulang Paksa (PP)</h2>
+            <p class="text-xs text-slate-500">Input terstandar menggantikan pencatatan manual pada tab LAPORAN KEMATIAN &amp; LAPORAN PP</p>
+          </div>
+          <form onsubmit="submitSpecialReport(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Jenis Laporan</label>
+              <select id="rep-type" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold">
+                <option value="Laporan Kematian">Laporan Kematian</option>
+                <option value="Laporan Pulang Paksa (PP)">Laporan Pulang Paksa (PP)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">No. Rekam Medis (No. RM)</label>
+              <input type="text" id="rep-norm" required placeholder="Contoh: 78-45-12" class="w-full px-3 py-2 rounded-xl border border-slate-300" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Asal Ruangan</label>
+              <select id="rep-ward" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold">
+                <option value="IGD">IGD</option>
+                <option value="DAHLIA">DAHLIA</option>
+                <option value="TERATAI">TERATAI</option>
+                <option value="ICU">ICU</option>
+                <option value="SERUNI">SERUNI</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Nama Pasien</label>
+              <input type="text" id="rep-name" required placeholder="Nama lengkap pasien" class="w-full px-3 py-2 rounded-xl border border-slate-300" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Diagnosa Utama</label>
+              <input type="text" id="rep-diag" required placeholder="Diagnosa klinis" class="w-full px-3 py-2 rounded-xl border border-slate-300" />
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">DPJP</label>
+              <input type="text" id="rep-dpjp" required placeholder="Nama dokter penanggung jawab" class="w-full px-3 py-2 rounded-xl border border-slate-300" />
+            </div>
+            <div class="sm:col-span-3 flex justify-end">
+              <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold transition">
+                Simpan ke Rekap Yanmed
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    // Data Ruangan sesuai Spreadsheet DATA INTEGRASI RSUD Dr. M. Soewandhie
+    const WARDS_DATA = [
+      { id: 'IGD', name: 'IGD', total: 25, occupied: 19, inden: 13, prereferral: 6, available: 6 },
+      { id: 'DAHLIA', name: 'DAHLIA', total: 42, occupied: 30, inden: 3, prereferral: 0, available: 9 },
+      { id: 'FLAMBOYAN', name: 'FLAMBOYAN', total: 21, occupied: 7, inden: 6, prereferral: 0, available: 8 },
+      { id: 'SAFIR', name: 'SAFIR', total: 20, occupied: 9, inden: 3, prereferral: 0, available: 8 },
+      { id: 'TULIP', name: 'TULIP', total: 18, occupied: 14, inden: 2, prereferral: 0, available: 2 },
+      { id: 'BOUGENVILLE', name: 'BOUGENVILLE', total: 34, occupied: 22, inden: 3, prereferral: 0, available: 9 },
+      { id: 'ASTER', name: 'ASTER', total: 29, occupied: 21, inden: 3, prereferral: 0, available: 5 },
+      { id: 'SERUNI', name: 'SERUNI', total: 57, occupied: 49, inden: 2, prereferral: 0, available: 6 },
+      { id: 'ANGGREK', name: 'ANGGREK', total: 32, occupied: 29, inden: 1, prereferral: 0, available: 2 },
+      { id: 'TERATAI', name: 'TERATAI', total: 35, occupied: 28, inden: 2, prereferral: 0, available: 5 },
+      { id: 'VK', name: 'VK BERSALIN', total: 11, occupied: 4, inden: 0, prereferral: 0, available: 7 },
+      { id: 'LAVENDER', name: 'LAVENDER', total: 10, occupied: 3, inden: 3, prereferral: 0, available: 4 },
+      { id: 'ICU', name: 'ICU', total: 9, occupied: 4, inden: 0, prereferral: 0, available: 5 },
+      { id: 'ICCU', name: 'ICCU', total: 8, occupied: 4, inden: 0, prereferral: 0, available: 4 },
+      { id: 'BURN', name: 'BURN UNIT', total: 2, occupied: 0, inden: 0, prereferral: 0, available: 2 },
+      { id: 'ICU_ISO', name: 'ICU ISO', total: 2, occupied: 0, inden: 0, prereferral: 0, available: 2 },
+      { id: 'MICU', name: 'MICU', total: 3, occupied: 3, inden: 0, prereferral: 0, available: 0 },
+      { id: 'ISU', name: 'ISU', total: 5, occupied: 3, inden: 2, prereferral: 0, available: 0 },
+      { id: 'NICU', name: 'NICU', total: 8, occupied: 0, inden: 2, prereferral: 0, available: 6 },
+      { id: 'NEONATUS', name: 'NEONATUS', total: 15, occupied: 11, inden: 0, prereferral: 0, available: 4 },
+      { id: 'EDELWEIS_2', name: 'EDELWEIS LT.2', total: 19, occupied: 9, inden: 0, prereferral: 0, available: 10 },
+      { id: 'EDELWEIS_3', name: 'EDELWEIS LT.3', total: 12, occupied: 7, inden: 0, prereferral: 0, available: 5 }
+    ];
+
+    const IGD_QUEUE = [
+      { bed: 'K1', name: 'Wagini', diag: 'Obs penkes ec CVA + Afasia global + DM Hiperglikemia + HT emergency', consult: 'C+ J+ dr Dian, dr Eryn, dr Niken', target: 'Teratai' },
+      { bed: 'K2', name: 'Ny. Munati', diag: 'Obs penkes ec susp ensefalopati sepsis + hiperpirexia + s ISK + DM', consult: 'C dr Agung J+', target: 'Inden Medik' },
+      { bed: 'K3', name: 'An. Alkhalifi Naufal', diag: 'Anemia gravis + pansitopenia + hiperleukositosis', consult: 'C dr. Shinta J 1/2', target: 'Hemato Onko' },
+      { bed: 'K4', name: 'Ny. Emmy', diag: 'Obs penurunan kesadaran susp Encephalopati Metabolik + Hematemesis', consult: 'C dr. Agung J-', target: 'Inden Medik No.4' },
+      { bed: 'K5', name: 'Ny. Sri Murtiarti', diag: 'Post koma hipoglikemia', consult: 'C-', target: 'DAHLIA' },
+      { bed: 'K6', name: 'Tn. Subari', diag: 'Obs penkes ec susp CVA dd ensefalopati + ulkus femur D + DM', consult: 'C dr Dian J+, dr Aisah J+, dr Eryn J+', target: 'Teratai / ISU' },
+      { bed: 'K8', name: 'Ny. Luluk Uljannah', diag: 'Abdominal pain susp peritonitis dd appendisitis perforasi', consult: 'C dr Esa J 1/2', target: 'BGV Bedah' },
+      { bed: 'K10', name: 'Ny. Ngadiyem', diag: 'Obs penurunan kesadaran susp CVA bleeding + gagal napas + hipotensi', consult: 'C dr Dian J 1/2, dr Angela J+', target: 'ISU / Inden ICU' }
+    ];
+
+    const ROLE_META = {
+      admin_yanmed: { label: 'Admin Yanmed', user: 'Pelayanan Medik (Akses Penuh)', allowedWard: 'ALL' },
+      igd_admission: { label: 'Petugas IGD', user: 'Instalasi Gawat Darurat & Admisi', allowedWard: 'IGD' },
+      nurse_dahlia: { label: 'Perawat Dahlia', user: 'Ruang Rawat Inap DAHLIA', allowedWard: 'DAHLIA' },
+      nurse_teratai: { label: 'Perawat Teratai', user: 'Ruang Rawat Inap TERATAI', allowedWard: 'TERATAI' },
+      nurse_icu: { label: 'Perawat ICU', user: 'Instalasi Perawatan Intensif (ICU)', allowedWard: 'ICU' },
+      public_display: { label: 'Display Publik', user: 'Layar Informasi Web RS (Read-Only)', allowedWard: 'NONE' }
+    };
+
+    let currentRole = 'admin_yanmed';
+    let currentTab = 'dashboard';
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const colors = type === 'success'
+        ? 'bg-emerald-800 text-white border-emerald-700'
+        : type === 'warn'
+        ? 'bg-amber-800 text-white border-amber-700'
+        : 'bg-slate-900 text-white border-slate-700';
+      toast.className = `${colors} border px-4 py-3 rounded-xl shadow-lg text-xs font-semibold pointer-events-auto motion-view-enter`;
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 3400);
+    }
+
+    function togglePasswordVisibility() {
+      const input = document.getElementById('login-password');
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function handlePortalLogin(e) {
+      e.preventDefault();
+      const nip = document.getElementById('login-nip').value.trim();
+      const role = document.getElementById('login-role-select').value;
+      if (!nip) {
+        showToast('Mohon masukkan NIP atau ID Petugas.', 'warn');
+        return;
+      }
+      enterDashboardWithRole(role, nip);
+    }
+
+    function quickLoginAs(role) {
+      const nip = document.getElementById('login-nip').value.trim() || '199204152020121004';
+      enterDashboardWithRole(role, nip);
+    }
+
+    function openTopLoginModal() {
+      document.getElementById('top-login-modal').classList.remove('hidden');
+    }
+
+    function closeTopLoginModal() {
+      document.getElementById('top-login-modal').classList.add('hidden');
+    }
+
+    function submitModalLogin() {
+      const nip = document.getElementById('modal-nip').value.trim() || '199204152020121004';
+      const role = document.getElementById('modal-role').value;
+      closeTopLoginModal();
+      enterDashboardWithRole(role, nip);
+    }
+
+    function enterPublicDisplay() {
+      enterDashboardWithRole('public_display', 'PUBLIK');
+    }
+
+    function enterDashboardWithRole(role, nip) {
+      document.getElementById('landing-login-gateway').classList.add('hidden');
+      document.getElementById('main-app-shell').classList.remove('hidden');
+      switchRole(role, nip);
+      showToast(`Berhasil masuk sebagai ${ROLE_META[role].label}`, 'success');
+    }
+
+    function logoutToPortal() {
+      document.getElementById('main-app-shell').classList.add('hidden');
+      document.getElementById('landing-login-gateway').classList.remove('hidden');
+      showToast('Anda telah keluar dari sesi operasional.');
+    }
+
+    function switchRole(role, nip = '199204152020121004') {
+      currentRole = role;
+      const meta = ROLE_META[role];
+      document.getElementById('active-role-switcher').value = role;
+      document.getElementById('role-badge-header').textContent = meta.label;
+      document.getElementById('header-user-info').textContent = `${meta.user} (${nip})`;
+
+      const isPublic = role === 'public_display';
+      document.getElementById('public-mode-banner').classList.toggle('hidden', !isPublic);
+      document.getElementById('main-nav-tabs').classList.toggle('hidden', isPublic);
+
+      if (isPublic) {
+        switchTab('dashboard');
+      } else if (meta.allowedWard !== 'ALL' && meta.allowedWard !== 'IGD') {
+        document.getElementById('ward-selector').value = meta.allowedWard;
+      }
+
+      renderWardTable();
+      renderIgdQueue();
+      renderBedBoard(document.getElementById('ward-selector').value || 'DAHLIA');
+    }
+
+    function switchTab(tabName) {
+      currentTab = tabName;
+      ['dashboard', 'igd', 'wards', 'reports'].forEach(t => {
+        document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tabName);
+      });
+      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+        const active = btn.dataset.tab === tabName;
+        btn.className = active
+          ? 'nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-700 text-white whitespace-nowrap transition'
+          : 'nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition';
+      });
+    }
+
+    function toggleComfortMode() {
+      document.body.classList.toggle('comfort-warm-mode');
+      const isWarm = document.body.classList.contains('comfort-warm-mode');
+      document.getElementById('btn-comfort-mode').textContent = isWarm ? '🌙 Hangat' : '☀️ Nyaman';
+    }
+
+    function openBriefingPlayer() {
+      showToast('Mode Tour Sistem: Silakan pilih peran pada kartu Login untuk mencoba fitur RBAC.');
+    }
+
+    function renderWardTable() {
+      const query = (document.getElementById('search-ward-input')?.value || '').toLowerCase();
+      const tbody = document.getElementById('ward-summary-tbody');
+      tbody.innerHTML = '';
+
+      WARDS_DATA.filter(w => w.name.toLowerCase().includes(query)).forEach(w => {
+        const pct = w.total > 0 ? Math.round((w.occupied / w.total) * 100) : 0;
+        const barColor = pct >= 85 ? 'bg-rose-500' : pct >= 65 ? 'bg-amber-500' : 'bg-emerald-500';
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-slate-50/90 transition';
+        tr.innerHTML = `
+          <td class="py-3 px-4 font-extrabold text-slate-900">${w.name}</td>
+          <td class="py-3 px-3 text-center font-semibold">${w.total}</td>
+          <td class="py-3 px-3 text-center font-bold text-rose-600">${w.occupied}</td>
+          <td class="py-3 px-3 text-center font-bold text-amber-600">${w.inden}</td>
+          <td class="py-3 px-3 text-center font-semibold text-indigo-600">${w.prereferral}</td>
+          <td class="py-3 px-3 text-center font-extrabold text-emerald-600">${w.available}</td>
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2">
+              <div class="w-20 h-2 rounded-full bg-slate-100 overflow-hidden">
+                <div class="h-full ${barColor}" style="width:${pct}%"></div>
+              </div>
+              <span class="font-bold text-[11px] text-slate-600">${pct}%</span>
+            </div>
+          </td>
+          <td class="py-3 px-4 text-right">
+            <button onclick="openWardDetail('${w.id}')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] transition">
+              Lihat Bed
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function openWardDetail(wardId) {
+      if (currentRole === 'public_display') {
+        showToast('Mode Publik bersifat baca-saja. Silakan login petugas untuk membuka detail bed.', 'warn');
+        return;
+      }
+      document.getElementById('ward-selector').value = wardId;
+      switchTab('wards');
+      renderBedBoard(wardId);
+    }
+
+    function renderIgdQueue() {
+      const container = document.getElementById('igd-queue-list');
+      container.innerHTML = '';
+      IGD_QUEUE.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-2xl border border-slate-200 p-4 space-y-2 shadow-2xs';
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded-lg bg-blue-700 text-white text-xs font-extrabold">${item.bed}</span>
+              <h4 class="text-sm font-extrabold text-slate-900">${item.name}</h4>
+            </div>
+            <span class="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold">Tujuan: ${item.target}</span>
+          </div>
+          <p class="text-xs text-slate-700 leading-relaxed">${item.diag}</p>
+          <p class="text-[11px] text-slate-500 font-medium">Konsul: ${item.consult}</p>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function initWardSelector() {
+      const sel = document.getElementById('ward-selector');
+      WARDS_DATA.forEach(w => {
+        const opt = document.createElement('option');
+        opt.value = w.id;
+        opt.textContent = `Ruang ${w.name} (${w.available} Tersedia / ${w.total} Bed)`;
+        sel.appendChild(opt);
+      });
+      sel.value = 'DAHLIA';
+    }
+
+    function renderBedBoard(wardId) {
+      const ward = WARDS_DATA.find(w => w.id === wardId) || WARDS_DATA[1];
+      const grid = document.getElementById('bed-board-grid');
+      const meta = ROLE_META[currentRole];
+      const canEdit = meta.allowedWard === 'ALL' || meta.allowedWard === ward.id;
+
+      document.getElementById('ward-permission-note').textContent = canEdit
+        ? `Akses Edit Aktif untuk Ruang ${ward.name}. Klik kartu bed untuk memperbarui status.`
+        : `Mode Baca-Saja (RBAC): Akun ${meta.label} tidak memiliki izin mengubah bed di Ruang ${ward.name}.`;
+
+      grid.innerHTML = '';
+      for (let i = 1; i <= ward.total; i++) {
+        let status = 'Tersedia';
+        let style = 'bg-emerald-50 border-emerald-200 text-emerald-800';
+        if (i <= ward.occupied) {
+          status = 'Terisi';
+          style = 'bg-rose-50 border-rose-200 text-rose-800';
+        } else if (i <= ward.occupied + ward.inden) {
+          status = 'Inden IGD';
+          style = 'bg-amber-50 border-amber-200 text-amber-800';
+        }
+
+        const btn = document.createElement('button');
+        btn.className = `p-3.5 rounded-2xl border text-left transition ${style} ${canEdit ? 'hover:shadow-sm cursor-pointer' : 'opacity-80 cursor-not-allowed'}`;
+        btn.innerHTML = `
+          <span class="text-[11px] font-extrabold block">${ward.id}-${String(i).padStart(2, '0')}</span>
+          <span class="text-xs font-bold mt-1 block">${status}</span>
+        `;
+        btn.onclick = () => {
+          if (!canEdit) {
+            showToast(`Ditolak (RBAC): ${meta.label} hanya dapat mengubah ruangannya sendiri.`, 'warn');
+            return;
+          }
+          showToast(`Status Bed ${ward.id}-${String(i).padStart(2, '0')} berhasil diperbarui & tercatat di Audit Log.`, 'success');
+        };
+        grid.appendChild(btn);
+      }
+    }
+
+    function submitSpecialReport(e) {
+      e.preventDefault();
+      const type = document.getElementById('rep-type').value;
+      const name = document.getElementById('rep-name').value;
+      showToast(`${type} atas nama ${name} berhasil disimpan ke sistem Yanmed.`, 'success');
+      e.target.reset();
+    }
+
+    // Inisialisasi saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', () => {
+      initWardSelector();
+      renderWardTable();
+      renderIgdQueue();
+      renderBedBoard('DAHLIA');
+    });
+  </script>
+</body>
+</html>
