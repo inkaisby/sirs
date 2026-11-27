@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 250" width="100%" height="100%">
+  <!-- Perisai Biru Utama RSUD Soewandhie -->
+  <path d="M110 12 C138 35, 175 42, 206 42 C196 105, 196 155, 206 205 C172 205, 138 216, 110 238 C82 216, 48 205, 14 205 C24 155, 24 105, 14 42 C45 42, 82 35, 110 12 Z" fill="#0028FF" stroke="#FACC15" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M110 12 C138 35, 175 42, 206 42 C196 105, 196 155, 206 205 C172 205, 138 216, 110 238 C82 216, 48 205, 14 205 C24 155, 24 105, 14 42 C45 42, 82 35, 110 12 Z" fill="none" stroke="#0F172A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Hiu & Buaya Emas -->
+  <g fill="#FACC15" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
+    <path d="M104 92 C85 88, 65 95, 56 108 L46 92 L50 116 C56 128, 72 136, 86 138 L82 148 L95 140 C100 135, 104 128, 105 118 Z"/>
+    <path d="M115 92 C132 90, 148 92, 162 84 L172 76 L166 94 L174 104 L158 100 C144 104, 128 104, 115 102 Z"/>
+    <path d="M84 93 L74 74 L92 89 Z"/>
+  </g>
+  <g fill="#FACC15" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
+    <path d="M116 130 L146 136 L146 142 L124 142 L124 147 L144 147 C154 152, 158 164, 152 176 L164 174 L162 182 L146 184 C140 192, 128 196, 116 194 Z"/>
+    <path d="M104 176 C84 178, 66 184, 52 194 C66 198, 86 196, 104 191 Z"/>
+  </g>
+  <!-- Tugu Pahlawan Putih -->
+  <g fill="#FFFFFF" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
+    <polygon points="110,34 114,52 106,52"/>
+    <polygon points="106,52 114,52 117,184 103,184"/>
+    <line x1="108.5" y1="54" x2="107" y2="182" stroke="#0F172A" stroke-width="1.2"/>
+    <line x1="111.5" y1="54" x2="113" y2="182" stroke="#0F172A" stroke-width="1.2"/>
+    <rect x="98" y="184" width="24" height="5"/>
+    <rect x="93" y="189" width="34" height="5"/>
+    <polygon points="86,194 134,194 144,202 76,202"/>
+  </g>
+</svg>
