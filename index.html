@@ -168,8 +168,8 @@
           <div>
             <div class="flex items-center gap-2">
               <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700 block">Pemerintah Kota Surabaya</span>
-              <span id="portal-db-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                DB Terpadu
+              <span id="portal-db-badge" onclick="checkDbConnection()" class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-200 transition cursor-pointer" title="Status Koneksi Database (Klik untuk periksa ulang)">
+                🔄 Memeriksa DB...
               </span>
             </div>
             <h1 class="text-base sm:text-lg font-extrabold text-slate-900 leading-tight">SIIRS RSUD Dr. M. Soewandhie</h1>
@@ -396,7 +396,7 @@
             <div class="flex items-center gap-2">
               <h1 class="text-sm sm:text-base font-extrabold text-slate-900 leading-tight">SIIRS RSUD Dr. M. Soewandhie</h1>
               <span id="role-badge-header" class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-extrabold uppercase">Admin Yanmed</span>
-              <span id="header-db-pill" class="hidden sm:inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">DB Lokal (Docker)</span>
+              <span id="header-db-pill" onclick="checkDbConnection()" class="hidden sm:inline-flex px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer" title="Status Basis Data (Klik untuk periksa ulang)">🔄 Memeriksa DB...</span>
               <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200" title="Keamanan Sesi Aktif">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                 Auto-Lock 15m
@@ -654,34 +654,64 @@
       setTimeout(() => toast.remove(), 3400);
     }
 
+    async function checkDbConnection(silent = false) {
+      if (!silent) showToast('Memeriksa koneksi basis data Supabase...', 'info');
+      try {
+        await initSupabase();
+        updateDbBadges();
+        const conn = getConnectionState();
+        if (!silent) {
+          if (conn.isConnected && conn.mode !== 'migration_needed') {
+            showToast(conn.mode === 'cloud' ? 'Terhubung ke Supabase Cloud (Shared IDIK).' : 'Terhubung ke Docker Lokal (54321).', 'success');
+          } else if (conn.mode === 'migration_needed') {
+            showToast('Supabase terhubung. Tabel siirs_beds siap dimigrasi via SQL.', 'warn');
+          } else {
+            showToast('Database offline, beralih ke mode mandiri lokal.', 'info');
+          }
+        }
+      } catch (e) {
+        updateDbBadges();
+      }
+    }
+
     function updateDbBadges() {
       const conn = getConnectionState();
       const portalBadge = document.getElementById('portal-db-badge');
       const headerPill = document.getElementById('header-db-pill');
 
-      let label = 'Mode Mandiri (Offline)';
+      let label = '⚪ Mode Mandiri (Offline)';
       let badgeClass = 'bg-slate-100 text-slate-700 border-slate-200';
+      let titleTooltip = 'Menggunakan cache data lokal';
 
       if (conn.isConnected) {
         if (conn.mode === 'local') {
           label = '🟢 DB Lokal (Docker: 54321)';
-          badgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
-        } else {
+          badgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-300';
+          titleTooltip = `Terhubung ke PostgreSQL Docker (${conn.endpoint || '127.0.0.1:54321'})`;
+        } else if (conn.mode === 'cloud') {
           label = '🟢 DB Cloud (Supabase)';
-          badgeClass = 'bg-blue-50 text-blue-800 border-blue-200';
+          badgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-300';
+          titleTooltip = `Terhubung ke Supabase Cloud (${conn.endpoint || 'whbinarvynbyemvqbfjg.supabase.co'})`;
+        } else if (conn.mode === 'migration_needed') {
+          label = '🟡 DB Terhubung (Perlu Migrasi SQL)';
+          badgeClass = 'bg-amber-50 text-amber-800 border-amber-300';
+          titleTooltip = 'Supabase terhubung. Eksekusi file SQL di supabase/migrations untuk mengaktifkan tabel siirs_beds.';
         }
-      } else if (conn.mode === 'migration_needed') {
-        label = '🟡 Migrasi Belum Terpasang';
-        badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
+      } else if (conn.mode === 'checking') {
+        label = '🔄 Memeriksa DB...';
+        badgeClass = 'bg-blue-50 text-blue-700 border-blue-200 animate-pulse';
+        titleTooltip = 'Sedang menguji koneksi jaringan ke basis data...';
       }
 
       if (portalBadge) {
         portalBadge.textContent = label;
-        portalBadge.className = `px-2 py-0.5 rounded-full text-[10px] font-bold border ${badgeClass}`;
+        portalBadge.className = `px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border transition cursor-pointer ${badgeClass}`;
+        portalBadge.title = `${titleTooltip} — Klik untuk periksa ulang`;
       }
       if (headerPill) {
         headerPill.textContent = label;
-        headerPill.className = `hidden sm:inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold border ${badgeClass}`;
+        headerPill.className = `hidden sm:inline-flex px-2.5 py-0.5 rounded-md text-[10px] font-extrabold border transition cursor-pointer ${badgeClass}`;
+        headerPill.title = `${titleTooltip} — Klik untuk periksa ulang`;
       }
     }
 
@@ -804,6 +834,7 @@
       document.getElementById('main-app-shell')?.classList.remove('hidden');
       switchRole(role, nip);
       resetIdleTimer();
+      updateDbBadges();
       showToast(`Berhasil masuk sebagai ${ROLE_META[role].label}`, 'success');
     }
 
@@ -1042,6 +1073,8 @@
     window.openBriefingPlayer = openBriefingPlayer;
     window.submitSpecialReport = submitSpecialReport;
     window.togglePasswordVisibility = togglePasswordVisibility;
+    window.checkDbConnection = checkDbConnection;
+    window.updateDbBadges = updateDbBadges;
 
     // Inisialisasi saat halaman dimuat
     window.addEventListener('DOMContentLoaded', async () => {
@@ -1049,6 +1082,7 @@
       renderWardTable();
       renderIgdQueue();
       renderBedBoard('DAHLIA');
+      updateDbBadges();
 
       // Hubungkan ke Supabase (Docker lokal atau Cloud)
       try {

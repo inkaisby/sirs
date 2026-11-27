@@ -226,6 +226,8 @@ export async function initSupabase() {
     return null;
   }
 
+  connectionState.mode = 'checking';
+
   try {
     const { createClient } = await import('https://esm.sh/@supabase/supabase-js@2');
     supabaseClient = createClient(url, key, {
@@ -233,16 +235,32 @@ export async function initSupabase() {
       realtime: { params: { eventsPerSecond: 10 } }
     });
 
-    // Uji koneksi ringan ke tabel siirs_beds
-    const { data, error } = await supabaseClient.from('siirs_beds').select('id').limit(1);
-    if (!error) {
+    // 1. Uji koneksi ringan ke tabel siirs_beds
+    const { data, error: bedErr } = await supabaseClient.from('siirs_beds').select('id').limit(1);
+    
+    if (!bedErr) {
       connectionState.isConnected = true;
       connectionState.mode = SIIRS_CONFIG.isLocal ? 'local' : 'cloud';
+      connectionState.endpoint = url;
+      connectionState.hasTables = true;
+      connectionState.error = null;
     } else {
-      console.warn('Supabase terhubung tapi tabel siirs_beds belum dimigrasi:', error.message);
-      connectionState.isConnected = false;
-      connectionState.mode = 'migration_needed';
-      connectionState.error = error.message;
+      // 2. Periksa apakah terhubung ke basis data bersama IDIK (misal tabel app_users / pasien)
+      const { error: idikErr } = await supabaseClient.from('app_users').select('id').limit(1);
+      const isPostgresReachable = !idikErr || (bedErr && (bedErr.code === '42P01' || bedErr.message?.includes('does not exist')));
+
+      if (isPostgresReachable) {
+        // Basis data Supabase berhasil terhubung, namun tabel siirs_beds belum dimigrasi
+        connectionState.isConnected = true;
+        connectionState.mode = 'migration_needed';
+        connectionState.endpoint = url;
+        connectionState.hasTables = false;
+        connectionState.error = bedErr?.message || 'Tabel siirs_beds belum dimigrasi';
+      } else {
+        connectionState.isConnected = false;
+        connectionState.mode = 'offline';
+        connectionState.error = bedErr.message;
+      }
     }
   } catch (err) {
     console.warn('Supabase offline / fallback simulasi lokal:', err.message);
