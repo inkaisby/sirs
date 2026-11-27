@@ -155,3 +155,68 @@ SIIRS mengimplementasikan arsitektur keamanan berlapis (*defense-in-depth*) untu
 ### 7.7. Keamanan Basis Data Bersama (*Shared DB*) dengan `idik-app`
 - Menggunakan skema terpadu pada Supabase lokal (`127.0.0.1:54322`) dan Supabase Cloud.
 - Pemisahan hak akses tabel `app_users` dengan pembatasan service role dan referensi `ruangan_id` untuk integrasi modul rumah sakit lainnya.
+
+---
+
+## 8. Spesifikasi Sistem, Bahasa Pemrograman, & Teknologi (Tech Stack)
+
+Jika Anda ditanya oleh **Auditor TI, Kepala Instalasi SIMRS, atau Tim Keamanan Informasi**:
+
+| Komponen Arsitektur | Teknologi / Standar yang Digunakan | Penjelasan Teknis Formal |
+| :--- | :--- | :--- |
+| **Arsitektur Aplikasi** | Single-Page Application (SPA) / JAMstack | Client-Side Rendering (CSR) terdistribusi di Edge CDN tanpa kompilasi server yang lambat. |
+| **Platform Deployment** | Vercel Edge Serverless Infrastructure | Hosting global dengan *Anycast DNS, Edge Caching, DDoS Mitigation*, dan *Zero-Downtime Deployment*. |
+| **Bahasa Frontend** | ECMAScript 2024 / Modern JavaScript (ES Modules) | Berjalan native di browser via modular `type="module"`, tanpa ketergantungan *bundler overhead* (*Zero Build Fragility*). |
+| **Bahasa Backend/DB** | PL/pgSQL & ANSI SQL | Logika keamanan transaksi, *triggers*, *functions*, dan RLS dieksekusi langsung pada mesin basis data (*in-database engine execution*). |
+| **Antarmuka & Styling** | HTML5 Semantik & Tailwind CSS | Standar desain antarmuka responsif ramah sentuhan, rasio kontras WCAG 2.1 AA, dan tata letak *grid/flexbox*. |
+| **Database Engine** | PostgreSQL 15 Enterprise (Managed Supabase) | Mesin database relasional kelas industri dengan dukungan *ACID compliance*, partisi data, *indexes*, dan isolasi RLS. |
+| **Protokol Realtime** | WebSocket Secure (WSS) via Supabase Realtime Engine | Sinkronisasi data ketersediaan bed menggunakan mekanisme *PostgreSQL Logical Replication / Change Data Capture (CDC)*. |
+| **Protokol API** | HTTPS / TLS 1.3 via PostgREST | Komunikasi data aman terenkripsi *in-transit* menggunakan RESTful API JSON standar dengan JWT signature. |
+| **Kriptografi & Sesi** | Web Cryptography API (`crypto.randomUUID`) | Penghasil token acak *cryptographically secure pseudo-random number generator (CSPRNG)*. |
+| **Environment Lokal** | Docker Engine & Supabase CLI | Kontainerisasi PostgreSQL, Inbucket mail server, dan REST gateway untuk lingkungan pengujian *offline-first*. |
+
+---
+
+## 9. Kepatuhan Regulasi & Standar Keamanan Data Medis (Compliance)
+
+Sistem dirancang dengan mematuhi standar hukum dan keamanan informasi kesehatan nasional:
+
+1. **Permenkes No. 24 Tahun 2022 tentang Rekam Medis Elektronik (RME):**
+   - Menjamin **Kerahasiaan (*Confidentiality*)**: Akses dibatasi berdasarkan peran (*Role-Based Access Control*).
+   - Menjamin **Integritas (*Integrity*)**: Seluruh perubahan status tempat tidur terekam permanen pada audit trail anti-tamper.
+   - Menjamin **Ketersediaan (*Availability*)**: Arsitektur ganda mendukung operasi lokal (Docker) saat jaringan luar bermasalah dan Cloud Vercel/Supabase saat daring.
+2. **UU Perlindungan Data Pribadi (UU PDP No. 27 Tahun 2022):**
+   - Data kesehatan diklasifikasikan sebagai **Data Pribadi yang Bersifat Spesifik**.
+   - Menerapkan **Prinsip De-identifikasi / Data Masking**: Pada mode publik (`public_display`), nama pasien dan diagnosa klinis disamarkan secara otomatis sehingga aman ditampilkan pada TV informasi antrean publik.
+3. **Standar OWASP Top 10 (Mitigasi Risiko Aplikasi Web):**
+   - *A01: Broken Access Control* &rarr; Dicegah oleh Row-Level Security (RLS) PostgreSQL dan pembatasan isolasi bangsal perawat.
+   - *A02: Cryptographic Failures* &rarr; Seluruh data transit diproteksi TLS 1.3 / HTTPS. Token sesi berbasis CSPRNG.
+   - *A03: Injection (SQLi/XSS)* &rarr; Validasi regex ketat, sanitasi karakter berisiko, dan query parameterized PostgREST.
+   - *A07: Identification & Authentication Failures* &rarr; Dilindungi rate-limiting (maksimal 5x percobaan gagal), penguncian akun 15 menit, serta auto-logout inaktivitas 15 menit.
+   - *A09: Security Logging & Monitoring Failures* &rarr; Pencatatan mutasi dan otentikasi ke tabel `siirs_audit_logs` yang bersifat *append-only* (tanpa izin update/delete).
+
+---
+
+## 10. Panduan Jawaban Praktis Saat Ditanya Ahli IT (IT Defense & Audit Q&A)
+
+Gunakan jawaban ini saat berhadapan dengan **Tim IT RS, Auditor Keamanan Siber, atau Pihak BSSN / Kominfo**:
+
+### Q1: Mengapa aplikasi ini menggunakan Vanilla JS (ES Modules) dan bukan React/Next.js?
+> **Jawaban Anda:**
+> *"SIIRS sengaja dirancang berbasis modern Vanilla JavaScript (ES Modules native) untuk mencapai performa 'Zero-Cold-Start' dan keandalan tinggi di komputer workstation ruang perawatan yang umumnya berspesifikasi rendah. Tidak adanya bundler runtime yang berat meminimalkan risiko kerentanan rantai pasok (npm supply-chain vulnerabilities), mempercepat waktu muat halaman (< 1 detik), dan menjamin sistem tetap dapat beroperasi secara mandiri bahkan jika server jaringan luar mengalami gangguan."*
+
+### Q2: Bagaimana keamanan data rekam medis pasien jika web ini memiliki portal publik?
+> **Jawaban Anda:**
+> *"Sistem memisahkan akses secara tegas di tingkat basis data PostgreSQL menggunakan Row Level Security (RLS) dan database view khusus `public.siirs_public_beds_view`. Ketika diakses oleh mode display publik, identitas pasien (No. RM, nama lengkap, diagnosis) tidak pernah dikirimkan ke peramban umum, melainkan disamarkan menjadi 'Pasien Anonim (***)'. Hal ini memenuhi ketentuan Permenkes No. 24 Tahun 2022 dan UU Perlindungan Data Pribadi (UU PDP)."*
+
+### Q3: Bagaimana mencegah petugas perawat lupa logout di komputer bangsal yang dipakai bersama?
+> **Jawaban Anda:**
+> *"SIIRS dilengkapi Inactivity Auto-Lock Watcher. Jika terminal komputer tidak mendeteksi input keyboard atau mouse selama 15 menit, sesi operasional otomatis dihanguskan (auto-logout) dan layar kembali terkunci ke portal awal. Selain itu, token sesi disimpan di `sessionStorage` sehingga otomatis musnah seketika tab atau jendela peramban ditutup."*
+
+### Q4: Apakah sistem terlindungi dari serangan brute-force login?
+> **Jawaban Anda:**
+> *"Ya. Sistem menerapkan pembatasan frekuensi percobaan (Rate Limiting). Jika terjadi 5 kali kegagalan login berturut-turut pada satu akun NIP, sistem secara otomatis mengunci login selama 15 menit dan mencatat insiden tersebut ke tabel `siirs_audit_logs` dengan aksi `AUTH_LOCKED_OUT` beserta rincian user agent dan stempel waktu."*
+
+### Q5: Bagaimana integrasi basis data antara SIIRS dan aplikasi IDIK (Rawat/Tindakan)?
+> **Jawaban Anda:**
+> *"SIIRS dan IDIK-App menggunakan arsitektur Shared Database (Single Source of Truth) berbasis PostgreSQL pada Supabase. Keduanya berbagi master data pasien (`public.pasien`), master akun petugas (`public.app_users`), dan master ruangan (`public.ruangan`). Hak akses antar-aplikasi diisolasi dengan aman menggunakan skema per-layanan dan Row Level Security (RLS)."*
