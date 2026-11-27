@@ -11,7 +11,7 @@
 - **Fokus Utama:** Manajemen Ketersediaan Tempat Tidur (*Bed Management*), Alur Pasien Masuk IGD (*Triage & Inden Rawat Inap*), dan Pelaporan Mutu Pelayanan Medis (*Yanmed*).
 - **Kapasitas RS:** 384 Tempat Tidur terdistribusi di 22 Instalasi/Bangsal Rawat Inap & Perawatan Intensif.
 - **Repositori GitHub:** `https://github.com/inkaisby/sirs`
-- **Domain Deployment Vercel:** `https://siirs.vercel.app` (atau fallback `sirs-soewandhie.vercel.app`).
+- **Domain Deployment Vercel:** `https://sliirs.vercel.app` (Aktif Production di Vercel project `sliirs`, dengan fallback `https://siirs.vercel.app`).
 
 ---
 
@@ -39,8 +39,9 @@ SIIRS terhubung ke **satu basis data PostgreSQL/Supabase yang sama** dengan apli
 ### C. Skema Tabel & Relasi
 1. **Tabel Master Shared (Milik Bersama RSUD):**
    - `public.pasien`: Master data rekam medis pasien (`no_rm`, `nama`, `jenis_kelamin`, `tgl_lahir`, `kelas_perawatan`).
-   - `public.app_users`: Akun pegawai & petugas medis RS (`username`, `password_hash`, `role`, `ruangan_id`).
+   - `public.app_users`: Akun pegawai & petugas medis RS (`username`, `password_hash`, `role`, `ruangan_id`). Kredensial aktif unit Cathlab: `username: cathlab` dengan password `123456` terverifikasi via bcrypt DB.
    - `public.ruangan`: Master ruangan rumah sakit (`nama`, `kode`, `kategori`, `kapasitas`).
+   - `public.tindakan`: Rekam prosedur medis intervensi kateterisasi & vaskular (PPCI, CAG, PPM, dll), temuan pembuluh darah koroner, radiasi (Fluoro/DAP), dan operator DPJP.
 2. **Tabel Khusus SIIRS (Bed & IGD):**
    - `public.siirs_beds`: Ketersediaan 384 bed (`ward_id`, `class_type`, `bed_number`, `status`, `patient_mrn`).
      - Status enum: `'available'`, `'occupied'`, `'reserved'`, `'cleaning'`.
@@ -49,7 +50,8 @@ SIIRS terhubung ke **satu basis data PostgreSQL/Supabase yang sama** dengan apli
    - `public.siirs_public_beds_view`: Tampilan aman display publik teranonimasi tanpa membocorkan identitas pasien.
 3. **File Migrasi Database:**
    - [D:\website\idik-app\supabase\migrations\20261128030000_create_siirs_bed_management.sql](file:///D:/website/idik-app/supabase/migrations/20261128030000_create_siirs_bed_management.sql) (Status: **Applied / Pushed to Remote Cloud `whbinarvynbyemvqbfjg`**)
-   - Salinan lokal: [D:\website\sirs\sql\20261128030000_create_siirs_bed_management.sql](file:///D:/website/sirs/sql/20261128030000_create_siirs_bed_management.sql)
+   - [D:\website\idik-app\supabase\migrations\20261128033000_verify_app_user_credentials.sql](file:///D:/website/idik-app/supabase/migrations/20261128033000_verify_app_user_credentials.sql) (Status: **Applied / Pushed to Remote Cloud `whbinarvynbyemvqbfjg`**)
+   - Salinan lokal: [D:\website\sirs\sql\20261128030000_create_siirs_bed_management.sql](file:///D:/website/sirs/sql/20261128030000_create_siirs_bed_management.sql) dan [D:\website\sirs\sql\20261128033000_verify_app_user_credentials.sql](file:///D:/website/sirs/sql/20261128033000_verify_app_user_credentials.sql)
 
 ---
 
@@ -57,7 +59,10 @@ SIIRS terhubung ke **satu basis data PostgreSQL/Supabase yang sama** dengan apli
 | Role Key | Label Tampilan | Cakupan Akses (*Scope*) | Fitur yang Diizinkan |
 | :--- | :--- | :--- | :--- |
 | `admin_yanmed` | Admin Yanmed | Seluruh Ruang (`ALL`) | Edit seluruh bed, alokasi antrean IGD, input rekap kematian & PP, verifikasi audit. |
+| `cathlab` | Petugas Cathlab | Instalasi Cathlab (`CATHLAB`) | Akses lembar kerja tindakan intervensi vaskular, update status prosedur real-time, penjadwalan tindakan baru, detail laporan temuan koroner & PCI. |
 | `igd_admission` | Petugas IGD & Admisi | Unit IGD & Triage (`IGD`) | Input antrean IGD (P1/P2/P3), reservasi bed rawat inap untuk pasien IGD. |
+| `nurse_ward` | Kepala Ruang / Perawat | Sesuai Bangsal (`assigned_ward_id`) | Update status bed bangsal sendiri (Tersedia, Terisi, Disinfeksi). |
+| `public_display` | Layar Informasi Web RS | Tanpa Ruang (`NONE`) | Tampilan read-only teranonimasi (data nama & diagnosis disembunyikan). |
 | `nurse_ward` | Kepala Ruang / Perawat | Sesuai Bangsal (`assigned_ward_id`) | Update status bed bangsal sendiri (Tersedia, Terisi, Disinfeksi). |
 | `public_display` | Layar Informasi Web RS | Tanpa Ruang (`NONE`) | Tampilan read-only teranonimasi (data nama & diagnosis disembunyikan). |
 

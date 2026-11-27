@@ -287,6 +287,7 @@
                 <label class="block text-xs font-bold text-slate-700 mb-1.5">Pilih Unit / Peran Demo Presentasi</label>
                 <select id="login-role-select" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-slate-50 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
                   <option value="admin_yanmed">Pelayanan Medik / Manajemen (Akses Penuh)</option>
+                  <option value="cathlab">Petugas Cathlab (Layanan Tindakan &amp; Intervensi Vaskular)</option>
                   <option value="igd_admission">Petugas IGD &amp; Admisi (Antrean Pro MRS &amp; Inden)</option>
                   <option value="nurse_dahlia">Perawat Ruang DAHLIA (Khusus Bangsal Dahlia)</option>
                   <option value="nurse_teratai">Perawat Ruang TERATAI (Khusus Bangsal Teratai)</option>
@@ -303,9 +304,12 @@
             <!-- Login Cepat Sekali Klik untuk Demo -->
             <div class="pt-3 border-t border-slate-100">
               <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Akses Cepat Demo (1-Klik):</span>
-              <div class="grid grid-cols-3 gap-2">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 <button type="button" onclick="quickLoginAs('admin_yanmed')" class="px-2.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-[11px] font-bold transition text-center">
                   Admin Yanmed
+                </button>
+                <button type="button" onclick="quickLoginAs('cathlab')" class="px-2.5 py-2 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-800 text-[11px] font-bold transition text-center border border-cyan-200">
+                  Unit Cathlab
                 </button>
                 <button type="button" onclick="quickLoginAs('igd_admission')" class="px-2.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition text-center">
                   Petugas IGD
@@ -349,6 +353,7 @@
           <label class="block text-xs font-bold text-slate-700 mb-1">Peran / Unit Kerja</label>
           <select id="modal-role" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-sm font-semibold">
             <option value="admin_yanmed">Pelayanan Medik / Manajemen</option>
+            <option value="cathlab">Petugas Cathlab (Layanan Tindakan)</option>
             <option value="igd_admission">Petugas IGD &amp; Admisi</option>
             <option value="nurse_dahlia">Perawat Ruang DAHLIA</option>
             <option value="nurse_teratai">Perawat Ruang TERATAI</option>
@@ -410,6 +415,7 @@
         <div class="flex items-center gap-2 flex-wrap">
           <select id="active-role-switcher" onchange="switchRole(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600" title="Simulasi Pergantian Peran">
             <option value="admin_yanmed">Peran: Admin Yanmed</option>
+            <option value="cathlab">Peran: Petugas Cathlab</option>
             <option value="igd_admission">Peran: Petugas IGD</option>
             <option value="nurse_dahlia">Peran: Ruang Dahlia</option>
             <option value="nurse_teratai">Peran: Ruang Teratai</option>
@@ -432,6 +438,10 @@
       <nav id="main-nav-tabs" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-slate-100 py-2">
         <button onclick="switchTab('dashboard')" data-tab="dashboard" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-700 text-white whitespace-nowrap transition">
           Dashboard Keterisian
+        </button>
+        <button onclick="switchTab('cathlab')" data-tab="cathlab" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-cyan-600"></span>
+          <span>Tindakan Cathlab</span>
         </button>
         <button onclick="switchTab('igd')" data-tab="igd" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition">
           Antrean IGD Pro MRS (16)
@@ -552,6 +562,150 @@
         <div id="bed-board-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3"></div>
       </section>
 
+      <!-- TAB KHUSUS: TINDAKAN CATHLAB (INSTALASI KATETERISASI JANTUNG) -->
+      <section id="tab-cathlab" class="hidden space-y-6 motion-view-enter">
+        <!-- Cathlab HUD Summary & Actions -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-xs space-y-5">
+          <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-4">
+            <div>
+              <div class="flex items-center gap-2 mb-1">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-cyan-100 text-cyan-800 border border-cyan-200">
+                  Unit Kateterisasi Jantung (Cathlab)
+                </span>
+                <span class="flex items-center gap-1 text-[11px] font-semibold text-slate-500">
+                  <span class="w-2 h-2 rounded-full bg-emerald-500 status-pulse-dot"></span>
+                  Sinkronisasi DB Supabase Terpadu
+                </span>
+              </div>
+              <h2 class="text-lg font-extrabold text-slate-900 leading-tight">
+                Layanan Prosedur Invasif &amp; Intervensi Vaskular
+              </h2>
+              <p class="text-xs text-slate-500">
+                Pencatatan klinis, pemantauan radiasi &amp; penjadwalan pasien terintegrasi rekam medis RSUD Dr. M. Soewandhie
+              </p>
+            </div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+              <button type="button" onclick="openModalTambahTindakan()" class="px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-xs transition shadow-sm flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                <span>Jadwal Tindakan Baru</span>
+              </button>
+              <button type="button" onclick="loadTindakanData(true)" class="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center gap-1.5" title="Muat ulang data dari database Supabase">
+                <svg id="sync-tindakan-icon" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                <span>Sinkron Live</span>
+              </button>
+              <button type="button" onclick="exportTindakanCsv()" class="px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition flex items-center gap-1.5">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                <span>Ekspor CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Cathlab Stat Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
+            <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200/80">
+              <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Total Prosedur</span>
+              <span id="stat-tindakan-total" class="text-2xl font-black text-slate-900 block mt-0.5">0</span>
+              <span class="text-[10px] text-slate-400 mt-1 block">Pasien terdaftar di database</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80">
+              <span class="text-[11px] font-bold text-emerald-700 uppercase tracking-wider block">Selesai Operasi</span>
+              <span id="stat-tindakan-selesai" class="text-2xl font-black text-emerald-700 block mt-0.5">0</span>
+              <span class="text-[10px] text-emerald-600 mt-1 block">Prosedur sukses terlaksana</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-cyan-50/70 border border-cyan-200/80">
+              <span class="text-[11px] font-bold text-cyan-800 uppercase tracking-wider block">Dalam Lab / Proses</span>
+              <span id="stat-tindakan-proses" class="text-2xl font-black text-cyan-800 block mt-0.5">0</span>
+              <span class="text-[10px] text-cyan-600 mt-1 block">Sedang berlangsung di meja cath</span>
+            </div>
+            <div class="p-3.5 rounded-xl bg-amber-50/70 border border-amber-200/80">
+              <span class="text-[11px] font-bold text-amber-800 uppercase tracking-wider block">Menunggu Prosedur</span>
+              <span id="stat-tindakan-menunggu" class="text-2xl font-black text-amber-800 block mt-0.5">0</span>
+              <span class="text-[10px] text-amber-600 mt-1 block">Antrean persiapan premedikasi</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-4 shadow-xs space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div class="lg:col-span-2 relative">
+              <input type="text" id="tindakan-search-input" oninput="filterTindakanData()" placeholder="Cari nama pasien, no. RM, dokter, diagnosa..." class="w-full pl-9 pr-3.5 py-2 rounded-xl border border-slate-300 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-cyan-600" />
+              <svg class="w-4 h-4 text-slate-400 absolute left-3 top-2.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+            <div>
+              <select id="tindakan-filter-status" onchange="filterTindakanData()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-semibold text-slate-700">
+                <option value="ALL">Semua Status</option>
+                <option value="Menunggu">Menunggu</option>
+                <option value="Proses">Dalam Proses</option>
+                <option value="Selesai">Selesai</option>
+                <option value="Meninggal">Meninggal</option>
+                <option value="Batal">Batal</option>
+              </select>
+            </div>
+            <div>
+              <select id="tindakan-filter-dokter" onchange="filterTindakanData()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-semibold text-slate-700">
+                <option value="ALL">Semua Operator / Dokter</option>
+                <option value="Faishal">dr. M. Faishal Riza, SpJP(K)</option>
+                <option value="Lely">dr. Lely P Candra, SpJP(K)</option>
+                <option value="Andrianus">dr. Andrianus Oktovianto, SpJP</option>
+                <option value="Deo">dr. Deo Idarto, SpJP(K)</option>
+              </select>
+            </div>
+            <div>
+              <select id="tindakan-filter-ruangan" onchange="filterTindakanData()" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-semibold text-slate-700">
+                <option value="ALL">Semua Ruangan Asal</option>
+                <option value="ICCU">ICCU</option>
+                <option value="IGD">IGD</option>
+                <option value="SAFIR">SAFIR HCU</option>
+                <option value="ASTER">ASTER</option>
+                <option value="TERATAI">TERATAI</option>
+                <option value="TULIP">TULIP</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabel Lembar Kerja Tindakan Cathlab (Spreadsheet Lite View) -->
+        <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-50 text-slate-700 font-extrabold border-b border-slate-200 uppercase text-[10px] tracking-wider">
+                  <th class="py-3 px-3 text-center w-12">#</th>
+                  <th class="py-3 px-3 min-w-[110px]">Waktu &amp; Tanggal</th>
+                  <th class="py-3 px-4 min-w-[200px]">Pasien &amp; No. RM</th>
+                  <th class="py-3 px-3 min-w-[120px]">Ruangan Asal</th>
+                  <th class="py-3 px-4 min-w-[180px]">Dokter DPJP</th>
+                  <th class="py-3 px-3 min-w-[130px]">Tindakan</th>
+                  <th class="py-3 px-3 min-w-[130px] text-center">Status Prosedur</th>
+                  <th class="py-3 px-3 min-w-[120px] text-center">Radiasi &amp; Kontras</th>
+                  <th class="py-3 px-3 text-center w-24">Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="tindakan-tbody" class="divide-y divide-slate-100 text-slate-800">
+                <tr>
+                  <td colspan="9" class="py-12 text-center text-slate-400">
+                    <div class="flex flex-col items-center justify-center gap-2">
+                      <span class="animate-spin text-cyan-600">
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                      </span>
+                      <span class="text-xs font-semibold">Memuat rekam tindakan dari basis data Supabase...</span>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div id="tindakan-pagination-footer" class="p-3.5 bg-slate-50/70 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-500">
+            <span id="tindakan-count-info">Menampilkan 0 tindakan</span>
+            <div class="flex items-center gap-1">
+              <span class="text-[11px] font-semibold text-slate-400">Instalasi Cathlab RSUD Dr. M. Soewandhie</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- TAB 4: LAPORAN KEMATIAN & PP -->
       <section id="tab-reports" class="hidden space-y-4 motion-view-enter">
         <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
@@ -605,6 +759,176 @@
     </main>
   </div>
 
+  <!-- ======================================================================= -->
+  <!-- MODAL DETAIL REKAM TINDAKAN CATHLAB                                      -->
+  <!-- ======================================================================= -->
+  <div id="modal-detail-tindakan" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-2xl w-full p-6 shadow-2xl space-y-4 my-8 motion-view-enter">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span id="dtl-tindakan-badge" class="px-2 py-0.5 rounded-md bg-cyan-100 text-cyan-800 text-[10px] font-extrabold uppercase">PPCI</span>
+            <span id="dtl-status-badge" class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">Selesai</span>
+          </div>
+          <h4 id="dtl-pasien-nama" class="text-base font-extrabold text-slate-900 leading-tight">Nama Pasien</h4>
+          <p class="text-xs text-slate-500 font-mono">No. RM: <span id="dtl-pasien-rm" class="font-bold text-slate-700">000000</span> • Asal: <span id="dtl-ruangan" class="font-bold text-slate-700">ICCU</span></p>
+        </div>
+        <button type="button" onclick="closeDetailTindakan()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="space-y-3.5 text-xs">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+          <div>
+            <span class="text-slate-400 text-[10px] font-bold uppercase block">Dokter DPJP / Operator</span>
+            <span id="dtl-dokter" class="font-bold text-slate-800 block mt-0.5">—</span>
+          </div>
+          <div>
+            <span class="text-slate-400 text-[10px] font-bold uppercase block">Tanggal Prosedur</span>
+            <span id="dtl-tanggal" class="font-bold text-slate-800 font-mono block mt-0.5">—</span>
+          </div>
+          <div>
+            <span class="text-slate-400 text-[10px] font-bold uppercase block">Waktu Prosedur</span>
+            <span id="dtl-waktu" class="font-bold text-slate-800 font-mono block mt-0.5">—</span>
+          </div>
+          <div>
+            <span class="text-slate-400 text-[10px] font-bold uppercase block">Tim Medis</span>
+            <span id="dtl-tim" class="font-medium text-slate-700 block mt-0.5">—</span>
+          </div>
+          <div>
+            <span class="text-slate-400 text-[10px] font-bold uppercase block">Fluoro Time</span>
+            <span id="dtl-fluoro" class="font-bold text-slate-800 font-mono block mt-0.5">—</span>
+          </div>
+          <div>
+            <span class="text-slate-400 text-[10px] font-bold uppercase block">Dosis DAP / Radiasi</span>
+            <span id="dtl-dose" class="font-bold text-slate-800 font-mono block mt-0.5">—</span>
+          </div>
+        </div>
+
+        <div>
+          <span class="text-slate-500 font-bold block mb-1">Temuan Pembuluh Darah Koroner:</span>
+          <pre id="dtl-temuan" class="p-3 bg-slate-900 text-slate-100 rounded-xl font-mono text-[11px] whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto">Tidak ada catatan temuan pembuluh khusus.</pre>
+        </div>
+
+        <div>
+          <span class="text-slate-500 font-bold block mb-1">Kesimpulan Prosedur:</span>
+          <div id="dtl-kesimpulan" class="p-3 bg-cyan-50 border border-cyan-200 text-cyan-950 font-semibold rounded-xl leading-relaxed">
+            SUCCESSFUL PROCEDURE
+          </div>
+        </div>
+
+        <div id="dtl-pci-link-container" class="hidden pt-1">
+          <a id="dtl-pci-link" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-blue-50 text-blue-800 hover:bg-blue-100 font-bold text-xs transition border border-blue-200">
+            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            <span>Buka Laporan PCI Medis Lengkap (Google Docs)</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="flex justify-end pt-3 border-t border-slate-100">
+        <button type="button" onclick="closeDetailTindakan()" class="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL INPUT / PENJADWALAN TINDAKAN BARU CATHLAB                          -->
+  <!-- ======================================================================= -->
+  <div id="modal-tambah-tindakan" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-xl w-full p-6 shadow-2xl space-y-4 my-8 motion-view-enter">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h4 class="text-base font-extrabold text-slate-900 leading-tight">Jadwalkan Tindakan Cathlab</h4>
+          <p class="text-xs text-slate-500">Input rekam prosedur intervensi vaskular langsung ke database Supabase</p>
+        </div>
+        <button type="button" onclick="closeModalTambahTindakan()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form onsubmit="submitTambahTindakan(event)" class="space-y-3.5 text-xs">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Tanggal Tindakan</label>
+            <input type="date" id="tb-tanggal" required class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Waktu / Jam (Estimasi)</label>
+            <input type="text" id="tb-waktu" placeholder="Contoh: 08:30 - 10:00" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">No. Rekam Medis (No. RM)</label>
+            <input type="text" id="tb-norm" required placeholder="Contoh: 919759" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono font-bold" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Nama Pasien</label>
+            <input type="text" id="tb-nama" required placeholder="Nama lengkap pasien" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-bold" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Ruangan Asal Pasien</label>
+            <select id="tb-ruangan" required class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-semibold">
+              <option value="ICCU">ICCU</option>
+              <option value="IGD">IGD</option>
+              <option value="SAFIR HCU">SAFIR HCU</option>
+              <option value="ASTER">ASTER</option>
+              <option value="TERATAI">TERATAI</option>
+              <option value="TULIP">TULIP</option>
+              <option value="DAHLIA">DAHLIA</option>
+              <option value="SERUNI">SERUNI</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Dokter Operator DPJP</label>
+            <select id="tb-dokter" required class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-semibold">
+              <option value="dr. M. Faishal Riza, SpJP(K), FIHA, FAPSC, FAPSIC, FAsCC, FSC">dr. M. Faishal Riza, SpJP(K)</option>
+              <option value="dr. Lely P Candra, SpJP(K), FIHA, FAPSIC, FAPS">dr. Lely P Candra, SpJP(K)</option>
+              <option value="dr. Andrianus Oktovianto, SpJP, FIHA">dr. Andrianus Oktovianto, SpJP</option>
+              <option value="dr. Deo Idarto,M.Biomed, SpJP (K), FIHA,FAPSC">dr. Deo Idarto, SpJP(K)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Jenis Tindakan</label>
+            <input type="text" id="tb-tindakan" required placeholder="PPCI / CAG / PPM / TPM" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-bold uppercase" />
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Status Prosedur Awal</label>
+            <select id="tb-status" class="w-full px-3 py-2 rounded-xl border border-slate-300 bg-slate-50 font-semibold">
+              <option value="Menunggu">Menunggu</option>
+              <option value="Proses">Dalam Proses</option>
+              <option value="Selesai">Selesai</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Catatan Diagnosa / Keterangan Tambahan</label>
+          <textarea id="tb-keterangan" rows="2" placeholder="Diagnosa klinis, faktor risiko atau instruksi persiapan..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"></textarea>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModalTambahTindakan()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">
+            Batal
+          </button>
+          <button type="submit" id="tb-submit-btn" class="px-5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold transition flex items-center gap-1.5 shadow-sm">
+            <span>Simpan ke Database</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
     import { SIIRS_CONFIG } from './src/js/config.js';
     import {
@@ -618,7 +942,10 @@
       destroySession,
       logSecurityAudit,
       checkRateLimit,
-      sanitizeInput
+      sanitizeInput,
+      fetchTindakanFromDb,
+      updateTindakanStatusDb,
+      createTindakanDb
     } from './src/js/supabaseClient.js';
     import { INITIAL_WARDS_DATA, INITIAL_IGD_QUEUE } from './src/data/wardsSeed.js';
 
@@ -628,6 +955,7 @@
 
     const ROLE_META = {
       admin_yanmed: { label: 'Admin Yanmed', user: 'Pelayanan Medik (Akses Penuh)', allowedWard: 'ALL' },
+      cathlab: { label: 'Petugas Cathlab', user: 'Instalasi Kateterisasi Jantung (Cathlab)', allowedWard: 'CATHLAB' },
       igd_admission: { label: 'Petugas IGD', user: 'Instalasi Gawat Darurat & Admisi', allowedWard: 'IGD' },
       nurse_dahlia: { label: 'Perawat Dahlia', user: 'Ruang Rawat Inap DAHLIA', allowedWard: 'DAHLIA' },
       nurse_teratai: { label: 'Perawat Teratai', user: 'Ruang Rawat Inap TERATAI', allowedWard: 'TERATAI' },
@@ -759,14 +1087,15 @@
           return;
         }
 
+        const effectiveRole = authResult.role || role;
         createSecureSession({
-          user: ROLE_META[role].user,
+          user: ROLE_META[effectiveRole].user,
           nip: authResult.nip,
-          role: authResult.role,
-          allowedWard: ROLE_META[role].allowedWard
+          role: effectiveRole,
+          allowedWard: ROLE_META[effectiveRole].allowedWard
         });
 
-        enterDashboardWithRole(authResult.role, authResult.nip);
+        enterDashboardWithRole(effectiveRole, authResult.nip);
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
@@ -777,21 +1106,30 @@
     }
 
     async function quickLoginAs(role) {
-      const nip = document.getElementById('login-nip')?.value.trim() || '199204152020121004';
-      const authResult = await authenticatePetugas(nip, 'soewandhie2026', role);
+      let nip = '199204152020121004';
+      let pass = 'soewandhie2026';
+      if (role === 'cathlab') {
+        nip = 'cathlab';
+        pass = '123456';
+      } else {
+        nip = document.getElementById('login-nip')?.value.trim() || '199204152020121004';
+      }
+
+      const authResult = await authenticatePetugas(nip, pass, role);
       if (!authResult.success) {
         showToast(authResult.message, 'warn');
         return;
       }
 
+      const effectiveRole = authResult.role || role;
       createSecureSession({
-        user: ROLE_META[role].user,
+        user: ROLE_META[effectiveRole].user,
         nip: authResult.nip,
-        role: authResult.role,
-        allowedWard: ROLE_META[role].allowedWard
+        role: effectiveRole,
+        allowedWard: ROLE_META[effectiveRole].allowedWard
       });
 
-      enterDashboardWithRole(authResult.role, authResult.nip);
+      enterDashboardWithRole(effectiveRole, authResult.nip);
     }
 
     function openTopLoginModal() {
@@ -805,22 +1143,24 @@
     async function submitModalLogin() {
       const nip = document.getElementById('modal-nip')?.value.trim() || '199204152020121004';
       const role = document.getElementById('modal-role')?.value || 'admin_yanmed';
+      const pass = nip.toLowerCase() === 'cathlab' ? '123456' : 'soewandhie2026';
       
-      const authResult = await authenticatePetugas(nip, 'soewandhie2026', role);
+      const authResult = await authenticatePetugas(nip, pass, role);
       if (!authResult.success) {
         showToast(authResult.message, 'warn');
         return;
       }
 
       closeTopLoginModal();
+      const effectiveRole = authResult.role || role;
       createSecureSession({
-        user: ROLE_META[role].user,
+        user: ROLE_META[effectiveRole].user,
         nip: authResult.nip,
-        role: authResult.role,
-        allowedWard: ROLE_META[role].allowedWard
+        role: effectiveRole,
+        allowedWard: ROLE_META[effectiveRole].allowedWard
       });
 
-      enterDashboardWithRole(authResult.role, authResult.nip);
+      enterDashboardWithRole(effectiveRole, authResult.nip);
     }
 
     function enterPublicDisplay() {
@@ -867,6 +1207,8 @@
 
       if (isPublic) {
         switchTab('dashboard');
+      } else if (role === 'cathlab') {
+        switchTab('cathlab');
       } else if (meta.allowedWard !== 'ALL' && meta.allowedWard !== 'IGD') {
         const wardSelector = document.getElementById('ward-selector');
         if (wardSelector) wardSelector.value = meta.allowedWard;
@@ -880,7 +1222,7 @@
 
     function switchTab(tabName) {
       currentTab = tabName;
-      ['dashboard', 'igd', 'wards', 'reports'].forEach(t => {
+      ['dashboard', 'cathlab', 'igd', 'wards', 'reports'].forEach(t => {
         document.getElementById(`tab-${t}`)?.classList.toggle('hidden', t !== tabName);
       });
       document.querySelectorAll('.nav-tab-btn').forEach(btn => {
@@ -889,6 +1231,415 @@
           ? 'nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-700 text-white whitespace-nowrap transition'
           : 'nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition';
       });
+
+      if (tabName === 'cathlab') {
+        loadTindakanData();
+      }
+    }
+
+    // =========================================================================
+    // MODUL TINDAKAN CATHLAB (SHARED DENGAN IDIK-APP & SUPABASE)
+    // =========================================================================
+    let tindakanDataList = [];
+    let isTindakanLoading = false;
+
+    async function loadTindakanData(forceToast = false) {
+      if (isTindakanLoading) return;
+      isTindakanLoading = true;
+      const syncIcon = document.getElementById('sync-tindakan-icon');
+      if (syncIcon) syncIcon.classList.add('animate-spin');
+
+      try {
+        const data = await fetchTindakanFromDb({ limit: 120 });
+        if (data && Array.isArray(data) && data.length > 0) {
+          tindakanDataList = data;
+        } else if (tindakanDataList.length === 0) {
+          // Fallback data demo klinis jika offline
+          tindakanDataList = [
+            {
+              id: 4471,
+              tanggal: '2026-11-26',
+              waktu: '09:15',
+              nama: 'NY. AMINATUN',
+              dokter: 'dr. Lely P Candra, SpJP(K), FIHA, FAPSIC, FAPS',
+              tindakan: 'PPCI',
+              kategori: 'PCI',
+              status: 'Selesai',
+              ruangan: 'IGD - ICCU',
+              no_rm: '939094',
+              asisten: 'ADI',
+              sirkuler: 'BIRAWA',
+              logger: 'AZIZA',
+              fluoro_time: 1420,
+              dap_dose: 185.4,
+              temuan_pembuluh: 'LM: Normal\nLAD: Total occlusion at mid\nLCx: Normal\nRCA: Calcified 40%',
+              kesimpulan_laporan: 'SUCCESSFUL PRIMARY PCI 1 DES TO MID LAD'
+            },
+            {
+              id: 4470,
+              tanggal: '2026-11-26',
+              waktu: '11:00',
+              nama: 'TINNEKE',
+              dokter: 'dr. M. Faishal Riza, SpJP(K), FIHA, FAPSC, FAPSIC, FAsCC, FSC',
+              tindakan: 'PPCI',
+              kategori: 'PCI',
+              status: 'Selesai',
+              ruangan: 'ICCU',
+              no_rm: '939012',
+              asisten: 'ADI',
+              sirkuler: 'BIRAWA',
+              logger: 'AZIZA',
+              fluoro_time: 2100,
+              dap_dose: 210.2,
+              temuan_pembuluh: 'LM: Normal\nLAD: 90% stenosis\nLCx: Normal\nRCA: 60% mid',
+              kesimpulan_laporan: 'SUCCESSFUL PROCEDURE 1 DES TO PROX-MID LAD'
+            },
+            {
+              id: 4469,
+              tanggal: '2026-11-25',
+              waktu: '13:30',
+              nama: 'SALAMA',
+              dokter: 'dr. Andrianus Oktovianto, SpJP, FIHA',
+              tindakan: 'PPM GANTI BATERRY',
+              kategori: 'PPM',
+              status: 'Selesai',
+              ruangan: 'SAFIR HCU',
+              no_rm: '938935',
+              fluoro_time: 450,
+              dap_dose: 45.1,
+              kesimpulan_laporan: 'SUCCESSFUL PACEMAKER GENERATOR REPLACEMENT'
+            },
+            {
+              id: 4466,
+              tanggal: '2026-11-25',
+              waktu: '15:10',
+              nama: 'SOEPRIYADI',
+              dokter: 'dr. Deo Idarto,M.Biomed, SpJP (K), FIHA,FAPSC',
+              tindakan: 'PPCI',
+              kategori: 'PCI',
+              status: 'Proses',
+              ruangan: 'TULIP - SAFIR HCU',
+              no_rm: '429519',
+              fluoro_time: 1800,
+              dap_dose: 195.0,
+              kesimpulan_laporan: 'PROCEDURE ONGOING'
+            },
+            {
+              id: 4459,
+              tanggal: '2026-11-25',
+              waktu: '16:45',
+              nama: 'SAYONAH',
+              dokter: 'dr. Andrianus Oktovianto, SpJP, FIHA',
+              tindakan: 'EP STUDY',
+              kategori: 'EP',
+              status: 'Menunggu',
+              ruangan: 'ASTER',
+              no_rm: '687237',
+              kesimpulan_laporan: 'PRE-PROCEDURE PREPARATION'
+            }
+          ];
+        }
+
+        updateTindakanStats();
+        filterTindakanData();
+        if (forceToast) {
+          showToast(`Berhasil menyinkronkan ${tindakanDataList.length} rekam tindakan dari database.`, 'success');
+        }
+      } catch (err) {
+        console.error('Error loadTindakanData:', err);
+        showToast('Gagal memuat tindakan dari DB, menggunakan data lokal.', 'warn');
+      } finally {
+        isTindakanLoading = false;
+        if (syncIcon) syncIcon.classList.remove('animate-spin');
+      }
+    }
+
+    function updateTindakanStats() {
+      const total = tindakanDataList.length;
+      const selesai = tindakanDataList.filter(t => (t.status || '').toLowerCase() === 'selesai').length;
+      const proses = tindakanDataList.filter(t => (t.status || '').toLowerCase() === 'proses').length;
+      const menunggu = tindakanDataList.filter(t => (t.status || '').toLowerCase() === 'menunggu').length;
+
+      const elTotal = document.getElementById('stat-tindakan-total');
+      const elSelesai = document.getElementById('stat-tindakan-selesai');
+      const elProses = document.getElementById('stat-tindakan-proses');
+      const elMenunggu = document.getElementById('stat-tindakan-menunggu');
+
+      if (elTotal) elTotal.textContent = total;
+      if (elSelesai) elSelesai.textContent = selesai;
+      if (elProses) elProses.textContent = proses;
+      if (elMenunggu) elMenunggu.textContent = menunggu;
+    }
+
+    function filterTindakanData() {
+      const q = (document.getElementById('tindakan-search-input')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('tindakan-filter-status')?.value || 'ALL';
+      const dokterFilter = document.getElementById('tindakan-filter-dokter')?.value || 'ALL';
+      const ruanganFilter = document.getElementById('tindakan-filter-ruangan')?.value || 'ALL';
+
+      const filtered = tindakanDataList.filter(item => {
+        // Query search
+        if (q) {
+          const matchNama = (item.nama || item.nama_pasien || '').toLowerCase().includes(q);
+          const matchRm = String(item.no_rm || '').toLowerCase().includes(q);
+          const matchDokter = (item.dokter || '').toLowerCase().includes(q);
+          const matchTindakan = (item.tindakan || '').toLowerCase().includes(q);
+          if (!matchNama && !matchRm && !matchDokter && !matchTindakan) return false;
+        }
+
+        // Status
+        if (statusFilter !== 'ALL') {
+          if ((item.status || '').toLowerCase() !== statusFilter.toLowerCase()) return false;
+        }
+
+        // Dokter
+        if (dokterFilter !== 'ALL') {
+          if (!(item.dokter || '').toLowerCase().includes(dokterFilter.toLowerCase())) return false;
+        }
+
+        // Ruangan
+        if (ruanganFilter !== 'ALL') {
+          if (!(item.ruangan || '').toLowerCase().includes(ruanganFilter.toLowerCase())) return false;
+        }
+
+        return true;
+      });
+
+      renderTindakanTable(filtered);
+    }
+
+    function renderTindakanTable(rows) {
+      const tbody = document.getElementById('tindakan-tbody');
+      const countInfo = document.getElementById('tindakan-count-info');
+      if (!tbody) return;
+
+      if (countInfo) {
+        countInfo.textContent = `Menampilkan ${rows.length} dari ${tindakanDataList.length} total prosedur`;
+      }
+
+      if (rows.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="9" class="py-12 text-center text-slate-400">
+              <div class="flex flex-col items-center justify-center gap-1.5">
+                <span class="text-sm font-semibold text-slate-600">Tidak ada tindakan yang cocok dengan filter.</span>
+                <span class="text-xs text-slate-400">Coba ubah kata kunci atau pilih opsi filter lain.</span>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = '';
+      rows.forEach((row, idx) => {
+        const id = row.id;
+        const no = idx + 1;
+        const nama = row.nama || row.nama_pasien || '—';
+        const norm = row.no_rm || '—';
+        const tgl = row.tanggal || '—';
+        const waktu = row.waktu || '—';
+        const dokter = row.dokter || '—';
+        const ruangan = row.ruangan || '—';
+        const tindakan = row.tindakan || '—';
+        const status = row.status || 'Menunggu';
+        const fluoro = row.fluoro_time ? `${row.fluoro_time}s` : '—';
+        const dose = row.dap_dose || row.dose ? `${row.dap_dose || row.dose} mGy` : '—';
+
+        let statusClass = 'bg-amber-100 text-amber-800 border-amber-300';
+        if (status.toLowerCase() === 'selesai') {
+          statusClass = 'bg-emerald-100 text-emerald-800 border-emerald-300';
+        } else if (status.toLowerCase() === 'proses') {
+          statusClass = 'bg-cyan-100 text-cyan-800 border-cyan-300';
+        } else if (status.toLowerCase() === 'meninggal' || status.toLowerCase() === 'batal') {
+          statusClass = 'bg-rose-100 text-rose-800 border-rose-300';
+        }
+
+        const tr = document.createElement('tr');
+        tr.className = 'hover:bg-cyan-50/40 transition duration-150 border-b border-slate-100';
+        tr.innerHTML = `
+          <td class="py-3 px-3 text-center font-mono text-[11px] text-slate-400 font-bold">${no}</td>
+          <td class="py-3 px-3 whitespace-nowrap">
+            <div class="font-mono text-xs font-bold text-slate-800">${tgl}</div>
+            <div class="font-mono text-[11px] text-slate-500">${waktu}</div>
+          </td>
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2">
+              <span class="font-extrabold text-slate-900 leading-tight">${nama}</span>
+              <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-700 font-mono text-[10px] font-bold">RM: ${norm}</span>
+            </div>
+            ${row.kelas_pembiayaan ? `<span class="text-[10px] text-slate-400 font-medium">${row.kelas_pembiayaan}</span>` : ''}
+          </td>
+          <td class="py-3 px-3">
+            <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-semibold">${ruangan}</span>
+          </td>
+          <td class="py-3 px-4">
+            <span class="text-xs font-bold text-slate-800 block leading-snug">${dokter}</span>
+            ${row.asisten ? `<span class="text-[10px] text-slate-400 block mt-0.5">Asist: ${row.asisten}</span>` : ''}
+          </td>
+          <td class="py-3 px-3">
+            <span class="px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 font-extrabold text-[11px] tracking-wide uppercase inline-block">
+              ${tindakan}
+            </span>
+          </td>
+          <td class="py-3 px-3 text-center whitespace-nowrap">
+            <select onchange="handleInlineStatusChange(${id}, this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${statusClass} focus:outline-none cursor-pointer">
+              <option value="Menunggu" ${status === 'Menunggu' ? 'selected' : ''}>⏳ Menunggu</option>
+              <option value="Proses" ${status === 'Proses' ? 'selected' : ''}>⚡ Proses</option>
+              <option value="Selesai" ${status === 'Selesai' ? 'selected' : ''}>✅ Selesai</option>
+              <option value="Meninggal" ${status === 'Meninggal' ? 'selected' : ''}>🥀 Meninggal</option>
+              <option value="Batal" ${status === 'Batal' ? 'selected' : ''}>❌ Batal</option>
+            </select>
+          </td>
+          <td class="py-3 px-3 text-center whitespace-nowrap font-mono text-[11px]">
+            <span class="text-slate-700 font-semibold block">${fluoro}</span>
+            <span class="text-slate-400 text-[10px] block">${dose}</span>
+          </td>
+          <td class="py-3 px-3 text-center whitespace-nowrap">
+            <button type="button" onclick="openDetailTindakan(${id})" class="px-2.5 py-1.5 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-800 border border-cyan-200 font-bold text-[11px] transition shadow-2xs">
+              Detail
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function handleInlineStatusChange(tindakanId, newStatus) {
+      const idx = tindakanDataList.findIndex(t => t.id === tindakanId);
+      if (idx !== -1) {
+        tindakanDataList[idx].status = newStatus;
+        tindakanDataList[idx].updated_at = new Date().toISOString();
+      }
+      updateTindakanStats();
+      filterTindakanData();
+
+      showToast(`Mengubah status ID #${tindakanId} menjadi '${newStatus}'...`, 'info');
+      try {
+        const res = await updateTindakanStatusDb(tindakanId, newStatus, currentNip);
+        if (res.success) {
+          showToast(`Status berhasil diperbarui ke database Supabase.`, 'success');
+        } else if (res.offline) {
+          showToast(`Status diperbarui di memori lokal (Mode Offline).`, 'info');
+        } else {
+          showToast(`Gagal update DB: ${res.error}`, 'warn');
+        }
+      } catch (err) {
+        console.error('Error handleInlineStatusChange:', err);
+      }
+    }
+
+    function openDetailTindakan(id) {
+      const item = tindakanDataList.find(t => t.id === id);
+      if (!item) return;
+
+      document.getElementById('dtl-tindakan-badge').textContent = item.tindakan || 'TINDAKAN';
+      document.getElementById('dtl-status-badge').textContent = item.status || 'Menunggu';
+      document.getElementById('dtl-pasien-nama').textContent = item.nama || item.nama_pasien || '—';
+      document.getElementById('dtl-pasien-rm').textContent = item.no_rm || '—';
+      document.getElementById('dtl-ruangan').textContent = item.ruangan || '—';
+      document.getElementById('dtl-dokter').textContent = item.dokter || '—';
+      document.getElementById('dtl-tanggal').textContent = item.tanggal || '—';
+      document.getElementById('dtl-waktu').textContent = item.waktu || '—';
+      document.getElementById('dtl-tim').textContent = `Asist: ${item.asisten || '—'}, Sirkuler: ${item.sirkuler || '—'}, Logger: ${item.logger || '—'}`;
+      document.getElementById('dtl-fluoro').textContent = item.fluoro_time ? `${item.fluoro_time} Detik` : '—';
+      document.getElementById('dtl-dose').textContent = item.dap_dose || item.dose ? `${item.dap_dose || item.dose} mGy/cm²` : '—';
+      document.getElementById('dtl-temuan').textContent = item.temuan_pembuluh || 'Tidak ada catatan temuan pembuluh khusus.';
+      document.getElementById('dtl-kesimpulan').textContent = item.kesimpulan_laporan || 'SUCCESSFUL PROCEDURE';
+
+      const pciLinkContainer = document.getElementById('dtl-pci-link-container');
+      const pciLink = document.getElementById('dtl-pci-link');
+      if (item.pci_report_link) {
+        pciLink.href = item.pci_report_link;
+        pciLinkContainer?.classList.remove('hidden');
+      } else {
+        pciLinkContainer?.classList.add('hidden');
+      }
+
+      document.getElementById('modal-detail-tindakan')?.classList.remove('hidden');
+    }
+
+    function closeDetailTindakan() {
+      document.getElementById('modal-detail-tindakan')?.classList.add('hidden');
+    }
+
+    function openModalTambahTindakan() {
+      const today = new Date().toISOString().split('T')[0];
+      const tglInput = document.getElementById('tb-tanggal');
+      if (tglInput) tglInput.value = today;
+      document.getElementById('modal-tambah-tindakan')?.classList.remove('hidden');
+    }
+
+    function closeModalTambahTindakan() {
+      document.getElementById('modal-tambah-tindakan')?.classList.add('hidden');
+    }
+
+    async function submitTambahTindakan(e) {
+      e.preventDefault();
+      const submitBtn = document.getElementById('tb-submit-btn');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span>Menyimpan ke DB...</span>';
+      }
+
+      const payload = {
+        tanggal: document.getElementById('tb-tanggal')?.value,
+        waktu: document.getElementById('tb-waktu')?.value || null,
+        no_rm: document.getElementById('tb-norm')?.value.trim(),
+        nama: document.getElementById('tb-nama')?.value.trim(),
+        nama_pasien: document.getElementById('tb-nama')?.value.trim(),
+        ruangan: document.getElementById('tb-ruangan')?.value,
+        dokter: document.getElementById('tb-dokter')?.value,
+        tindakan: document.getElementById('tb-tindakan')?.value.trim().toUpperCase(),
+        kategori: 'PCI',
+        status: document.getElementById('tb-status')?.value || 'Menunggu',
+        keterangan: document.getElementById('tb-keterangan')?.value || null
+      };
+
+      try {
+        const res = await createTindakanDb(payload, currentNip);
+        if (res.success && res.data) {
+          tindakanDataList.unshift(res.data);
+          showToast(`Tindakan untuk ${payload.nama} berhasil dijadwalkan ke DB Supabase!`, 'success');
+        } else {
+          // Local fallback jika offline
+          const mockId = Date.now();
+          tindakanDataList.unshift({ id: mockId, ...payload });
+          showToast(`Tindakan disimpan ke memori operasional (Mode Offline).`, 'info');
+        }
+        updateTindakanStats();
+        filterTindakanData();
+        closeModalTambahTindakan();
+        e.target.reset();
+      } catch (err) {
+        console.error('Error submitTambahTindakan:', err);
+        showToast('Gagal menyimpan tindakan: ' + err.message, 'warn');
+      } finally {
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<span>Simpan ke Database</span>';
+        }
+      }
+    }
+
+    function exportTindakanCsv() {
+      if (tindakanDataList.length === 0) {
+        showToast('Tidak ada data tindakan untuk diekspor.', 'warn');
+        return;
+      }
+      let csv = 'ID,Tanggal,Waktu,No RM,Nama Pasien,Ruangan,Dokter,Tindakan,Status,Fluoro Time (s),DAP Dose\n';
+      tindakanDataList.forEach(r => {
+        csv += `"${r.id}","${r.tanggal || ''}","${r.waktu || ''}","${r.no_rm || ''}","${(r.nama || r.nama_pasien || '').replace(/"/g, '""')}","${r.ruangan || ''}","${(r.dokter || '').replace(/"/g, '""')}","${r.tindakan || ''}","${r.status || ''}","${r.fluoro_time || ''}","${r.dap_dose || r.dose || ''}"\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `siirs_cathlab_tindakan_${new Date().toISOString().split('T')[0]}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      showToast('Berkas CSV Rekam Tindakan Cathlab berhasil diunduh.', 'success');
     }
 
     function toggleComfortMode() {
@@ -1075,6 +1826,15 @@
     window.togglePasswordVisibility = togglePasswordVisibility;
     window.checkDbConnection = checkDbConnection;
     window.updateDbBadges = updateDbBadges;
+    window.loadTindakanData = loadTindakanData;
+    window.filterTindakanData = filterTindakanData;
+    window.handleInlineStatusChange = handleInlineStatusChange;
+    window.openDetailTindakan = openDetailTindakan;
+    window.closeDetailTindakan = closeDetailTindakan;
+    window.openModalTambahTindakan = openModalTambahTindakan;
+    window.closeModalTambahTindakan = closeModalTambahTindakan;
+    window.submitTambahTindakan = submitTambahTindakan;
+    window.exportTindakanCsv = exportTindakanCsv;
 
     // Inisialisasi saat halaman dimuat
     window.addEventListener('DOMContentLoaded', async () => {

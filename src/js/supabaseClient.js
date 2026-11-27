@@ -345,33 +345,38 @@ export async function authenticatePetugas(nipInput, passwordInput, roleSelected)
     };
   }
 
-  // 3. Verifikasi terhadap database Supabase jika online
+  // 3. Verifikasi terhadap database Supabase jika online (Tabel app_users)
   let isVerified = false;
   let userDetails = null;
 
   if (supabaseClient && connectionState.isConnected) {
     try {
-      const { data, error } = await supabaseClient
-        .from('app_users')
-        .select('id, username, role, ruangan_id')
-        .eq('username', nip)
-        .maybeSingle();
+      // Panggil RPC terpadu verify_app_user_credentials (SECURITY DEFINER dengan pgcrypto bcrypt)
+      const { data: rpcRes, error: rpcErr } = await supabaseClient
+        .rpc('verify_app_user_credentials', {
+          p_username: nip,
+          p_password: password
+        });
 
-      if (!error && data) {
-        // Pengguna ditemukan di basis data terpadu (shared with idik-app)
+      if (!rpcErr && rpcRes && rpcRes.success) {
         isVerified = true;
-        userDetails = data;
+        userDetails = rpcRes;
       }
     } catch (e) {
-      console.warn('Pemeriksaan app_users DB dilewati, beralih ke validasi role SIIRS.');
+      console.warn('Verifikasi RPC app_users dilewati:', e);
     }
   }
 
-  // Fallback kredensial demo / operasional lokal RSUD
+  // Fallback kredensial demo / operasional lokal RSUD jika offline
   if (!isVerified) {
-    const validDefaultPass = 'soewandhie2026';
-    if (password === validDefaultPass || password.length >= 6) {
+    if (nip.toLowerCase() === 'cathlab' && password === '123456') {
       isVerified = true;
+      userDetails = { username: 'cathlab', role: 'cathlab' };
+    } else {
+      const validDefaultPass = 'soewandhie2026';
+      if (password === validDefaultPass || (password.length >= 6 && nip !== 'cathlab')) {
+        isVerified = true;
+      }
     }
   }
 
@@ -379,16 +384,23 @@ export async function authenticatePetugas(nipInput, passwordInput, roleSelected)
     // Reset rate limit
     resetRateLimit(nip);
 
+    // Deteksi role efektif (prioritas user cathlab -> unit cathlab)
+    const effectiveRole = (nip.toLowerCase() === 'cathlab' || userDetails?.username === 'cathlab')
+      ? 'cathlab'
+      : (roleSelected || userDetails?.role || 'admin_yanmed');
+
     // Catat log sukses
-    await logSecurityAudit('AUTH_LOGIN_SUCCESS', nip, roleSelected, {
+    await logSecurityAudit('AUTH_LOGIN_SUCCESS', nip, effectiveRole, {
       authMode: connectionState.isConnected ? 'DATABASE_CONNECTED' : 'STANDALONE_VALIDATED',
-      ruanganId: userDetails?.ruangan_id || null
+      ruanganId: userDetails?.ruangan_id || null,
+      dbUserRole: userDetails?.role || null
     });
 
     return {
       success: true,
       nip,
-      role: roleSelected
+      role: effectiveRole,
+      userDetails
     };
   } else {
     // Catat kegagalan
@@ -463,6 +475,119 @@ export async function updateBedStatusDb(bedId, newStatus, actorUsername, actorRo
     return { success: true, data: updatedBed };
   } catch (e) {
     console.error('Gagal update status bed di DB:', e);
+    return { success: false, error: e.message };
+  }
+}
+
+// ==============================================================================
+// 5. OPERASI DATA TINDAKAN MEDIS (CATHLAB / SHARED WITH IDIK-APP)
+// ==============================================================================
+
+/**
+ * Mengambil daftar tindakan dari tabel `public.tindakan` Supabase
+ */
+export async function fetchTindakanFromDb(params = {}) {
+  if (!supabaseClient || !connectionState.isConnected) {
+    return null;
+  }
+  try {
+    let query = supabaseClient
+      .from('tindakan')
+      .select('*')
+      .order('tanggal', { ascending: false })
+      .order('id', { ascending: false });
+
+    if (params.search) {
+      const q = params.search.trim();
+      query = query.or(`nama.ilike.%${q}%,no_rm.ilike.%${q}%,dokter.ilike.%${q}%,tindakan.ilike.%${q}%`);
+    }
+    if (params.status && params.status !== 'ALL') {
+      query = query.eq('status', params.status);
+    }
+    if (params.dokter && params.dokter !== 'ALL') {
+      query = query.ilike('dokter', `%${params.dokter}%`);
+    }
+    if (params.ruangan && params.ruangan !== 'ALL') {
+      query = query.ilike('ruangan', `%${params.ruangan}%`);
+    }
+    if (params.limit) {
+      query = query.limit(params.limit);
+    } else {
+      query = query.limit(100);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  } catch (e) {
+    console.error('Gagal mengambil data tindakan dari DB:', e);
+    return null;
+  }
+}
+
+/**
+ * Update status prosedur tindakan medis di database
+ */
+export async function updateTindakanStatusDb(id, newStatus, actorUsername = 'cathlab') {
+  if (!supabaseClient || !connectionState.isConnected) {
+    return { success: false, offline: true };
+  }
+  try {
+    const { data, error } = await supabaseClient
+      .from('tindakan')
+      .update({
+        status: newStatus,
+        updated_at: new Date().toISOString()
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    await logSecurityAudit('TINDAKAN_STATUS_CHANGE', actorUsername, 'cathlab', {
+      tindakan_id: id,
+      new_status: newStatus
+    });
+
+    return { success: true, data };
+  } catch (e) {
+    console.error('Gagal update status tindakan di DB:', e);
+    return { success: false, error: e.message };
+  }
+}
+
+/**
+ * Tambah jadwal / rekam tindakan baru di database
+ */
+export async function createTindakanDb(recordPayload, actorUsername = 'cathlab') {
+  if (!supabaseClient || !connectionState.isConnected) {
+    return { success: false, offline: true };
+  }
+  try {
+    const payload = {
+      ...recordPayload,
+      inserted_at: new Date().toISOString(),
+      updated_at: new Date().toISOString()
+    };
+    const { data, error } = await supabaseClient
+      .from('tindakan')
+      .insert([payload])
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    await logSecurityAudit('TINDAKAN_CREATE', actorUsername, 'cathlab', {
+      tindakan_id: data.id,
+      nama: data.nama,
+      no_rm: data.no_rm,
+      tindakan: data.tindakan
+    });
+
+    return { success: true, data };
+  } catch (e) {
+    console.error('Gagal tambah record tindakan di DB:', e);
     return { success: false, error: e.message };
   }
 }
