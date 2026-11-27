@@ -11,7 +11,7 @@
 - **Fokus Utama:** Manajemen Ketersediaan Tempat Tidur (*Bed Management*), Alur Pasien Masuk IGD (*Triage & Inden Rawat Inap*), dan Pelaporan Mutu Pelayanan Medis (*Yanmed*).
 - **Kapasitas RS:** 384 Tempat Tidur terdistribusi di 22 Instalasi/Bangsal Rawat Inap & Perawatan Intensif.
 - **Repositori GitHub:** `https://github.com/inkaisby/sirs`
-- **Domain Deployment Vercel:** `https://sliirs.vercel.app` (Aktif Production di Vercel project `sliirs`, dengan fallback `https://siirs.vercel.app`).
+- **Domain Deployment Vercel:** `https://siirs.vercel.app` (Production Aktif - Status: HTTP 200 OK).
 
 ---
 
