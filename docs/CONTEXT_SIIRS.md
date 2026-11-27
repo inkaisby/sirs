@@ -48,7 +48,7 @@ SIIRS terhubung ke **satu basis data PostgreSQL/Supabase yang sama** dengan apli
    - `public.siirs_audit_logs`: Rekam jejak audit otentikasi dan mutasi bed (`action`, `bed_id`, `actor_username`, `actor_role`, `details`). Bersifat *immutable append-only*.
    - `public.siirs_public_beds_view`: Tampilan aman display publik teranonimasi tanpa membocorkan identitas pasien.
 3. **File Migrasi Database:**
-   - [D:\website\idik-app\supabase\migrations\20261128030000_create_siirs_bed_management.sql](file:///D:/website/idik-app/supabase/migrations/20261128030000_create_siirs_bed_management.sql)
+   - [D:\website\idik-app\supabase\migrations\20261128030000_create_siirs_bed_management.sql](file:///D:/website/idik-app/supabase/migrations/20261128030000_create_siirs_bed_management.sql) (Status: **Applied / Pushed to Remote Cloud `whbinarvynbyemvqbfjg`**)
    - Salinan lokal: [D:\website\sirs\sql\20261128030000_create_siirs_bed_management.sql](file:///D:/website/sirs/sql/20261128030000_create_siirs_bed_management.sql)
 
 ---
