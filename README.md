@@ -1,68 +1,95 @@
-# SIMRS Bed & Inpatient Management System
+# SIIRS (Sistem Informasi Integrasi Rumah Sakit)
 ### RSUD Dr. M. Soewandhie — Pemerintah Kota Surabaya
 
-Aplikasi web terintegrasi untuk pemantauan kapasitas tempat tidur (*bed management*) real-time, koordinasi antrean pasien IGD Pro MRS (Masuk Rawat Selesai), serta pelaporan pelayanan medis di lingkungan RSUD Dr. M. Soewandhie Surabaya.
+Platform terpadu untuk pemantauan kapasitas tempat tidur (*bed management*) real-time, koordinasi antrean pasien IGD Pro MRS (*Masuk Rawat Selesai*), serta pelaporan mutu pelayanan medis terintegrasi di lingkungan **RSUD Dr. M. Soewandhie Surabaya**.
+
+SIIRS terintegrasi langsung dengan satu basis data **PostgreSQL / Supabase** yang berbagi (*shared database*) dengan aplikasi pelayanan rumah sakit lainnya ([IDIK-App](file:///D:/website/idik-app)).
 
 ---
 
 ## Fitur Utama
 
-- **Live Bed Occupancy & BOR Dashboard:** Pemantauan otomatis kapasitas 384 tempat tidur di 22 unit/bangsal perawatan (rawat inap, intensif, dan isolasi) dengan visualisasi Bed Occupancy Rate (BOR).
-- **IGD Pro MRS Queue Management:** Pencatatan status pasien IGD, diagnosis, verifikasi DPJP, dan pemesanan kamar rawat inap (*inden bed*).
-- **Visual Bed Board per Ruangan:** Tampilan visual kartu status tempat tidur (Tersedia, Terisi, Inden IGD, Rencana Pulang).
+- **Live Bed Occupancy & BOR Dashboard:** Pemantauan kapasitas 384 tempat tidur di 22 instalasi/bangsal perawatan secara real-time dengan kalkulasi otomatis Bed Occupancy Rate (BOR).
+- **IGD Pro MRS Queue Management:** Pencatatan status pasien IGD, triase (P1, P2, P3), diagnosis, verifikasi DPJP, dan pemesanan kamar rawat inap (*inden bed*).
+- **Visual Bed Board per Ruangan:** Tampilan visual kartu status tempat tidur (Tersedia, Terisi, Inden IGD, Desinfeksi/Pembersihan).
 - **Role-Based Access Control (RBAC):**
-  - `admin_yanmed`: Akses penuh manajerial dan audit log seluruh rumah sakit.
-  - `igd_admission`: Pengelolaan antrean IGD dan booking kamar rawat inap.
-  - `nurse_ward`: Khusus unit ruangan perawat yang bertugas (*ward-level access*).
+  - `admin_yanmed`: Akses manajerial penuh dan audit log seluruh rumah sakit.
+  - `igd_admission`: Pengelolaan antrean IGD dan alokasi kamar rawat inap.
+  - `nurse_ward`: Khusus unit bangsal perawat yang bertugas (*ward-level scoped access*).
   - `public_display`: Tampilan layar informasi publik baca-saja (*read-only*) tanpa data rekam medis pasien.
-- **Modul Pelaporan Khusus:** Formulir digital pencatatan Laporan Kematian dan Pasien Pulang Paksa (PP).
+- **Audit Logging Otomatis:** Setiap mutasi dan perubahan status tempat tidur tercatat di tabel `public.siirs_audit_logs`.
+- **Dukungan Lokal & Cloud:**
+  - **Lokal:** Berjalan di atas Docker Supabase lokal (`http://127.0.0.1:54321`).
+  - **Cloud:** Berjalan di Supabase Cloud saat dideploy ke Vercel.
 
 ---
 
 ## Struktur Repositori
 
 ```text
-├── index.html         # Halaman utama aplikasi (Single Page Application)
+├── CONTEXT_SIIRS.md          # Rujukan utama agen & developer (hemat token)
+├── index.html                # Entry point aplikasi web SIIRS (Single Page App)
 ├── docs/
-│   └── PRD.md         # Dokumen spesifikasi kebutuhan produk (PRD/SRS)
-├── .gitignore         # Berkas konfigurasi git ignore
-└── README.md          # Dokumentasi proyek
+│   ├── CONTEXT_SIIRS.md      # Salinan dokumentasi arsitektur
+│   └── PRD.md                # Spesifikasi kebutuhan teknis & user stories
+├── public/                   # Aset publik (Favicon & Emblem resmi RSUD)
+│   ├── favicon.ico
+│   ├── favicon.png
+│   └── favicon.svg
+├── src/
+│   ├── js/
+│   │   ├── config.js         # Deteksi otomatis lokal vs cloud & port
+│   │   └── supabaseClient.js # Inisialisasi Supabase, query & real-time sync
+│   └── data/
+│       └── wardsSeed.js      # Data dasar 22 bangsal untuk mode standalone/offline
+├── sql/
+│   └── 20261128030000_create_siirs_bed_management.sql # Skema DDL & migrasi
+└── README.md                 # Dokumentasi proyek
 ```
 
 ---
 
-## Menjalankan Proyek Secara Lokal
+## Integrasi Database dengan IDIK-App
 
-Tidak memerlukan instalasi dependensi atau proses *build* rumit. Aplikasi ini berbasis berkas statis tunggal (*standalone*):
+SIIRS dan IDIK-App berbagi basis data yang sama:
 
-1. **Buka langsung di browser:**
-   Klik dua kali berkas `index.html` pada File Explorer.
-
-2. **Atau jalankan server lokal sederhana:**
+1. **Jalankan Supabase Lokal (via Docker di `D:\website\idik-app`):**
    ```bash
-   # Menggunakan Python
-   python -m http.server 3000
-
-   # Menggunakan Node.js / npx
-   npx serve .
+   cd D:\website\idik-app
+   npx supabase start
    ```
-   Buka `http://localhost:3000` pada peramban Anda.
+2. **Cek Port & Kredensial:**
+   ```bash
+   npx supabase status
+   ```
+   - API URL: `http://127.0.0.1:54321`
+   - DB URL: `postgresql://postgres:postgres@127.0.0.1:54322/postgres`
+   - Studio URL: `http://127.0.0.1:54323`
+3. **Migrasi Tabel:**
+   File migrasi telah tersedia di [D:\website\idik-app\supabase\migrations\20261128030000_create_siirs_bed_management.sql](file:///D:/website/idik-app/supabase/migrations/20261128030000_create_siirs_bed_management.sql).
 
 ---
 
-## Publikasi ke GitHub Pages
+## Menjalankan SIIRS di Lokal
 
-Proyek ini telah dikonfigurasi menggunakan standar berkas `index.html` di akar repositori sehingga dapat langsung dipublikasikan via GitHub Pages:
-
-1. Buat repositori baru di akun GitHub Anda (misal: `sirs-soewandhie`).
-2. Jalankan perintah git:
+1. **Buka langsung di browser:**
+   Klik dua kali `index.html`.
+2. **Atau jalankan web server lokal:**
    ```bash
-   git init
-   git add .
-   git commit -m "feat: initial commit SIMRS Bed Management RSUD Dr. M. Soewandhie"
-   git branch -M main
-   git remote add origin https://github.com/<USERNAME>/<REPO_NAME>.git
-   git push -u origin main
+   # Python
+   python -m http.server 3000
+
+   # Node.js
+   npx serve .
    ```
-3. Di GitHub: Masuk ke menu **Settings** > **Pages** > Pada opsi **Build and deployment**, pilih cabang `main` dan folder `/ (root)`, lalu klik **Save**.
-4. Website akan aktif secara otomatis di: `https://<USERNAME>.github.io/<REPO_NAME>/`.
+   Buka `http://localhost:3000` pada peramban.
+
+---
+
+## Deployment (Vercel & GitHub)
+
+- **Repositori:** `https://github.com/inkaisby/sirs`
+- **Vercel Project:** `siirs` (domain: `https://siirs.vercel.app` atau `https://sirs-soewandhie.vercel.app`).
+- **Environment Variables di Vercel:**
+  - `SUPABASE_URL` : URL project Supabase Cloud
+  - `SUPABASE_ANON_KEY` : Anon Public Key Supabase Cloud

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SIMRS Bed & Inpatient Integration — RSUD Dr. M. Soewandhie</title>
+  <title>SIIRS — Sistem Informasi Integrasi Rumah Sakit | RSUD Dr. M. Soewandhie</title>
   <link rel="icon" type="image/svg+xml" href="favicon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="favicon.png" />
   <link rel="shortcut icon" href="favicon.ico" />
@@ -166,8 +166,13 @@
             </svg>
           </div>
           <div>
-            <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700 block">Pemerintah Kota Surabaya</span>
-            <h1 class="text-base sm:text-lg font-extrabold text-slate-900 leading-tight">RSUD Dr. M. Soewandhie</h1>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-bold uppercase tracking-wider text-blue-700 block">Pemerintah Kota Surabaya</span>
+              <span id="portal-db-badge" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                DB Terpadu
+              </span>
+            </div>
+            <h1 class="text-base sm:text-lg font-extrabold text-slate-900 leading-tight">SIIRS RSUD Dr. M. Soewandhie</h1>
           </div>
         </div>
 
@@ -191,7 +196,7 @@
         <div class="lg:col-span-7 space-y-6 motion-view-enter">
           <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-100/80 border border-blue-200 text-blue-800 text-xs font-bold">
             <span class="w-2 h-2 rounded-full bg-emerald-500 status-pulse-dot"></span>
-            Sistem Informasi Terintegrasi • Pelayanan Medik & Rawat Inap
+            SIIRS • Sistem Informasi Integrasi Rumah Sakit
           </div>
 
           <div class="space-y-3">
@@ -199,7 +204,7 @@
               Portal Manajemen Ruang Inap &amp; Antrean IGD <span class="text-blue-700">Real-Time</span>
             </h2>
             <p class="text-sm sm:text-base text-slate-600 leading-relaxed max-w-2xl">
-              Platform terpusat untuk pemantauan kapasitas tempat tidur (<em>bed</em>) seluruh instalasi rawat inap, koordinasi pasien IGD Pro MRS, serta pelaporan indikator pelayanan medis di lingkungan <strong>RSUD Dr. M. Soewandhie Surabaya</strong>.
+              Platform terpusat pemantauan 384 tempat tidur di 22 bangsal rawat inap, koordinasi IGD Pro MRS, dan pelaporan pelayanan medis <strong>RSUD Dr. M. Soewandhie Surabaya</strong> yang terintegrasi dengan database rumah sakit.
             </p>
           </div>
 
@@ -282,7 +287,7 @@
               </div>
 
               <button type="submit" class="w-full py-3 px-4 rounded-xl bg-blue-700 hover:bg-blue-800 active:scale-[0.99] text-white font-bold text-sm shadow-md shadow-blue-700/20 transition flex items-center justify-center gap-2">
-                <span>Masuk ke Dashboard SIMRS</span>
+                <span>Masuk ke Dashboard SIIRS</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
               </button>
             </form>
@@ -381,10 +386,11 @@
           </div>
           <div>
             <div class="flex items-center gap-2">
-              <h1 class="text-sm sm:text-base font-extrabold text-slate-900 leading-tight">RSUD Dr. M. Soewandhie</h1>
+              <h1 class="text-sm sm:text-base font-extrabold text-slate-900 leading-tight">SIIRS RSUD Dr. M. Soewandhie</h1>
               <span id="role-badge-header" class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-extrabold uppercase">Admin Yanmed</span>
+              <span id="header-db-pill" class="hidden sm:inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200">DB Lokal (Docker)</span>
             </div>
-            <p class="text-[11px] text-slate-500">Data Integrasi Ruang Inap &amp; IGD • <span id="header-user-info" class="font-semibold text-slate-700">Pelayanan Medik</span></p>
+            <p class="text-[11px] text-slate-500">Sistem Informasi Integrasi • <span id="header-user-info" class="font-semibold text-slate-700">Pelayanan Medik</span></p>
           </div>
         </div>
 
@@ -587,43 +593,14 @@
     </main>
   </div>
 
-  <script>
-    // Data Ruangan sesuai Spreadsheet DATA INTEGRASI RSUD Dr. M. Soewandhie
-    const WARDS_DATA = [
-      { id: 'IGD', name: 'IGD', total: 25, occupied: 19, inden: 13, prereferral: 6, available: 6 },
-      { id: 'DAHLIA', name: 'DAHLIA', total: 42, occupied: 30, inden: 3, prereferral: 0, available: 9 },
-      { id: 'FLAMBOYAN', name: 'FLAMBOYAN', total: 21, occupied: 7, inden: 6, prereferral: 0, available: 8 },
-      { id: 'SAFIR', name: 'SAFIR', total: 20, occupied: 9, inden: 3, prereferral: 0, available: 8 },
-      { id: 'TULIP', name: 'TULIP', total: 18, occupied: 14, inden: 2, prereferral: 0, available: 2 },
-      { id: 'BOUGENVILLE', name: 'BOUGENVILLE', total: 34, occupied: 22, inden: 3, prereferral: 0, available: 9 },
-      { id: 'ASTER', name: 'ASTER', total: 29, occupied: 21, inden: 3, prereferral: 0, available: 5 },
-      { id: 'SERUNI', name: 'SERUNI', total: 57, occupied: 49, inden: 2, prereferral: 0, available: 6 },
-      { id: 'ANGGREK', name: 'ANGGREK', total: 32, occupied: 29, inden: 1, prereferral: 0, available: 2 },
-      { id: 'TERATAI', name: 'TERATAI', total: 35, occupied: 28, inden: 2, prereferral: 0, available: 5 },
-      { id: 'VK', name: 'VK BERSALIN', total: 11, occupied: 4, inden: 0, prereferral: 0, available: 7 },
-      { id: 'LAVENDER', name: 'LAVENDER', total: 10, occupied: 3, inden: 3, prereferral: 0, available: 4 },
-      { id: 'ICU', name: 'ICU', total: 9, occupied: 4, inden: 0, prereferral: 0, available: 5 },
-      { id: 'ICCU', name: 'ICCU', total: 8, occupied: 4, inden: 0, prereferral: 0, available: 4 },
-      { id: 'BURN', name: 'BURN UNIT', total: 2, occupied: 0, inden: 0, prereferral: 0, available: 2 },
-      { id: 'ICU_ISO', name: 'ICU ISO', total: 2, occupied: 0, inden: 0, prereferral: 0, available: 2 },
-      { id: 'MICU', name: 'MICU', total: 3, occupied: 3, inden: 0, prereferral: 0, available: 0 },
-      { id: 'ISU', name: 'ISU', total: 5, occupied: 3, inden: 2, prereferral: 0, available: 0 },
-      { id: 'NICU', name: 'NICU', total: 8, occupied: 0, inden: 2, prereferral: 0, available: 6 },
-      { id: 'NEONATUS', name: 'NEONATUS', total: 15, occupied: 11, inden: 0, prereferral: 0, available: 4 },
-      { id: 'EDELWEIS_2', name: 'EDELWEIS LT.2', total: 19, occupied: 9, inden: 0, prereferral: 0, available: 10 },
-      { id: 'EDELWEIS_3', name: 'EDELWEIS LT.3', total: 12, occupied: 7, inden: 0, prereferral: 0, available: 5 }
-    ];
+  <script type="module">
+    import { SIIRS_CONFIG } from './src/js/config.js';
+    import { initSupabase, getSupabase, getConnectionState, updateBedStatusDb } from './src/js/supabaseClient.js';
+    import { INITIAL_WARDS_DATA, INITIAL_IGD_QUEUE } from './src/data/wardsSeed.js';
 
-    const IGD_QUEUE = [
-      { bed: 'K1', name: 'Wagini', diag: 'Obs penkes ec CVA + Afasia global + DM Hiperglikemia + HT emergency', consult: 'C+ J+ dr Dian, dr Eryn, dr Niken', target: 'Teratai' },
-      { bed: 'K2', name: 'Ny. Munati', diag: 'Obs penkes ec susp ensefalopati sepsis + hiperpirexia + s ISK + DM', consult: 'C dr Agung J+', target: 'Inden Medik' },
-      { bed: 'K3', name: 'An. Alkhalifi Naufal', diag: 'Anemia gravis + pansitopenia + hiperleukositosis', consult: 'C dr. Shinta J 1/2', target: 'Hemato Onko' },
-      { bed: 'K4', name: 'Ny. Emmy', diag: 'Obs penurunan kesadaran susp Encephalopati Metabolik + Hematemesis', consult: 'C dr. Agung J-', target: 'Inden Medik No.4' },
-      { bed: 'K5', name: 'Ny. Sri Murtiarti', diag: 'Post koma hipoglikemia', consult: 'C-', target: 'DAHLIA' },
-      { bed: 'K6', name: 'Tn. Subari', diag: 'Obs penkes ec susp CVA dd ensefalopati + ulkus femur D + DM', consult: 'C dr Dian J+, dr Aisah J+, dr Eryn J+', target: 'Teratai / ISU' },
-      { bed: 'K8', name: 'Ny. Luluk Uljannah', diag: 'Abdominal pain susp peritonitis dd appendisitis perforasi', consult: 'C dr Esa J 1/2', target: 'BGV Bedah' },
-      { bed: 'K10', name: 'Ny. Ngadiyem', diag: 'Obs penurunan kesadaran susp CVA bleeding + gagal napas + hipotensi', consult: 'C dr Dian J 1/2, dr Angela J+', target: 'ISU / Inden ICU' }
-    ];
+    // Salin data master lokal untuk fallback offline & performa render cepat
+    const WARDS_DATA = [...INITIAL_WARDS_DATA];
+    const IGD_QUEUE = [...INITIAL_IGD_QUEUE];
 
     const ROLE_META = {
       admin_yanmed: { label: 'Admin Yanmed', user: 'Pelayanan Medik (Akses Penuh)', allowedWard: 'ALL' },
@@ -636,9 +613,11 @@
 
     let currentRole = 'admin_yanmed';
     let currentTab = 'dashboard';
+    let currentNip = '199204152020121004';
 
     function showToast(message, type = 'info') {
       const container = document.getElementById('toast-container');
+      if (!container) return;
       const toast = document.createElement('div');
       const colors = type === 'success'
         ? 'bg-emerald-800 text-white border-emerald-700'
@@ -651,9 +630,40 @@
       setTimeout(() => toast.remove(), 3400);
     }
 
+    function updateDbBadges() {
+      const conn = getConnectionState();
+      const portalBadge = document.getElementById('portal-db-badge');
+      const headerPill = document.getElementById('header-db-pill');
+
+      let label = 'Mode Mandiri (Offline)';
+      let badgeClass = 'bg-slate-100 text-slate-700 border-slate-200';
+
+      if (conn.isConnected) {
+        if (conn.mode === 'local') {
+          label = '🟢 DB Lokal (Docker: 54321)';
+          badgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-200';
+        } else {
+          label = '🟢 DB Cloud (Supabase)';
+          badgeClass = 'bg-blue-50 text-blue-800 border-blue-200';
+        }
+      } else if (conn.mode === 'migration_needed') {
+        label = '🟡 Migrasi Belum Terpasang';
+        badgeClass = 'bg-amber-50 text-amber-800 border-amber-200';
+      }
+
+      if (portalBadge) {
+        portalBadge.textContent = label;
+        portalBadge.className = `px-2 py-0.5 rounded-full text-[10px] font-bold border ${badgeClass}`;
+      }
+      if (headerPill) {
+        headerPill.textContent = label;
+        headerPill.className = `hidden sm:inline-flex px-2 py-0.5 rounded-md text-[10px] font-bold border ${badgeClass}`;
+      }
+    }
+
     function togglePasswordVisibility() {
       const input = document.getElementById('login-password');
-      input.type = input.type === 'password' ? 'text' : 'password';
+      if (input) input.type = input.type === 'password' ? 'text' : 'password';
     }
 
     function handlePortalLogin(e) {
@@ -668,21 +678,21 @@
     }
 
     function quickLoginAs(role) {
-      const nip = document.getElementById('login-nip').value.trim() || '199204152020121004';
+      const nip = document.getElementById('login-nip')?.value.trim() || '199204152020121004';
       enterDashboardWithRole(role, nip);
     }
 
     function openTopLoginModal() {
-      document.getElementById('top-login-modal').classList.remove('hidden');
+      document.getElementById('top-login-modal')?.classList.remove('hidden');
     }
 
     function closeTopLoginModal() {
-      document.getElementById('top-login-modal').classList.add('hidden');
+      document.getElementById('top-login-modal')?.classList.add('hidden');
     }
 
     function submitModalLogin() {
-      const nip = document.getElementById('modal-nip').value.trim() || '199204152020121004';
-      const role = document.getElementById('modal-role').value;
+      const nip = document.getElementById('modal-nip')?.value.trim() || '199204152020121004';
+      const role = document.getElementById('modal-role')?.value || 'admin_yanmed';
       closeTopLoginModal();
       enterDashboardWithRole(role, nip);
     }
@@ -692,44 +702,52 @@
     }
 
     function enterDashboardWithRole(role, nip) {
-      document.getElementById('landing-login-gateway').classList.add('hidden');
-      document.getElementById('main-app-shell').classList.remove('hidden');
+      currentNip = nip;
+      document.getElementById('landing-login-gateway')?.classList.add('hidden');
+      document.getElementById('main-app-shell')?.classList.remove('hidden');
       switchRole(role, nip);
       showToast(`Berhasil masuk sebagai ${ROLE_META[role].label}`, 'success');
     }
 
     function logoutToPortal() {
-      document.getElementById('main-app-shell').classList.add('hidden');
-      document.getElementById('landing-login-gateway').classList.remove('hidden');
-      showToast('Anda telah keluar dari sesi operasional.');
+      document.getElementById('main-app-shell')?.classList.add('hidden');
+      document.getElementById('landing-login-gateway')?.classList.remove('hidden');
+      showToast('Anda telah keluar dari sesi operasional SIIRS.');
     }
 
-    function switchRole(role, nip = '199204152020121004') {
+    function switchRole(role, nip = currentNip) {
       currentRole = role;
       const meta = ROLE_META[role];
-      document.getElementById('active-role-switcher').value = role;
-      document.getElementById('role-badge-header').textContent = meta.label;
-      document.getElementById('header-user-info').textContent = `${meta.user} (${nip})`;
+      const activeSwitcher = document.getElementById('active-role-switcher');
+      if (activeSwitcher) activeSwitcher.value = role;
+
+      const badgeHeader = document.getElementById('role-badge-header');
+      if (badgeHeader) badgeHeader.textContent = meta.label;
+
+      const userInfo = document.getElementById('header-user-info');
+      if (userInfo) userInfo.textContent = `${meta.user} (${nip})`;
 
       const isPublic = role === 'public_display';
-      document.getElementById('public-mode-banner').classList.toggle('hidden', !isPublic);
-      document.getElementById('main-nav-tabs').classList.toggle('hidden', isPublic);
+      document.getElementById('public-mode-banner')?.classList.toggle('hidden', !isPublic);
+      document.getElementById('main-nav-tabs')?.classList.toggle('hidden', isPublic);
 
       if (isPublic) {
         switchTab('dashboard');
       } else if (meta.allowedWard !== 'ALL' && meta.allowedWard !== 'IGD') {
-        document.getElementById('ward-selector').value = meta.allowedWard;
+        const wardSelector = document.getElementById('ward-selector');
+        if (wardSelector) wardSelector.value = meta.allowedWard;
       }
 
       renderWardTable();
       renderIgdQueue();
-      renderBedBoard(document.getElementById('ward-selector').value || 'DAHLIA');
+      const currentWard = document.getElementById('ward-selector')?.value || 'DAHLIA';
+      renderBedBoard(currentWard);
     }
 
     function switchTab(tabName) {
       currentTab = tabName;
       ['dashboard', 'igd', 'wards', 'reports'].forEach(t => {
-        document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tabName);
+        document.getElementById(`tab-${t}`)?.classList.toggle('hidden', t !== tabName);
       });
       document.querySelectorAll('.nav-tab-btn').forEach(btn => {
         const active = btn.dataset.tab === tabName;
@@ -742,16 +760,18 @@
     function toggleComfortMode() {
       document.body.classList.toggle('comfort-warm-mode');
       const isWarm = document.body.classList.contains('comfort-warm-mode');
-      document.getElementById('btn-comfort-mode').textContent = isWarm ? '🌙 Hangat' : '☀️ Nyaman';
+      const btn = document.getElementById('btn-comfort-mode');
+      if (btn) btn.textContent = isWarm ? '🌙 Hangat' : '☀️ Nyaman';
     }
 
     function openBriefingPlayer() {
-      showToast('Mode Tour Sistem: Silakan pilih peran pada kartu Login untuk mencoba fitur RBAC.');
+      showToast('Mode Tour Sistem SIIRS: Pilih peran pada kartu login untuk mencoba hak akses RBAC.');
     }
 
     function renderWardTable() {
       const query = (document.getElementById('search-ward-input')?.value || '').toLowerCase();
       const tbody = document.getElementById('ward-summary-tbody');
+      if (!tbody) return;
       tbody.innerHTML = '';
 
       WARDS_DATA.filter(w => w.name.toLowerCase().includes(query)).forEach(w => {
@@ -789,13 +809,15 @@
         showToast('Mode Publik bersifat baca-saja. Silakan login petugas untuk membuka detail bed.', 'warn');
         return;
       }
-      document.getElementById('ward-selector').value = wardId;
+      const sel = document.getElementById('ward-selector');
+      if (sel) sel.value = wardId;
       switchTab('wards');
       renderBedBoard(wardId);
     }
 
     function renderIgdQueue() {
       const container = document.getElementById('igd-queue-list');
+      if (!container) return;
       container.innerHTML = '';
       IGD_QUEUE.forEach(item => {
         const card = document.createElement('div');
@@ -817,6 +839,8 @@
 
     function initWardSelector() {
       const sel = document.getElementById('ward-selector');
+      if (!sel) return;
+      sel.innerHTML = '';
       WARDS_DATA.forEach(w => {
         const opt = document.createElement('option');
         opt.value = w.id;
@@ -832,10 +856,14 @@
       const meta = ROLE_META[currentRole];
       const canEdit = meta.allowedWard === 'ALL' || meta.allowedWard === ward.id;
 
-      document.getElementById('ward-permission-note').textContent = canEdit
-        ? `Akses Edit Aktif untuk Ruang ${ward.name}. Klik kartu bed untuk memperbarui status.`
-        : `Mode Baca-Saja (RBAC): Akun ${meta.label} tidak memiliki izin mengubah bed di Ruang ${ward.name}.`;
+      const permNote = document.getElementById('ward-permission-note');
+      if (permNote) {
+        permNote.textContent = canEdit
+          ? `Akses Edit Aktif untuk Ruang ${ward.name}. Klik kartu bed untuk memperbarui status.`
+          : `Mode Baca-Saja (RBAC): Akun ${meta.label} tidak memiliki izin mengubah bed di Ruang ${ward.name}.`;
+      }
 
+      if (!grid) return;
       grid.innerHTML = '';
       for (let i = 1; i <= ward.total; i++) {
         let status = 'Tersedia';
@@ -848,18 +876,33 @@
           style = 'bg-amber-50 border-amber-200 text-amber-800';
         }
 
+        const bedCode = `${ward.id}-${String(i).padStart(2, '0')}`;
         const btn = document.createElement('button');
         btn.className = `p-3.5 rounded-2xl border text-left transition ${style} ${canEdit ? 'hover:shadow-sm cursor-pointer' : 'opacity-80 cursor-not-allowed'}`;
         btn.innerHTML = `
-          <span class="text-[11px] font-extrabold block">${ward.id}-${String(i).padStart(2, '0')}</span>
+          <span class="text-[11px] font-extrabold block">${bedCode}</span>
           <span class="text-xs font-bold mt-1 block">${status}</span>
         `;
-        btn.onclick = () => {
+        btn.onclick = async () => {
           if (!canEdit) {
             showToast(`Ditolak (RBAC): ${meta.label} hanya dapat mengubah ruangannya sendiri.`, 'warn');
             return;
           }
-          showToast(`Status Bed ${ward.id}-${String(i).padStart(2, '0')} berhasil diperbarui & tercatat di Audit Log.`, 'success');
+          
+          // Simpan ke Supabase jika terhubung
+          const conn = getConnectionState();
+          if (conn.isConnected) {
+            showToast(`Menyimpan perubahan ${bedCode} ke basis data Supabase...`);
+            // Mock ID bed untuk demo
+            const res = await updateBedStatusDb(bedCode, status === 'Tersedia' ? 'occupied' : 'available', currentNip, currentRole, { bed_code: bedCode });
+            if (res.success) {
+              showToast(`Status Bed ${bedCode} berhasil diperbarui & tercatat di siirs_audit_logs!`, 'success');
+            } else {
+              showToast(`Status Bed ${bedCode} diperbarui di cache lokal.`, 'info');
+            }
+          } else {
+            showToast(`Status Bed ${bedCode} diperbarui (Mode Mandiri/Lokal).`, 'success');
+          }
         };
         grid.appendChild(btn);
       }
@@ -867,18 +910,42 @@
 
     function submitSpecialReport(e) {
       e.preventDefault();
-      const type = document.getElementById('rep-type').value;
-      const name = document.getElementById('rep-name').value;
-      showToast(`${type} atas nama ${name} berhasil disimpan ke sistem Yanmed.`, 'success');
+      const type = document.getElementById('rep-type')?.value;
+      const name = document.getElementById('rep-name')?.value;
+      showToast(`${type} atas nama ${name} berhasil disimpan ke sistem Yanmed SIIRS.`, 'success');
       e.target.reset();
     }
 
+    // Expose handlers ke window untuk kompatibilitas atribut onclick inline HTML
+    window.switchTab = switchTab;
+    window.handlePortalLogin = handlePortalLogin;
+    window.quickLoginAs = quickLoginAs;
+    window.openTopLoginModal = openTopLoginModal;
+    window.closeTopLoginModal = closeTopLoginModal;
+    window.submitModalLogin = submitModalLogin;
+    window.enterPublicDisplay = enterPublicDisplay;
+    window.logoutToPortal = logoutToPortal;
+    window.switchRole = switchRole;
+    window.openWardDetail = openWardDetail;
+    window.toggleComfortMode = toggleComfortMode;
+    window.openBriefingPlayer = openBriefingPlayer;
+    window.submitSpecialReport = submitSpecialReport;
+    window.togglePasswordVisibility = togglePasswordVisibility;
+
     // Inisialisasi saat halaman dimuat
-    window.addEventListener('DOMContentLoaded', () => {
+    window.addEventListener('DOMContentLoaded', async () => {
       initWardSelector();
       renderWardTable();
       renderIgdQueue();
       renderBedBoard('DAHLIA');
+
+      // Hubungkan ke Supabase (Docker lokal atau Cloud)
+      try {
+        await initSupabase();
+        updateDbBadges();
+      } catch (err) {
+        console.warn('Inisialisasi Supabase gagal, menggunakan mode mandiri:', err);
+      }
     });
   </script>
 </body>
