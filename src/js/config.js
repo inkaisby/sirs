@@ -15,9 +15,13 @@ const isLocalHost = Boolean(
 const LOCAL_SUPABASE_URL = 'http://127.0.0.1:54321';
 const LOCAL_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM0NDEyMDB9.EG-dummy-anon-key-replace-with-status';
 
+// Nilai default Supabase Cloud Production (Shared DB dengan IDIK-App)
+const DEFAULT_CLOUD_SUPABASE_URL = 'https://whbinarvynbyemvqbfjg.supabase.co';
+const DEFAULT_CLOUD_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndoYmluYXJ2eW5ieWVtdnFiZmpnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTcwMDUzNjMsImV4cCI6MjA3MjU4MTM2M30.7gGW62Rehd4YiRn9rzwrGzgC8Kjl-uHZ74cOjDDfFaY';
+
 // Nilai Cloud Production (Bisa di-override lewat window.SIIRS_ENV atau localStorage)
-const CLOUD_SUPABASE_URL = window.SIIRS_ENV?.SUPABASE_URL || localStorage.getItem('SIIRS_SUPABASE_URL') || '';
-const CLOUD_SUPABASE_ANON_KEY = window.SIIRS_ENV?.SUPABASE_ANON_KEY || localStorage.getItem('SIIRS_SUPABASE_ANON_KEY') || '';
+const CLOUD_SUPABASE_URL = window.SIIRS_ENV?.SUPABASE_URL || localStorage.getItem('SIIRS_SUPABASE_URL') || DEFAULT_CLOUD_SUPABASE_URL;
+const CLOUD_SUPABASE_ANON_KEY = window.SIIRS_ENV?.SUPABASE_ANON_KEY || localStorage.getItem('SIIRS_SUPABASE_ANON_KEY') || DEFAULT_CLOUD_SUPABASE_ANON_KEY;
 
 export const SIIRS_CONFIG = {
   appName: 'SIIRS RSUD Dr. M. Soewandhie',
