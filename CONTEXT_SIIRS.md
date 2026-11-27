@@ -72,10 +72,6 @@ D:\website\sirs\
 ├── docs/
 │   ├── CONTEXT_SIIRS.md      # Mirror dokumentasi arsitektur
 │   └── PRD.md                # Spesifikasi kebutuhan teknis & user stories
-├── public/                   # Direktori aset publik
-│   ├── favicon.ico
-│   ├── favicon.png
-│   └── favicon.svg
 ├── src/
 │   ├── js/
 │   │   ├── config.js         # Deteksi otomatis lokal vs cloud & konfigurasi port
