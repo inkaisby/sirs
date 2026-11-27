@@ -1,0 +1,19 @@
+{
+  "name": "siirs",
+  "version": "2.0.0",
+  "description": "Sistem Informasi Integrasi Rumah Sakit - RSUD Dr. M. Soewandhie Surabaya",
+  "scripts": {
+    "dev": "python -m http.server 3300",
+    "start": "python -m http.server 3300",
+    "serve": "npx serve . -l 3300"
+  },
+  "keywords": [
+    "siirs",
+    "hospital",
+    "bed-management",
+    "cathlab",
+    "soewandhie"
+  ],
+  "author": "RSUD Dr. M. Soewandhie",
+  "license": "ISC"
+}

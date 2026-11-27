@@ -23,17 +23,44 @@ const DEFAULT_CLOUD_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ey
 const CLOUD_SUPABASE_URL = window.SIIRS_ENV?.SUPABASE_URL || localStorage.getItem('SIIRS_SUPABASE_URL') || DEFAULT_CLOUD_SUPABASE_URL;
 const CLOUD_SUPABASE_ANON_KEY = window.SIIRS_ENV?.SUPABASE_ANON_KEY || localStorage.getItem('SIIRS_SUPABASE_ANON_KEY') || DEFAULT_CLOUD_SUPABASE_ANON_KEY;
 
+// Pilihan target database ('cloud' default agar di localhost tetap terhubung ke data real Supabase)
+const currentDbTarget = localStorage.getItem('SIIRS_DB_TARGET') || 'cloud';
+
 export const SIIRS_CONFIG = {
   appName: 'SIIRS RSUD Dr. M. Soewandhie',
   version: '2.0.0',
   isLocal: isLocalHost,
-  supabaseUrl: isLocalHost ? (localStorage.getItem('SIIRS_SUPABASE_URL') || LOCAL_SUPABASE_URL) : CLOUD_SUPABASE_URL,
-  supabaseAnonKey: isLocalHost ? (localStorage.getItem('SIIRS_SUPABASE_ANON_KEY') || LOCAL_SUPABASE_ANON_KEY) : CLOUD_SUPABASE_ANON_KEY,
+  dbTarget: currentDbTarget,
+  // Di localhost default tetap gunakan Cloud DB terpadu kecuali pengguna memilih 'local'
+  supabaseUrl: currentDbTarget === 'local' ? (localStorage.getItem('SIIRS_SUPABASE_URL') || LOCAL_SUPABASE_URL) : CLOUD_SUPABASE_URL,
+  supabaseAnonKey: currentDbTarget === 'local' ? (localStorage.getItem('SIIRS_SUPABASE_ANON_KEY') || LOCAL_SUPABASE_ANON_KEY) : CLOUD_SUPABASE_ANON_KEY,
   sharedWithIdikApp: true,
   ports: {
+    siirsLocal: 3300,
     idikAppDev: 3000,
     supabaseApi: 54321,
     supabaseStudio: 54323,
     postgresDb: 54322,
   }
 };
+
+/**
+ * Beralih target basis data antara Cloud Supabase dan Docker Lokal dalam 1-klik
+ */
+export function setDbTarget(target) {
+  if (target === 'local') {
+    localStorage.setItem('SIIRS_DB_TARGET', 'local');
+    localStorage.setItem('SIIRS_SUPABASE_URL', LOCAL_SUPABASE_URL);
+    localStorage.setItem('SIIRS_SUPABASE_ANON_KEY', LOCAL_SUPABASE_ANON_KEY);
+  } else {
+    localStorage.setItem('SIIRS_DB_TARGET', 'cloud');
+    localStorage.setItem('SIIRS_SUPABASE_URL', DEFAULT_CLOUD_SUPABASE_URL);
+    localStorage.setItem('SIIRS_SUPABASE_ANON_KEY', DEFAULT_CLOUD_SUPABASE_ANON_KEY);
+  }
+  window.location.reload();
+}
+
+export function toggleDbTarget() {
+  const current = localStorage.getItem('SIIRS_DB_TARGET') || 'cloud';
+  setDbTarget(current === 'cloud' ? 'local' : 'cloud');
+}

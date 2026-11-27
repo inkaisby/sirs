@@ -53,6 +53,13 @@ SIIRS terhubung ke **satu basis data PostgreSQL/Supabase yang sama** dengan apli
    - [D:\website\idik-app\supabase\migrations\20261128033000_verify_app_user_credentials.sql](file:///D:/website/idik-app/supabase/migrations/20261128033000_verify_app_user_credentials.sql) (Status: **Applied / Pushed to Remote Cloud `whbinarvynbyemvqbfjg`**)
    - Salinan lokal: [D:\website\sirs\sql\20261128030000_create_siirs_bed_management.sql](file:///D:/website/sirs/sql/20261128030000_create_siirs_bed_management.sql) dan [D:\website\sirs\sql\20261128033000_verify_app_user_credentials.sql](file:///D:/website/sirs/sql/20261128033000_verify_app_user_credentials.sql)
 
+### D. Menjalankan SIIRS di Localhost (1-Klik)
+Tersedia dua opsi berkas peluncur batch Windows di folder root `d:\website\sirs\`:
+1. **`JALANKAN_SIIRS.bat`:** Klik dua kali berkas ini untuk otomatis menyalakan server lokal di port 3300 dan membuka browser ke `http://localhost:3300`.
+2. **`START_CATHLAB.bat`:** Klik dua kali berkas ini untuk langsung menyalakan server dan membuka layar tindakan Cathlab (`http://localhost:3300/?login=cathlab`).
+3. **Auto-Login via URL:** Buka `http://localhost:3300/?login=cathlab` atau `http://localhost:3300/?login=admin_yanmed` untuk langsung masuk ke sesi tanpa klik formulir.
+4. **Target DB Cerdas:** Di localhost secara default terhubung langsung ke basis data Cloud Supabase terpadu (sehingga seluruh 384 bed dan data tindakan langsung tampil tanpa perlu Docker). Pengguna juga dapat beralih ke Docker Lokal dengan 1-klik tombol `DB: Cloud / Docker`.
+
 ---
 
 ## 3. Matriks Peran & Hak Akses (RBAC)
