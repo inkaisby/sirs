@@ -263,25 +263,30 @@
             <div class="flex items-center gap-2.5 text-[11px] font-medium text-slate-600 bg-slate-50 border border-slate-200/90 rounded-2xl p-3">
               <span class="w-2 h-2 rounded-full bg-emerald-500 status-pulse-dot"></span>
               <p class="leading-relaxed">
-                <strong>Lapisan Keamanan Aktif:</strong> Logto OIDC SSO • Proteksi Brute-Force • Sesi Kriptografis • RLS Terpadu
+                <strong>Lapisan Keamanan Aktif:</strong> Google OAuth 2.0 • Proteksi Brute-Force • Sesi Kriptografis • RLS Terpadu
               </p>
             </div>
 
-            <!-- SINGLE SIGN-ON TERPADU RSUD (LOGTO IAM / OIDC) -->
+            <!-- SINGLE SIGN-ON & PENDAFTARAN RESMI VIA GOOGLE WORKSPACE RSUD -->
             <div class="p-3.5 bg-slate-900 rounded-2xl text-white space-y-2.5 shadow-sm border border-slate-800">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-cyan-400 status-pulse-dot"></span>
-                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-cyan-300">Single Sign-On Terpadu</span>
+                  <span class="w-2 h-2 rounded-full bg-emerald-400 status-pulse-dot"></span>
+                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300">Single Sign-On Google RSUD</span>
                 </div>
-                <button type="button" onclick="openModalLogtoConfig()" class="text-[10px] text-slate-400 hover:text-cyan-300 transition flex items-center gap-1" title="Atur Endpoint & App ID Logto">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                  <span>Setup Logto</span>
+                <button type="button" onclick="openModalGoogleConfig()" class="text-[10px] text-slate-400 hover:text-emerald-300 transition flex items-center gap-1" title="Panduan & Uji Coba Google Auth">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <span>Info & Sandbox</span>
                 </button>
               </div>
-              <button type="button" onclick="handleLogtoSignIn()" class="w-full py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-extrabold text-xs transition flex items-center justify-center gap-2 shadow-sm">
-                <svg class="w-4 h-4 text-cyan-200" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                <span>Masuk via Logto SSO (Akun Terpadu RSUD)</span>
+              <button type="button" onclick="handleGoogleSignIn()" class="w-full py-2.5 px-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-extrabold text-xs transition flex items-center justify-center gap-2.5 shadow-sm active:scale-[0.99]">
+                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                </svg>
+                <span>Masuk / Daftar dengan Akun Google</span>
               </button>
             </div>
 
@@ -963,71 +968,73 @@
   </div>
 
   <!-- ======================================================================= -->
-  <!-- MODAL SETUP / KONFIGURASI LOGTO IAM (SSO RSUD)                          -->
+  <!-- MODAL PANDUAN & SANDBOX GOOGLE WORKSPACE OAUTH (SUPABASE AUTH)          -->
   <!-- ======================================================================= -->
-  <div id="modal-logto-config" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+  <div id="modal-google-config" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
     <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 my-8 motion-view-enter">
       <div class="flex items-start justify-between border-b border-slate-100 pb-3">
         <div>
           <div class="flex items-center gap-2 mb-1">
-            <span class="px-2 py-0.5 rounded-md bg-cyan-100 text-cyan-800 text-[10px] font-extrabold uppercase">Logto OIDC SSO</span>
-            <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-bold">Identity Provider</span>
+            <span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-extrabold uppercase">Google OAuth 2.0</span>
+            <span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-bold">Supabase Auth</span>
           </div>
-          <h4 class="text-base font-extrabold text-slate-900 leading-tight">Pengaturan Single Sign-On Logto</h4>
-          <p class="text-xs text-slate-500">Hubungkan SIIRS ke instance Logto Cloud atau Self-Hosted RSUD</p>
+          <h4 class="text-base font-extrabold text-slate-900 leading-tight">Single Sign-On Google RSUD</h4>
+          <p class="text-xs text-slate-500">Pendaftaran & masuk terpadu menggunakan akun Google resmi</p>
         </div>
-        <button type="button" onclick="closeModalLogtoConfig()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+        <button type="button" onclick="closeModalGoogleConfig()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
       </div>
 
-      <form onsubmit="submitLogtoConfig(event)" class="space-y-3.5 text-xs">
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">Logto Endpoint URL</label>
-          <input type="url" id="cfg-logto-endpoint" required placeholder="https://<tenant-id>.logto.app/ atau http://localhost:3301/" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-xs" />
-          <span class="text-[10px] text-slate-400 mt-1 block">Contoh Cloud: https://xxxx.logto.app/ • Self-Hosted: http://192.168.1.10:3301/</span>
+      <div class="space-y-3.5 text-xs">
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+          <span class="text-[11px] font-bold text-slate-700 block">Cara Aktifkan Google di Supabase Dashboard:</span>
+          <ol class="list-decimal list-inside text-slate-600 space-y-1 leading-relaxed text-[11px]">
+            <li>Buka <strong>Supabase Dashboard</strong> proyek (<code class="bg-white px-1 py-0.5 border border-slate-200 rounded text-slate-800">whbinarvynbyemvqbfjg</code>).</li>
+            <li>Masuk ke menu <strong>Authentication</strong> &gt; <strong>Providers</strong> &gt; pilih <strong>Google</strong>.</li>
+            <li>Nyalakan toggle <strong>Enable Google provider</strong>.</li>
+            <li>Masukkan <strong>Client ID</strong> &amp; <strong>Client Secret</strong> dari Google Cloud Console.</li>
+            <li>Daftarkan Authorized Redirect URI:
+              <div class="flex items-center gap-2 mt-1">
+                <code id="cfg-supabase-callback-uri" class="px-2 py-1 bg-white border border-slate-200 rounded text-[11px] font-mono text-slate-800 select-all flex-1 truncate">
+                  https://whbinarvynbyemvqbfjg.supabase.co/auth/v1/callback
+                </code>
+                <button type="button" onclick="copySupabaseCallbackUri()" class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-bold hover:bg-blue-100 text-[10px] transition shrink-0">
+                  Salin
+                </button>
+              </div>
+            </li>
+          </ol>
         </div>
 
-        <div>
-          <label class="block font-bold text-slate-700 mb-1">Logto Application ID (App ID)</label>
-          <input type="text" id="cfg-logto-appid" required placeholder="Contoh: siirs_hospital_web" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-xs" />
-          <span class="text-[10px] text-slate-400 mt-1 block">Buat aplikasi bertipe "Single Page App" di Logto Console</span>
-        </div>
-
-        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
-          <span class="text-[11px] font-bold text-slate-700 block">Redirect URI untuk Logto Console:</span>
-          <div class="flex items-center gap-2">
-            <code id="cfg-logto-redirect-uri" class="px-2 py-1 bg-white border border-slate-200 rounded text-[11px] font-mono text-slate-800 select-all flex-1 truncate">
-              https://siirs.vercel.app/
-            </code>
-            <button type="button" onclick="copyLogtoRedirectUri()" class="px-2.5 py-1 rounded bg-blue-50 text-blue-700 font-bold hover:bg-blue-100 text-[11px] transition shrink-0">
-              Salin
+        <!-- Uji Coba Cepat / Demo Sandbox Akun Google -->
+        <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-2">
+          <span class="text-[11px] font-extrabold text-emerald-950 block">Uji Coba Langsung Masuk Akun Google (Sandbox Demo):</span>
+          <p class="text-[10px] text-emerald-800">Gunakan simulasi ini untuk langsung mencoba alur masuk Google ke unit terkait tanpa menunggu konfigurasi Google Cloud Console:</p>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" onclick="testSimulateGoogleLogin('cathlab')" class="px-2 py-2 rounded-lg bg-white border border-emerald-300 hover:bg-emerald-100 text-emerald-950 font-bold text-[11px] transition text-center shadow-2xs">
+              Google: Cathlab
             </button>
-          </div>
-          <span class="text-[10px] text-slate-500 block">Daftarkan URI di atas pada field <strong>Redirect URIs</strong> dan <strong>Post sign-out redirect URIs</strong> di Logto Console.</span>
-        </div>
-
-        <!-- Uji Coba Cepat / Demo Simulasi Token Logto -->
-        <div class="p-3 bg-cyan-50/70 border border-cyan-200 rounded-xl space-y-2">
-          <span class="text-[11px] font-extrabold text-cyan-900 block">Uji Coba Cepat Token Logto (Sandbox):</span>
-          <div class="grid grid-cols-2 gap-2">
-            <button type="button" onclick="simulateLogtoDemoLogin('cathlab')" class="px-2.5 py-1.5 rounded-lg bg-white border border-cyan-300 hover:bg-cyan-100/70 text-cyan-950 font-bold text-[11px] transition text-center shadow-2xs">
-              Simulasi Token: Cathlab
+            <button type="button" onclick="testSimulateGoogleLogin('admin_yanmed')" class="px-2 py-2 rounded-lg bg-white border border-emerald-300 hover:bg-emerald-100 text-emerald-950 font-bold text-[11px] transition text-center shadow-2xs">
+              Google: Yanmed
             </button>
-            <button type="button" onclick="simulateLogtoDemoLogin('admin_yanmed')" class="px-2.5 py-1.5 rounded-lg bg-white border border-cyan-300 hover:bg-cyan-100/70 text-cyan-950 font-bold text-[11px] transition text-center shadow-2xs">
-              Simulasi Token: Yanmed
+            <button type="button" onclick="testSimulateGoogleLogin('igd_admission')" class="px-2 py-2 rounded-lg bg-white border border-emerald-300 hover:bg-emerald-100 text-emerald-950 font-bold text-[11px] transition text-center shadow-2xs">
+              Google: IGD
             </button>
           </div>
         </div>
 
         <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
-          <button type="button" onclick="closeModalLogtoConfig()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">
+          <button type="button" onclick="closeModalGoogleConfig()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">
             Tutup
           </button>
-          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold transition shadow-sm">
-            Simpan Konfigurasi Logto
+          <button type="button" onclick="closeModalGoogleConfig(); handleGoogleSignIn();" class="px-5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold transition shadow-sm">
+            Coba Login Google Sekarang
           </button>
         </div>
+      </div>
+    </div>
+  </div>
       </form>
     </div>
   </div>
@@ -1055,7 +1062,10 @@
       sanitizeInput,
       fetchTindakanFromDb,
       updateTindakanStatusDb,
-      createTindakanDb
+      createTindakanDb,
+      signInWithGoogle,
+      handleGoogleOAuthCallback,
+      simulateGoogleLogin
     } from './src/js/supabaseClient.js';
     import { INITIAL_WARDS_DATA, INITIAL_IGD_QUEUE } from './src/data/wardsSeed.js';
 
@@ -1921,70 +1931,57 @@
     }
 
     // =========================================================================
-    // INTEGRASI LOGTO OIDC SINGLE SIGN-ON (SSO)
+    // INTEGRASI GOOGLE WORKSPACE OAUTH & SSO (VIA SUPABASE AUTH)
     // =========================================================================
-    async function handleLogtoSignIn() {
-      showToast('Menghubungkan ke Portal Logto SSO RSUD...', 'info');
-      const res = await signInWithLogto();
-      if (res?.needsConfig) {
-        openModalLogtoConfig();
-        showToast(res.message, 'warn');
-      } else if (res && !res.success) {
-        showToast(res.message, 'warn');
+    async function handleGoogleSignIn() {
+      const selectedRole = document.getElementById('login-role-select')?.value || 'cathlab';
+      showToast('Menghubungkan ke layanan Google OAuth...', 'info');
+
+      try {
+        const res = await signInWithGoogle(selectedRole);
+        if (!res.success) {
+          // Jika Google provider belum dinyalakan di Supabase Console, munculkan panduan & sandbox
+          if (res.message && (res.message.includes('not enabled') || res.message.includes('provider') || res.message.includes('OAuth'))) {
+            showToast('Google OAuth belum aktif di Supabase. Buka panduan / sandbox demo.', 'warn');
+            openModalGoogleConfig();
+          } else {
+            showToast('Koneksi Google: ' + res.message, 'warn');
+          }
+        }
+      } catch (err) {
+        showToast('Koneksi Google bermasalah: ' + err.message, 'warn');
       }
     }
 
-    function openModalLogtoConfig() {
-      const ep = document.getElementById('cfg-logto-endpoint');
-      const app = document.getElementById('cfg-logto-appid');
-      const redir = document.getElementById('cfg-logto-redirect-uri');
-      if (ep) ep.value = localStorage.getItem('SIIRS_LOGTO_ENDPOINT') || LOGTO_CONFIG.endpoint;
-      if (app) app.value = localStorage.getItem('SIIRS_LOGTO_APP_ID') || LOGTO_CONFIG.appId;
-      if (redir) redir.textContent = LOGTO_CONFIG.redirectUri;
-      document.getElementById('modal-logto-config')?.classList.remove('hidden');
+    function openModalGoogleConfig() {
+      document.getElementById('modal-google-config')?.classList.remove('hidden');
     }
 
-    function closeModalLogtoConfig() {
-      document.getElementById('modal-logto-config')?.classList.add('hidden');
+    function closeModalGoogleConfig() {
+      document.getElementById('modal-google-config')?.classList.add('hidden');
     }
 
-    function copyLogtoRedirectUri() {
-      const uri = LOGTO_CONFIG.redirectUri;
+    function copySupabaseCallbackUri() {
+      const uri = 'https://whbinarvynbyemvqbfjg.supabase.co/auth/v1/callback';
       navigator.clipboard.writeText(uri).then(() => {
-        showToast('Redirect URI berhasil disalin ke clipboard!', 'success');
+        showToast('Supabase Callback URI disalin ke clipboard!', 'success');
       }).catch(() => {
         showToast(`URI: ${uri}`, 'info');
       });
     }
 
-    function submitLogtoConfig(e) {
-      e.preventDefault();
-      const endpoint = document.getElementById('cfg-logto-endpoint')?.value;
-      const appId = document.getElementById('cfg-logto-appid')?.value;
-      saveLogtoSettings(endpoint, appId);
-      showToast('Konfigurasi Logto berhasil disimpan!', 'success');
-      closeModalLogtoConfig();
-    }
-
-    function simulateLogtoDemoLogin(role) {
-      closeModalLogtoConfig();
-      const mockLogtoUser = {
-        sub: `logto-usr-${Date.now()}`,
-        name: role === 'cathlab' ? 'Tim Cathlab RSUD' : 'Admin Yanmed Terpadu',
-        username: role === 'cathlab' ? 'cathlab' : 'admin_yanmed',
-        roles: [role]
-      };
-      
+    function testSimulateGoogleLogin(role) {
+      closeModalGoogleConfig();
+      const mockUser = simulateGoogleLogin(role);
       createSecureSession({
-        user: `${ROLE_META[role].user} (Logto SSO)`,
-        nip: mockLogtoUser.username,
-        role: role,
-        allowedWard: ROLE_META[role].allowedWard,
-        authProvider: 'LOGTO_OIDC_SSO'
+        user: mockUser.user,
+        nip: mockUser.nip,
+        role: mockUser.role,
+        allowedWard: ROLE_META[mockUser.role]?.allowedWard || 'ALL',
+        authProvider: 'GOOGLE_OAUTH_SIMULATION'
       });
-
-      enterDashboardWithRole(role, mockLogtoUser.username);
-      showToast(`Berhasil masuk via Logto SSO sebagai ${ROLE_META[role].label}`, 'success');
+      enterDashboardWithRole(mockUser.role, mockUser.nip);
+      showToast(`Berhasil masuk via Google RSUD: ${mockUser.user}`, 'success');
     }
 
     // Expose handlers ke window untuk kompatibilitas atribut onclick inline HTML
@@ -2014,12 +2011,11 @@
     window.submitTambahTindakan = submitTambahTindakan;
     window.exportTindakanCsv = exportTindakanCsv;
     window.toggleDbMode = () => toggleDbTarget();
-    window.handleLogtoSignIn = handleLogtoSignIn;
-    window.openModalLogtoConfig = openModalLogtoConfig;
-    window.closeModalLogtoConfig = closeModalLogtoConfig;
-    window.copyLogtoRedirectUri = copyLogtoRedirectUri;
-    window.submitLogtoConfig = submitLogtoConfig;
-    window.simulateLogtoDemoLogin = simulateLogtoDemoLogin;
+    window.handleGoogleSignIn = handleGoogleSignIn;
+    window.openModalGoogleConfig = openModalGoogleConfig;
+    window.closeModalGoogleConfig = closeModalGoogleConfig;
+    window.copySupabaseCallbackUri = copySupabaseCallbackUri;
+    window.testSimulateGoogleLogin = testSimulateGoogleLogin;
 
     // Inisialisasi saat halaman dimuat
     window.addEventListener('DOMContentLoaded', async () => {
@@ -2043,23 +2039,23 @@
         console.warn('Inisialisasi Supabase gagal, menggunakan mode mandiri:', err);
       }
 
-      // 1. Cek inisialisasi sesi Logto OIDC jika ada callback sign in atau sesi aktif
+      // 1. Cek sesi Google OAuth yang kembali dari alur autentikasi Supabase
       try {
-        const logtoUser = await initLogtoClient();
-        if (logtoUser && logtoUser.siirsRole) {
+        const googleUser = await handleGoogleOAuthCallback();
+        if (googleUser && googleUser.role) {
           createSecureSession({
-            user: `${logtoUser.name || logtoUser.username} (Logto SSO)`,
-            nip: logtoUser.username || logtoUser.sub,
-            role: logtoUser.siirsRole,
-            allowedWard: ROLE_META[logtoUser.siirsRole]?.allowedWard || 'ALL',
-            authProvider: 'LOGTO_OIDC'
+            user: googleUser.user,
+            nip: googleUser.nip,
+            role: googleUser.role,
+            allowedWard: ROLE_META[googleUser.role]?.allowedWard || 'ALL',
+            authProvider: 'GOOGLE_SUPABASE'
           });
-          enterDashboardWithRole(logtoUser.siirsRole, logtoUser.username || logtoUser.sub);
-          showToast(`Berhasil masuk via Logto SSO: ${logtoUser.name || logtoUser.username}`, 'success');
+          enterDashboardWithRole(googleUser.role, googleUser.nip);
+          showToast(`Berhasil masuk dengan Google: ${googleUser.user}`, 'success');
           return;
         }
-      } catch (logtoErr) {
-        console.warn('Logto auto check error:', logtoErr);
+      } catch (gErr) {
+        console.warn('Google auth check error:', gErr);
       }
 
       // 2. Deteksi parameter URL untuk 1-Klik Masuk Otomatis (misal: ?login=cathlab)

@@ -591,3 +591,121 @@ export async function createTindakanDb(recordPayload, actorUsername = 'cathlab')
     return { success: false, error: e.message };
   }
 }
+
+// ==============================================================================
+// 7. GOOGLE WORKSPACE OAUTH & SSO LOGIN (SUPABASE AUTH INTEGRATION)
+// ==============================================================================
+
+/**
+ * Memulai alur login / pendaftaran via Google OAuth Supabase
+ */
+export async function signInWithGoogle(intendedRole = 'admin_yanmed') {
+  let client = getSupabase();
+  if (!client) {
+    client = await initSupabase();
+  }
+  if (!client) {
+    return { success: false, message: 'Basis data Supabase belum terhubung.' };
+  }
+
+  // Simpan role target di localStorage agar dapat diaplikasikan setelah redirect Google
+  if (intendedRole) {
+    localStorage.setItem('siirs_google_intended_role', intendedRole);
+  }
+
+  try {
+    const redirectUrl = window.location.origin + '/';
+    const { data, error } = await client.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: redirectUrl,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'select_account'
+        }
+      }
+    });
+
+    if (error) {
+      return { success: false, message: error.message };
+    }
+    return { success: true, data };
+  } catch (err) {
+    return { success: false, message: err.message };
+  }
+}
+
+/**
+ * Tangani kembalinya pengguna dari alur redirect Google OAuth
+ */
+export async function handleGoogleOAuthCallback() {
+  let client = getSupabase();
+  if (!client) {
+    client = await initSupabase();
+  }
+  if (!client) return null;
+
+  try {
+    const { data: { session }, error } = await client.auth.getSession();
+    if (error || !session || !session.user) {
+      return null;
+    }
+
+    const user = session.user;
+    const email = (user.email || '').toLowerCase();
+    const name = user.user_metadata?.full_name || user.user_metadata?.name || email.split('@')[0];
+
+    // Deteksi role dari preferensi pengguna yang disimpan atau deteksi kata kunci email
+    const storedRole = localStorage.getItem('siirs_google_intended_role');
+    let resolvedRole = storedRole || 'admin_yanmed';
+
+    if (email.includes('cathlab')) resolvedRole = 'cathlab';
+    else if (email.includes('igd') || email.includes('admisi')) resolvedRole = 'igd_admission';
+    else if (email.includes('dahlia')) resolvedRole = 'nurse_dahlia';
+    else if (email.includes('teratai')) resolvedRole = 'nurse_teratai';
+    else if (email.includes('icu')) resolvedRole = 'nurse_icu';
+
+    await logSecurityAudit('AUTH_GOOGLE_SUCCESS', email, resolvedRole, {
+      provider: 'google',
+      user_id: user.id
+    });
+
+    return {
+      user: `${name} (Google)`,
+      nip: email,
+      role: resolvedRole,
+      avatar: user.user_metadata?.avatar_url || null,
+      email: email,
+      id: user.id,
+      authProvider: 'GOOGLE_SUPABASE'
+    };
+  } catch (e) {
+    console.warn('Gagal membaca sesi Google:', e);
+    return null;
+  }
+}
+
+/**
+ * Simulasi instan pendaftaran & login via Akun Google RSUD (Sandbox / Pengujian)
+ */
+export function simulateGoogleLogin(role = 'cathlab') {
+  const roleNames = {
+    cathlab: 'dr. Cathlab Soewandhie, Sp.JP',
+    admin_yanmed: 'dr. Yanmed Soewandhie, M.Kes',
+    igd_admission: 'Petugas Triase IGD Soewandhie',
+    nurse_dahlia: 'Ns. Siti Rahma, S.Kep (Dahlia)',
+    nurse_teratai: 'Ns. Budi Santoso, S.Kep (Teratai)',
+    nurse_icu: 'Ns. Agus Wicaksono, S.Kep (ICU)'
+  };
+
+  const email = `${role}.rsud@soewandhie.id`;
+  const name = roleNames[role] || 'Petugas Medis RSUD';
+
+  return {
+    user: `${name} (Google RSUD)`,
+    nip: email,
+    role: role,
+    email: email,
+    authProvider: 'GOOGLE_OAUTH_SIMULATED'
+  };
+}
