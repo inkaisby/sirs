@@ -73,9 +73,9 @@ export const LOGTO_CONFIG = {
   appId: localStorage.getItem('SIIRS_LOGTO_APP_ID') || window.SIIRS_ENV?.LOGTO_APP_ID || 'eodliref1opa1lgpsicnn',
   scopes: ['openid', 'profile', 'email', 'roles', 'custom_data'],
   get redirectUri() {
-    return window.location.origin + window.location.pathname;
+    return window.location.origin + '/';
   },
   get postLogoutRedirectUri() {
-    return window.location.origin + window.location.pathname;
+    return window.location.origin + '/';
   }
 };
