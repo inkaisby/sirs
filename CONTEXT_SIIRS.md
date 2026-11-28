@@ -62,7 +62,26 @@ Tersedia dua opsi berkas peluncur batch Windows di folder root `d:\website\sirs\
 
 ---
 
-## 3. Matriks Peran & Hak Akses (RBAC)
+## 3. Integrasi Identity & Access Management (Logto OIDC SSO)
+SIIRS mendukung arsitektur autentikasi ganda (*Dual-Auth Strategy*):
+1. **Logto OIDC Single Sign-On (SSO):**
+   * Menggunakan SDK resmi `@logto/browser` melalui modul [src/js/logtoClient.js](file:///d:/website/sirs/src/js/logtoClient.js).
+   * Bertindak sebagai Identity Provider (IdP) terpadu lintas aplikasi RSUD Dr. M. Soewandhie (SIIRS, IDIK-App, SIMRS).
+   * **Konfigurasi Lingkungan (`src/js/config.js`):**
+     * `LOGTO_ENDPOINT`: URL instance Logto (misal: `https://auth.soewandhie.id` atau `https://<tenant-id>.logto.app/` atau `http://localhost:3301/`).
+     * `LOGTO_APP_ID`: Application ID bertipe *Single Page App* di Logto Console.
+     * `Redirect URI`: `https://siirs.vercel.app/` (Production) atau `http://localhost:3300/` (Lokalhost).
+   * **Pemetaan Peran Otomatis (*Claim Mapping*):**
+     * Peran `cathlab` di token/custom_data Logto -> Akses penuh modul Tindakan Cathlab.
+     * Peran `admin` / `yanmed` -> Akses penuh Pelayanan Medik (seluruh bangsal & rekap audit).
+     * Peran `igd` -> Akses modul Triage IGD & Antrean Pro MRS.
+     * Peran bangsal (`dahlia`, `teratai`, `icu`) -> Akses khusus bed ruangan masing-masing.
+2. **Kredensial Internal Database (Supabase `app_users`):**
+   * Login langsung NIP & kata sandi terverifikasi via RPC `verify_app_user_credentials` (bcrypt `pgcrypto`).
+
+---
+
+## 4. Matriks Peran & Hak Akses (RBAC)
 | Role Key | Label Tampilan | Cakupan Akses (*Scope*) | Fitur yang Diizinkan |
 | :--- | :--- | :--- | :--- |
 | `admin_yanmed` | Admin Yanmed | Seluruh Ruang (`ALL`) | Edit seluruh bed, alokasi antrean IGD, input rekap kematian & PP, verifikasi audit. |
@@ -70,34 +89,37 @@ Tersedia dua opsi berkas peluncur batch Windows di folder root `d:\website\sirs\
 | `igd_admission` | Petugas IGD & Admisi | Unit IGD & Triage (`IGD`) | Input antrean IGD (P1/P2/P3), reservasi bed rawat inap untuk pasien IGD. |
 | `nurse_ward` | Kepala Ruang / Perawat | Sesuai Bangsal (`assigned_ward_id`) | Update status bed bangsal sendiri (Tersedia, Terisi, Disinfeksi). |
 | `public_display` | Layar Informasi Web RS | Tanpa Ruang (`NONE`) | Tampilan read-only teranonimasi (data nama & diagnosis disembunyikan). |
-| `nurse_ward` | Kepala Ruang / Perawat | Sesuai Bangsal (`assigned_ward_id`) | Update status bed bangsal sendiri (Tersedia, Terisi, Disinfeksi). |
-| `public_display` | Layar Informasi Web RS | Tanpa Ruang (`NONE`) | Tampilan read-only teranonimasi (data nama & diagnosis disembunyikan). |
 
 ---
 
-## 4. Struktur Folder Repositori (Terorganisir)
+## 5. Struktur Folder Repositori (Terorganisir)
 ```
 D:\website\sirs\
 ├── CONTEXT_SIIRS.md          # << RUJUKAN UTAMA: Sumber informasi hemat token
 ├── index.html                # Entry point utama web SIIRS (Vercel deployment)
 ├── README.md                 # Dokumentasi publik GitHub
+├── package.json              # Skrip npm dev & serve
+├── JALANKAN_SIIRS.bat        # 1-Klik peluncur web lokalhost di Windows
+├── START_CATHLAB.bat         # 1-Klik peluncur khusus modul Cathlab
 ├── favicon.ico / .png / .svg # Aset favicon resmi lambang RSUD Dr. M. Soewandhie
 ├── docs/
 │   ├── CONTEXT_SIIRS.md      # Mirror dokumentasi arsitektur
 │   └── PRD.md                # Spesifikasi kebutuhan teknis & user stories
 ├── src/
 │   ├── js/
-│   │   ├── config.js         # Deteksi otomatis lokal vs cloud & konfigurasi port
+│   │   ├── config.js         # Konfigurasi Supabase, Logto OIDC, & port
+│   │   ├── logtoClient.js    # Modul client Logto SSO OIDC browser SDK
 │   │   └── supabaseClient.js # Client Supabase, auth security, session, dan sync DB
 │   └── data/
 │       └── wardsSeed.js      # 22 bangsal & data cadangan offline/stand-alone
 └── sql/
-    └── 20261128030000_create_siirs_bed_management.sql # Skema DDL & RLS Supabase
+    ├── 20261128030000_create_siirs_bed_management.sql # Skema DDL & RLS Supabase
+    └── 20261128033000_verify_app_user_credentials.sql # RPC autentikasi aman pgcrypto
 ```
 
 ---
 
-## 5. Ringkasan 22 Bangsal / Unit Perawatan
+## 6. Ringkasan 22 Bangsal / Unit Perawatan
 1. **IGD & TRIAGE** (24 bed)
 2. **DAHLIA** (28 bed)
 3. **MAWAR** (24 bed)

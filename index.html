@@ -263,8 +263,31 @@
             <div class="flex items-center gap-2.5 text-[11px] font-medium text-slate-600 bg-slate-50 border border-slate-200/90 rounded-2xl p-3">
               <span class="w-2 h-2 rounded-full bg-emerald-500 status-pulse-dot"></span>
               <p class="leading-relaxed">
-                <strong>Lapisan Keamanan Aktif:</strong> Proteksi Brute-Force (Max 5x) • Sesi Kriptografis • RLS Terpadu
+                <strong>Lapisan Keamanan Aktif:</strong> Logto OIDC SSO • Proteksi Brute-Force • Sesi Kriptografis • RLS Terpadu
               </p>
+            </div>
+
+            <!-- SINGLE SIGN-ON TERPADU RSUD (LOGTO IAM / OIDC) -->
+            <div class="p-3.5 bg-slate-900 rounded-2xl text-white space-y-2.5 shadow-sm border border-slate-800">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 status-pulse-dot"></span>
+                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-cyan-300">Single Sign-On Terpadu</span>
+                </div>
+                <button type="button" onclick="openModalLogtoConfig()" class="text-[10px] text-slate-400 hover:text-cyan-300 transition flex items-center gap-1" title="Atur Endpoint & App ID Logto">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                  <span>Setup Logto</span>
+                </button>
+              </div>
+              <button type="button" onclick="handleLogtoSignIn()" class="w-full py-2.5 px-3.5 rounded-xl bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-extrabold text-xs transition flex items-center justify-center gap-2 shadow-sm">
+                <svg class="w-4 h-4 text-cyan-200" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                <span>Masuk via Logto SSO (Akun Terpadu RSUD)</span>
+              </button>
+            </div>
+
+            <div class="relative flex items-center justify-center my-1">
+              <div class="border-t border-slate-200 w-full"></div>
+              <span class="bg-white px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider absolute">atau login manual database</span>
             </div>
 
             <form id="portal-login-form" onsubmit="handlePortalLogin(event)" class="space-y-4">
@@ -939,8 +962,85 @@
     </div>
   </div>
 
+  <!-- ======================================================================= -->
+  <!-- MODAL SETUP / KONFIGURASI LOGTO IAM (SSO RSUD)                          -->
+  <!-- ======================================================================= -->
+  <div id="modal-logto-config" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 my-8 motion-view-enter">
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2 py-0.5 rounded-md bg-cyan-100 text-cyan-800 text-[10px] font-extrabold uppercase">Logto OIDC SSO</span>
+            <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-bold">Identity Provider</span>
+          </div>
+          <h4 class="text-base font-extrabold text-slate-900 leading-tight">Pengaturan Single Sign-On Logto</h4>
+          <p class="text-xs text-slate-500">Hubungkan SIIRS ke instance Logto Cloud atau Self-Hosted RSUD</p>
+        </div>
+        <button type="button" onclick="closeModalLogtoConfig()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form onsubmit="submitLogtoConfig(event)" class="space-y-3.5 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Logto Endpoint URL</label>
+          <input type="url" id="cfg-logto-endpoint" required placeholder="https://<tenant-id>.logto.app/ atau http://localhost:3301/" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-xs" />
+          <span class="text-[10px] text-slate-400 mt-1 block">Contoh Cloud: https://xxxx.logto.app/ • Self-Hosted: http://192.168.1.10:3301/</span>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Logto Application ID (App ID)</label>
+          <input type="text" id="cfg-logto-appid" required placeholder="Contoh: siirs_hospital_web" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-mono text-xs" />
+          <span class="text-[10px] text-slate-400 mt-1 block">Buat aplikasi bertipe "Single Page App" di Logto Console</span>
+        </div>
+
+        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+          <span class="text-[11px] font-bold text-slate-700 block">Redirect URI untuk Logto Console:</span>
+          <div class="flex items-center gap-2">
+            <code id="cfg-logto-redirect-uri" class="px-2 py-1 bg-white border border-slate-200 rounded text-[11px] font-mono text-slate-800 select-all flex-1 truncate">
+              https://siirs.vercel.app/
+            </code>
+            <button type="button" onclick="copyLogtoRedirectUri()" class="px-2.5 py-1 rounded bg-blue-50 text-blue-700 font-bold hover:bg-blue-100 text-[11px] transition shrink-0">
+              Salin
+            </button>
+          </div>
+          <span class="text-[10px] text-slate-500 block">Daftarkan URI di atas pada field <strong>Redirect URIs</strong> dan <strong>Post sign-out redirect URIs</strong> di Logto Console.</span>
+        </div>
+
+        <!-- Uji Coba Cepat / Demo Simulasi Token Logto -->
+        <div class="p-3 bg-cyan-50/70 border border-cyan-200 rounded-xl space-y-2">
+          <span class="text-[11px] font-extrabold text-cyan-900 block">Uji Coba Cepat Token Logto (Sandbox):</span>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="simulateLogtoDemoLogin('cathlab')" class="px-2.5 py-1.5 rounded-lg bg-white border border-cyan-300 hover:bg-cyan-100/70 text-cyan-950 font-bold text-[11px] transition text-center shadow-2xs">
+              Simulasi Token: Cathlab
+            </button>
+            <button type="button" onclick="simulateLogtoDemoLogin('admin_yanmed')" class="px-2.5 py-1.5 rounded-lg bg-white border border-cyan-300 hover:bg-cyan-100/70 text-cyan-950 font-bold text-[11px] transition text-center shadow-2xs">
+              Simulasi Token: Yanmed
+            </button>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeModalLogtoConfig()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">
+            Tutup
+          </button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold transition shadow-sm">
+            Simpan Konfigurasi Logto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script type="module">
-    import { SIIRS_CONFIG, toggleDbTarget, setDbTarget } from './src/js/config.js';
+    import { SIIRS_CONFIG, toggleDbTarget, setDbTarget, LOGTO_CONFIG } from './src/js/config.js';
+    import {
+      initLogtoClient,
+      signInWithLogto,
+      signOutFromLogto,
+      getCurrentLogtoUser,
+      saveLogtoSettings
+    } from './src/js/logtoClient.js';
     import {
       initSupabase,
       getSupabase,
@@ -1193,6 +1293,7 @@
       await logSecurityAudit('AUTH_LOGOUT', currentNip, currentRole, {
         reason: customMsg || 'User logged out voluntarily'
       });
+      await signOutFromLogto();
       destroySession();
       document.getElementById('main-app-shell')?.classList.add('hidden');
       document.getElementById('landing-login-gateway')?.classList.remove('hidden');
@@ -1819,6 +1920,73 @@
       e.target.reset();
     }
 
+    // =========================================================================
+    // INTEGRASI LOGTO OIDC SINGLE SIGN-ON (SSO)
+    // =========================================================================
+    async function handleLogtoSignIn() {
+      showToast('Menghubungkan ke Portal Logto SSO RSUD...', 'info');
+      const res = await signInWithLogto();
+      if (res?.needsConfig) {
+        openModalLogtoConfig();
+        showToast(res.message, 'warn');
+      } else if (res && !res.success) {
+        showToast(res.message, 'warn');
+      }
+    }
+
+    function openModalLogtoConfig() {
+      const ep = document.getElementById('cfg-logto-endpoint');
+      const app = document.getElementById('cfg-logto-appid');
+      const redir = document.getElementById('cfg-logto-redirect-uri');
+      if (ep) ep.value = localStorage.getItem('SIIRS_LOGTO_ENDPOINT') || LOGTO_CONFIG.endpoint;
+      if (app) app.value = localStorage.getItem('SIIRS_LOGTO_APP_ID') || LOGTO_CONFIG.appId;
+      if (redir) redir.textContent = LOGTO_CONFIG.redirectUri;
+      document.getElementById('modal-logto-config')?.classList.remove('hidden');
+    }
+
+    function closeModalLogtoConfig() {
+      document.getElementById('modal-logto-config')?.classList.add('hidden');
+    }
+
+    function copyLogtoRedirectUri() {
+      const uri = LOGTO_CONFIG.redirectUri;
+      navigator.clipboard.writeText(uri).then(() => {
+        showToast('Redirect URI berhasil disalin ke clipboard!', 'success');
+      }).catch(() => {
+        showToast(`URI: ${uri}`, 'info');
+      });
+    }
+
+    function submitLogtoConfig(e) {
+      e.preventDefault();
+      const endpoint = document.getElementById('cfg-logto-endpoint')?.value;
+      const appId = document.getElementById('cfg-logto-appid')?.value;
+      saveLogtoSettings(endpoint, appId);
+      showToast('Konfigurasi Logto berhasil disimpan!', 'success');
+      closeModalLogtoConfig();
+    }
+
+    function simulateLogtoDemoLogin(role) {
+      closeModalLogtoConfig();
+      const mockLogtoUser = {
+        sub: `logto-usr-${Date.now()}`,
+        name: role === 'cathlab' ? 'Tim Cathlab RSUD' : 'Admin Yanmed Terpadu',
+        username: role === 'cathlab' ? 'cathlab' : 'admin_yanmed',
+        roles: [role]
+      };
+      
+      createSecureSession({
+        user: `${ROLE_META[role].user} (Logto SSO)`,
+        nip: mockLogtoUser.username,
+        role: role,
+        allowedWard: ROLE_META[role].allowedWard,
+        authProvider: 'LOGTO_OIDC_SSO'
+      });
+
+      enterDashboardWithRole(role, mockLogtoUser.username);
+      showToast(`Berhasil masuk via Logto SSO sebagai ${ROLE_META[role].label}`, 'success');
+    }
+
     // Expose handlers ke window untuk kompatibilitas atribut onclick inline HTML
     window.switchTab = switchTab;
     window.handlePortalLogin = handlePortalLogin;
@@ -1846,6 +2014,12 @@
     window.submitTambahTindakan = submitTambahTindakan;
     window.exportTindakanCsv = exportTindakanCsv;
     window.toggleDbMode = () => toggleDbTarget();
+    window.handleLogtoSignIn = handleLogtoSignIn;
+    window.openModalLogtoConfig = openModalLogtoConfig;
+    window.closeModalLogtoConfig = closeModalLogtoConfig;
+    window.copyLogtoRedirectUri = copyLogtoRedirectUri;
+    window.submitLogtoConfig = submitLogtoConfig;
+    window.simulateLogtoDemoLogin = simulateLogtoDemoLogin;
 
     // Inisialisasi saat halaman dimuat
     window.addEventListener('DOMContentLoaded', async () => {
@@ -1869,7 +2043,26 @@
         console.warn('Inisialisasi Supabase gagal, menggunakan mode mandiri:', err);
       }
 
-      // Deteksi parameter URL untuk 1-Klik Masuk Otomatis (misal: ?login=cathlab)
+      // 1. Cek inisialisasi sesi Logto OIDC jika ada callback sign in atau sesi aktif
+      try {
+        const logtoUser = await initLogtoClient();
+        if (logtoUser && logtoUser.siirsRole) {
+          createSecureSession({
+            user: `${logtoUser.name || logtoUser.username} (Logto SSO)`,
+            nip: logtoUser.username || logtoUser.sub,
+            role: logtoUser.siirsRole,
+            allowedWard: ROLE_META[logtoUser.siirsRole]?.allowedWard || 'ALL',
+            authProvider: 'LOGTO_OIDC'
+          });
+          enterDashboardWithRole(logtoUser.siirsRole, logtoUser.username || logtoUser.sub);
+          showToast(`Berhasil masuk via Logto SSO: ${logtoUser.name || logtoUser.username}`, 'success');
+          return;
+        }
+      } catch (logtoErr) {
+        console.warn('Logto auto check error:', logtoErr);
+      }
+
+      // 2. Deteksi parameter URL untuk 1-Klik Masuk Otomatis (misal: ?login=cathlab)
       const urlParams = new URLSearchParams(window.location.search);
       const autoLogin = urlParams.get('login') || urlParams.get('role');
       if (autoLogin) {
@@ -1880,7 +2073,7 @@
         }
       }
 
-      // Periksa pemulihan sesi aktif yang valid
+      // 3. Periksa pemulihan sesi aktif yang valid
       const existingSession = getActiveSession();
       if (existingSession && existingSession.role) {
         enterDashboardWithRole(existingSession.role, existingSession.nip);
