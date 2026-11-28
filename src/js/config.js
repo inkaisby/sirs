@@ -69,8 +69,8 @@ export function toggleDbTarget() {
 // KONFIGURASI LOGTO IAM (IDENTITY & ACCESS MANAGEMENT / OIDC SSO)
 // ==============================================================================
 export const LOGTO_CONFIG = {
-  endpoint: localStorage.getItem('SIIRS_LOGTO_ENDPOINT') || window.SIIRS_ENV?.LOGTO_ENDPOINT || 'https://auth.soewandhie.id',
-  appId: localStorage.getItem('SIIRS_LOGTO_APP_ID') || window.SIIRS_ENV?.LOGTO_APP_ID || 'siirs_web_app',
+  endpoint: localStorage.getItem('SIIRS_LOGTO_ENDPOINT') || window.SIIRS_ENV?.LOGTO_ENDPOINT || 'https://ftsb3h.logto.app/',
+  appId: localStorage.getItem('SIIRS_LOGTO_APP_ID') || window.SIIRS_ENV?.LOGTO_APP_ID || 'eodliref1opa1lgpsicnn',
   scopes: ['openid', 'profile', 'email', 'roles', 'custom_data'],
   get redirectUri() {
     return window.location.origin + window.location.pathname;

@@ -116,8 +116,8 @@ export async function signInWithLogto() {
   const endpoint = LOGTO_CONFIG.endpoint;
   const appId = LOGTO_CONFIG.appId;
 
-  // Cek apakah endpoint masih dummy / belum dikonfigurasi
-  const isDummyEndpoint = !endpoint || endpoint.includes('auth.soewandhie.id') || endpoint.includes('placeholder');
+  // Cek apakah endpoint masih placeholder / belum disetel
+  const isDummyEndpoint = !endpoint || endpoint.includes('placeholder');
 
   if (isDummyEndpoint && !logtoInstance) {
     // Tampilkan modal pengaturan kredensial Logto atau jalankan simulasi sandbox OIDC
