@@ -117,7 +117,15 @@ D:\website\sirs\
 │   │   │   └── navigation.js # Tab switching, sidebar collapse/mobile, HUD
 │   │   └── modules/
 │   │       ├── auth.js       # Autentikasi RBAC, Google SSO, idle timeout 15m
-│   │       ├── wards.js      # Denah 384 bed, 22 bangsal, mutasi status bed
+│   │       ├── wards.js      # Bridge re-exporter modul ruangan (backward compatible)
+│   │       ├── wards/        # Modul Khusus Tampilan Ruangan Berbasis Kategori (Strategy Pattern)
+│   │       │   ├── index.js              # Router & Registry pemanggil renderer ruangan
+│   │       │   ├── wardSummary.js        # Tabel rekap 22 ruangan & okupansi
+│   │       │   └── renderers/
+│   │       │       ├── standardWard.js   # Format Bangsal Reguler (filter kelas KL1/KL2/KL3/VIP & status PP)
+│   │       │       ├── intensiveWard.js  # Format Intensif (ICU, ICCU, MICU, ISU, NICU - status ventilator & monitor)
+│   │       │       ├── maternityWard.js  # Format Kebidanan & Bayi (VK Bersalin partus & Neonatus inkubator)
+│   │       │       └── isolationWard.js  # Format Isolasi Khusus (Burn Unit & ICU ISO - tekanan negatif & HEPA)
 │   │       ├── cathlab.js    # Manajemen prosedur & rekam tindakan Cathlab
 │   │       ├── igd.js        # Antrean Triage IGD & alokasi pro MRS
 │   │       ├── account.js    # Penugasan ruangan jaga & foto profil kompresi

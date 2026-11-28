@@ -1,7 +1,7 @@
 import { appState, ROLE_META } from '../state.js';
 import { showToast } from '../ui/toast.js';
-import { switchTab, renderSidebarWards } from '../ui/navigation.js';
-import { renderWardTable, renderBedBoard } from './wards.js';
+import { switchTab, renderSidebarWards, updateSidebarRoleFocus } from '../ui/navigation.js';
+import { renderWardTable, renderBedBoard, initWardSelector } from './wards.js';
 import { renderIgdQueue } from './igd.js';
 import { loadSavedAvatar, openAccountSettingsModal } from './account.js';
 import {
@@ -348,11 +348,12 @@ export function switchRole(role, nip = appState.currentNip) {
     }
   }
 
+  initWardSelector();
+  updateSidebarRoleFocus(role);
   renderWardTable();
   renderIgdQueue();
-  const currentWard = document.getElementById('ward-selector')?.value || 'DAHLIA';
+  const currentWard = document.getElementById('ward-selector')?.value || (meta.allowedWard && meta.allowedWard !== 'ALL' && meta.allowedWard !== 'NONE' ? meta.allowedWard : 'DAHLIA');
   renderBedBoard(currentWard);
-  renderSidebarWards();
 }
 
 export async function handleGoogleSignIn() {

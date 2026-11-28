@@ -28,6 +28,7 @@ import {
   toggleSidebarCollapse,
   toggleSidebarMobile,
   renderSidebarWards,
+  updateSidebarRoleFocus,
   updateWardHud,
   toggleComfortMode,
   openBriefingPlayer
@@ -59,7 +60,9 @@ import {
   renderWardTable,
   openWardDetail,
   initWardSelector,
-  renderBedBoard
+  renderBedBoard,
+  openPatientDrawer,
+  closePatientDrawer
 } from './modules/wards.js';
 
 import {
@@ -108,6 +111,8 @@ window.enterPublicDisplay = enterPublicDisplay;
 window.logoutToPortal = logoutToPortal;
 window.switchRole = switchRole;
 window.openWardDetail = openWardDetail;
+window.openPatientDrawer = openPatientDrawer;
+window.closePatientDrawer = closePatientDrawer;
 window.toggleComfortMode = toggleComfortMode;
 window.openBriefingPlayer = openBriefingPlayer;
 window.submitSpecialReport = submitSpecialReport;
@@ -163,10 +168,10 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   // 3. Render awal komponen tabel dan denah
   initWardSelector();
+  updateSidebarRoleFocus(appState.currentRole);
   renderWardTable();
   renderIgdQueue();
   renderBedBoard('DAHLIA');
-  renderSidebarWards();
   loadSavedAvatar(appState.currentNip);
   updateDbBadges();
 

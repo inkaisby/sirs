@@ -225,19 +225,19 @@ export function renderTindakanTable(rows) {
         <div class="font-mono text-xs font-bold text-slate-800">${tgl}</div>
         <div class="font-mono text-[11px] text-slate-500">${waktu}</div>
       </td>
-      <td class="py-3 px-4">
+      <td class="py-3 px-4 whitespace-nowrap">
         <div class="flex items-center gap-2">
-          <span class="font-extrabold text-slate-900 leading-tight">${nama}</span>
-          <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-700 font-mono text-[10px] font-bold">RM: ${norm}</span>
+          <span class="font-extrabold text-slate-900 leading-tight whitespace-nowrap">${nama}</span>
+          <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-700 font-mono text-[10px] font-bold whitespace-nowrap">RM: ${norm}</span>
         </div>
-        ${row.kelas_pembiayaan ? `<span class="text-[10px] text-slate-400 font-medium">${row.kelas_pembiayaan}</span>` : ''}
+        ${row.kelas_pembiayaan ? `<span class="text-[10px] text-slate-400 font-medium block whitespace-nowrap">${row.kelas_pembiayaan}</span>` : ''}
       </td>
-      <td class="py-3 px-3">
-        <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-semibold">${ruangan}</span>
+      <td class="py-3 px-3 whitespace-nowrap">
+        <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-semibold whitespace-nowrap">${ruangan}</span>
       </td>
-      <td class="py-3 px-4">
-        <span class="text-xs font-bold text-slate-800 block leading-snug">${dokter}</span>
-        ${row.asisten ? `<span class="text-[10px] text-slate-400 block mt-0.5">Asist: ${row.asisten}</span>` : ''}
+      <td class="py-3 px-4 whitespace-nowrap">
+        <span class="text-xs font-bold text-slate-800 block leading-snug whitespace-nowrap">${dokter}</span>
+        ${row.asisten ? `<span class="text-[10px] text-slate-400 block mt-0.5 whitespace-nowrap">Asist: ${row.asisten}</span>` : ''}
       </td>
       <td class="py-3 px-3">
         <span class="px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 font-extrabold text-[11px] tracking-wide uppercase inline-block">

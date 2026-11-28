@@ -1,5 +1,6 @@
 import { appState, ROLE_META, WARDS_DATA } from '../state.js';
 import { showToast } from './toast.js';
+import { WARD_CATEGORIES } from '../modules/wards.js';
 
 export function toggleSidebarCollapse() {
   appState.isSidebarCollapsed = !appState.isSidebarCollapsed;
@@ -40,15 +41,51 @@ export function toggleSidebarMobile(open = true) {
 
 export function renderSidebarWards(onSelectWard) {
   const filterInput = document.getElementById('sidebar-ward-filter');
-  const q = (filterInput?.value || '').toLowerCase().trim();
+  const filterWrapper = document.getElementById('sidebar-ward-filter-wrapper');
+  const headingEl = document.getElementById('sidebar-wards-heading');
+  const countEl = document.getElementById('sidebar-wards-count');
   const container = document.getElementById('sidebar-wards-list');
   if (!container) return;
   container.innerHTML = '';
 
+  const q = (filterInput?.value || '').toLowerCase().trim();
   const currentWard = document.getElementById('ward-selector')?.value || 'DAHLIA';
-  const userAllowedWard = ROLE_META[appState.currentRole]?.allowedWard || 'ALL';
+  const role = appState.currentRole;
+  const userAllowedWard = ROLE_META[role]?.allowedWard || 'ALL';
 
-  WARDS_DATA.filter(w => w.name.toLowerCase().includes(q) || w.id.toLowerCase().includes(q)).forEach(w => {
+  let wardsToShow = WARDS_DATA;
+
+  // Jika akun memiliki penugasan ruangan khusus (Bukan ALL dan Bukan NONE)
+  if (userAllowedWard !== 'ALL' && userAllowedWard !== 'NONE') {
+    // Sembunyikan ruangan lain, HANYA tampilkan ruangan milik akun yang login
+    wardsToShow = WARDS_DATA.filter(w => w.id === userAllowedWard);
+    if (headingEl) headingEl.textContent = 'Ruangan Jaga Anda';
+    if (countEl) countEl.textContent = '1 Ruangan';
+    if (filterWrapper) filterWrapper.classList.add('hidden');
+  } else if (role === 'cathlab') {
+    // Akun Cathlab fokus ke unit Cathlab
+    if (headingEl) headingEl.textContent = 'Unit Penugasan';
+    if (countEl) countEl.textContent = 'Instalasi Cathlab';
+    if (filterWrapper) filterWrapper.classList.add('hidden');
+    container.innerHTML = `
+      <div class="p-3 rounded-xl bg-cyan-50 border border-cyan-200 text-cyan-900 text-xs shadow-2xs">
+        <div class="flex items-center gap-2 font-black text-cyan-800 mb-1">
+          <span class="w-2 h-2 rounded-full bg-cyan-500 animate-pulse"></span>
+          <span>Instalasi Cathlab</span>
+        </div>
+        <p class="text-[11px] text-cyan-700 leading-snug">Akses fokus pada jadwal &amp; lembar tindakan kateterisasi vaskular.</p>
+      </div>
+    `;
+    return;
+  } else {
+    // Admin Yanmed / Public Display: Menampilkan seluruh 22 ruangan
+    if (headingEl) headingEl.textContent = '22 Ruang Rawat Inap';
+    if (countEl) countEl.textContent = '384 Bed';
+    if (filterWrapper) filterWrapper.classList.remove('hidden');
+    wardsToShow = WARDS_DATA.filter(w => w.name.toLowerCase().includes(q) || w.id.toLowerCase().includes(q));
+  }
+
+  wardsToShow.forEach(w => {
     const isActive = appState.currentTab === 'wards' && currentWard === w.id;
     const isUserWard = userAllowedWard === w.id;
     const btn = document.createElement('button');
@@ -63,17 +100,17 @@ export function renderSidebarWards(onSelectWard) {
     };
 
     const activeClass = isActive
-      ? 'bg-blue-50 text-blue-800 font-extrabold border border-blue-200'
+      ? 'bg-blue-50 text-blue-800 font-extrabold border border-blue-200 shadow-2xs'
       : 'text-slate-600 hover:bg-slate-100 font-semibold';
 
-    btn.className = `sidebar-ward-item w-full flex items-center justify-between px-2.5 py-1.5 rounded-xl text-left text-xs transition ${activeClass}`;
+    btn.className = `sidebar-ward-item w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-left text-xs transition ${activeClass}`;
     btn.title = `Ruang ${w.name} (${w.available} bed kosong)`;
 
     btn.innerHTML = `
       <div class="flex items-center gap-2 min-w-0">
-        <span class="w-1.5 h-1.5 rounded-full ${w.available > 0 ? 'bg-emerald-500' : 'bg-rose-500'} shrink-0"></span>
+        <span class="w-2 h-2 rounded-full ${w.available > 0 ? 'bg-emerald-500' : 'bg-rose-500'} shrink-0"></span>
         <span class="sidebar-text-group truncate">${w.name}</span>
-        ${isUserWard ? '<span class="sidebar-text-group text-[9px] px-1 bg-blue-100 text-blue-800 rounded font-bold shrink-0">Bangsal Anda</span>' : ''}
+        ${isUserWard ? '<span class="sidebar-text-group text-[9px] px-1.5 py-0.5 bg-blue-100 text-blue-800 rounded font-bold shrink-0">Ruangan Anda</span>' : ''}
       </div>
       <span class="ward-badge-pill text-[10px] font-bold px-1.5 py-0.5 rounded ${w.available > 0 ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500'} shrink-0">
         ${w.available} Kosong
@@ -81,6 +118,41 @@ export function renderSidebarWards(onSelectWard) {
     `;
     container.appendChild(btn);
   });
+}
+
+export function updateSidebarRoleFocus(role) {
+  const meta = ROLE_META[role] || ROLE_META.admin_yanmed;
+  const allowedWard = meta.allowedWard || 'ALL';
+
+  // Sesuaikan visibilitas tombol navigasi di sidebar utama
+  document.querySelectorAll('[data-sidebar-tab]').forEach(btn => {
+    const tab = btn.dataset.sidebarTab;
+    if (role === 'cathlab') {
+      btn.classList.toggle('hidden', tab !== 'cathlab' && tab !== 'dashboard');
+    } else if (role === 'igd_admission') {
+      btn.classList.toggle('hidden', tab === 'cathlab');
+    } else if (allowedWard !== 'ALL' && allowedWard !== 'NONE') {
+      btn.classList.toggle('hidden', tab === 'cathlab');
+    } else {
+      btn.classList.remove('hidden');
+    }
+  });
+
+  // Sesuaikan tab horizontal header atas
+  document.querySelectorAll('#main-nav-tabs .nav-tab-btn').forEach(btn => {
+    const tab = btn.dataset.tab;
+    if (role === 'cathlab') {
+      btn.classList.toggle('hidden', tab !== 'cathlab' && tab !== 'dashboard');
+    } else if (role === 'igd_admission') {
+      btn.classList.toggle('hidden', tab === 'cathlab');
+    } else if (allowedWard !== 'ALL' && allowedWard !== 'NONE') {
+      btn.classList.toggle('hidden', tab === 'cathlab');
+    } else {
+      btn.classList.remove('hidden');
+    }
+  });
+
+  renderSidebarWards();
 }
 
 export function updateWardHud(wardId) {
@@ -91,7 +163,16 @@ export function updateWardHud(wardId) {
   const meta = ROLE_META[appState.currentRole] || ROLE_META.admin_yanmed;
   const canEdit = meta.allowedWard === 'ALL' || meta.allowedWard === ward.id;
 
-  if (titleEl) titleEl.textContent = `Ruang Rawat Inap ${ward.name}`;
+  const cat = WARD_CATEGORIES?.[ward.id] || 'standard';
+  const prefix = cat === 'intensive'
+    ? 'Unit Perawatan Intensif'
+    : cat === 'maternity'
+    ? 'Instalasi Kebidanan & Anak'
+    : cat === 'isolation'
+    ? 'Unit Isolasi Khusus'
+    : 'Ruang Rawat Inap';
+
+  if (titleEl) titleEl.textContent = `${prefix} ${ward.name}`;
   if (descEl) {
     const pct = ward.total > 0 ? Math.round((ward.occupied / ward.total) * 100) : 0;
     descEl.textContent = `Kapasitas: ${ward.total} Bed • Terisi: ${ward.occupied} • Inden: ${ward.inden} • Tersedia: ${ward.available} Bed (Okupansi: ${pct}%)`;

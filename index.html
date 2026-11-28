@@ -146,9 +146,19 @@
     #app-sidebar.sidebar-collapsed .ward-badge-pill {
       display: none !important;
     }
+
+    /* Pastikan placeholder tetap terlihat jelas dan tidak menghilang saat kursor aktif */
+    input::placeholder, textarea::placeholder {
+      opacity: 1 !important;
+      color: #94a3b8 !important;
+    }
+    input:focus::placeholder, textarea:focus::placeholder {
+      opacity: 0.75 !important;
+      color: #94a3b8 !important;
+    }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900 pb-20 sm:pb-8 transition-colors duration-300">
+<body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900 pb-16 sm:pb-8 transition-colors duration-300 min-h-screen flex flex-col overflow-x-hidden">
 
   <!-- Toast Notification Container (Pengganti alert()) -->
   <div id="toast-container" class="fixed bottom-20 sm:bottom-5 right-4 z-50 flex flex-col gap-2 max-w-sm w-full px-4 sm:px-0 pointer-events-none"></div>
@@ -160,7 +170,7 @@
     
     <!-- Top Bar Portal -->
     <header class="bg-white/90 backdrop-blur-md border-b border-slate-200">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between gap-4">
+      <div class="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap sm:flex-nowrap items-center justify-between gap-3 sm:gap-4">
         <div class="flex items-center gap-3">
           <div class="w-11 h-11 shrink-0 flex items-center justify-center bg-slate-50 rounded-xl border border-slate-200 p-1 shadow-2xs">
             <svg viewBox="0 0 220 250" class="w-full h-full" xmlns="http://www.w3.org/2000/svg" aria-label="Logo RSUD Dr. M. Soewandhie Surabaya">
@@ -210,7 +220,7 @@
     </header>
 
     <!-- Main Hero & Portal Content -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full">
+    <main class="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 w-full flex-1">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         
         <!-- Kolom Kiri: Identitas Sistem & Ringkasan Ketersediaan Bed Publik -->
@@ -269,92 +279,113 @@
 
         <!-- Kolom Kanan: Kartu Login Petugas RSUD -->
         <div class="lg:col-span-5 motion-view-enter">
-          <div class="bg-white rounded-3xl border border-slate-200 shadow-lg p-6 sm:p-8 space-y-6">
-            <div class="flex items-center gap-3.5 border-b border-slate-100 pb-4">
-              <div class="w-12 h-12 rounded-2xl bg-blue-700 text-white flex items-center justify-center shadow-sm shrink-0">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-              </div>
-              <div>
-                <h3 class="text-lg font-extrabold text-slate-900">Masuk Sistem Operasional</h3>
-                <p class="text-xs text-slate-500">Autentikasi Berbasis Peran (RBAC) RSUD Dr. M. Soewandhie</p>
-              </div>
-            </div>
-
-            <!-- Banner Indikator Lapis Keamanan -->
-            <div class="flex items-center gap-2.5 text-[11px] font-medium text-slate-600 bg-slate-50 border border-slate-200/90 rounded-2xl p-3">
-              <span class="w-2 h-2 rounded-full bg-emerald-500 status-pulse-dot"></span>
-              <p class="leading-relaxed">
-                <strong>Lapisan Keamanan Aktif:</strong> Google OAuth 2.0 • Proteksi Brute-Force • Sesi Kriptografis • RLS Terpadu
-              </p>
-            </div>
-
-            <!-- SINGLE SIGN-ON & PENDAFTARAN RESMI VIA GOOGLE WORKSPACE RSUD -->
-            <div class="p-3.5 bg-slate-900 rounded-2xl text-white space-y-2.5 shadow-sm border border-slate-800">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                  <span class="w-2 h-2 rounded-full bg-emerald-400 status-pulse-dot"></span>
-                  <span class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-300">Single Sign-On Google RSUD</span>
+          <div class="bg-white/95 backdrop-blur-md rounded-3xl border border-slate-200/90 shadow-xl shadow-slate-200/60 p-6 sm:p-7 space-y-5 transition-all">
+            
+            <!-- Header Kartu & Status Keamanan -->
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200/80 text-blue-700 flex items-center justify-center shrink-0 shadow-2xs">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                 </div>
-                <button type="button" onclick="openModalGoogleConfig()" class="text-[10px] text-slate-400 hover:text-emerald-300 transition flex items-center gap-1" title="Panduan & Uji Coba Google Auth">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                  <span>Info & Sandbox</span>
+                <div>
+                  <h3 class="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight">Masuk Sistem Operasional</h3>
+                  <p class="text-xs text-slate-500 font-medium">Autentikasi Berbasis Peran (RBAC)</p>
+                </div>
+              </div>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200/70 text-emerald-800 text-[10px] font-bold" title="Sesi kriptografis terlindungi">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 status-pulse-dot"></span>
+                Aman
+              </span>
+            </div>
+
+            <!-- Single Sign-On Google Workspace RSUD -->
+            <div class="p-3 bg-slate-50/80 rounded-2xl border border-slate-200/80 space-y-2.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-[11px] font-extrabold uppercase tracking-wider text-slate-600">Single Sign-On Resmi</span>
+                <button type="button" onclick="openModalGoogleConfig()" class="text-[11px] font-bold text-blue-700 hover:text-blue-800 transition flex items-center gap-1" title="Panduan & Uji Coba Google Auth">
+                  <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <span>Info &amp; Sandbox</span>
                 </button>
               </div>
-              <button type="button" onclick="handleGoogleSignIn()" class="w-full py-2.5 px-3.5 rounded-xl bg-white hover:bg-slate-100 text-slate-800 font-extrabold text-xs transition flex items-center justify-center gap-2.5 shadow-sm active:scale-[0.99]">
-                <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24">
+              <button type="button" onclick="handleGoogleSignIn()" class="w-full py-2.5 px-3.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-300 text-slate-800 font-bold text-xs transition flex items-center justify-center gap-2.5 shadow-2xs active:scale-[0.99] group">
+                <svg class="w-4 h-4 shrink-0 transition-transform group-hover:scale-105" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                   <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                   <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
                   <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                 </svg>
-                <span>Masuk / Daftar dengan Akun Google</span>
+                <span>Masuk dengan Akun Google RSUD</span>
               </button>
             </div>
 
+            <!-- Divider Antara SSO dan Form Manual -->
             <div class="relative flex items-center justify-center my-1">
-              <div class="border-t border-slate-200 w-full"></div>
-              <span class="bg-white px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider absolute">atau login manual database</span>
+              <div class="border-t border-slate-200/90 w-full"></div>
+              <span class="bg-white px-3 text-[10px] font-bold text-slate-400 uppercase tracking-wider absolute">atau login kredensial jaga</span>
             </div>
 
+            <!-- Form Login NIP -->
             <form id="portal-login-form" onsubmit="handlePortalLogin(event)" class="space-y-4">
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5">NIP / ID Petugas Jaga</label>
-                <input type="text" id="login-nip" value="199204152020121004" required placeholder="Masukkan NIP atau ID SIMRS" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600" />
-              </div>
-
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5">Kata Sandi</label>
+              <!-- Field NIP / ID Petugas Jaga -->
+              <div class="relative pt-1.5">
                 <div class="relative">
-                  <input type="password" id="login-password" value="soewandhie2026" required placeholder="••••••••••••" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 pr-10" />
-                  <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 px-3 text-slate-400 hover:text-slate-600 text-xs font-semibold">
-                    Lihat
-                  </button>
+                  <label for="login-nip" class="absolute -top-2.5 left-3 z-10 bg-white px-2 py-0.5 rounded text-[11px] font-bold text-slate-700 border border-slate-200/90 shadow-2xs flex items-center gap-1.5 pointer-events-none">
+                    <svg class="w-3.5 h-3.5 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    <span>NIP / ID Petugas Jaga</span>
+                  </label>
+                  <div class="relative">
+                    <input type="text" id="login-nip" value="199204152020121004" required placeholder="Masukkan NIP atau ID SIMRS" class="w-full pl-10 pr-3.5 pt-3 pb-2.5 rounded-xl border border-slate-300 bg-white focus:bg-white text-xs sm:text-sm font-semibold text-slate-800 placeholder:text-slate-400 placeholder:opacity-100 focus:placeholder:opacity-75 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition" />
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2"/></svg>
+                  </div>
                 </div>
               </div>
 
-              <div>
-                <label class="block text-xs font-bold text-slate-700 mb-1.5">Pilih Unit / Peran Demo Presentasi</label>
-                <select id="login-role-select" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 bg-slate-50 text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
-                  <option value="admin_yanmed">Pelayanan Medik / Manajemen (Akses Penuh)</option>
-                  <option value="cathlab">Petugas Cathlab (Layanan Tindakan &amp; Intervensi Vaskular)</option>
-                  <option value="igd_admission">Petugas IGD &amp; Admisi (Antrean Pro MRS &amp; Inden)</option>
-                  <option value="nurse_dahlia">Perawat Ruang DAHLIA (Khusus Bangsal Dahlia)</option>
-                  <option value="nurse_teratai">Perawat Ruang TERATAI (Khusus Bangsal Teratai)</option>
-                  <option value="nurse_icu">Perawat Ruang ICU (Khusus Unit Intensif)</option>
-                  <option value="new_account">Akun Baru / Registrasi Google (Wajib Pilih Ruangan)</option>
-                </select>
+              <!-- Field Kata Sandi -->
+              <div class="relative pt-1.5">
+                <div class="relative">
+                  <label for="login-password" class="absolute -top-2.5 left-3 z-10 bg-white px-2 py-0.5 rounded text-[11px] font-bold text-slate-700 border border-slate-200/90 shadow-2xs flex items-center gap-1.5 pointer-events-none">
+                    <svg class="w-3.5 h-3.5 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    <span>Kata Sandi Akun</span>
+                  </label>
+                  <div class="relative">
+                    <input type="password" id="login-password" value="soewandhie2026" required placeholder="Masukkan kata sandi jaga" class="w-full pl-10 pr-14 pt-3 pb-2.5 rounded-xl border border-slate-300 bg-white focus:bg-white text-xs sm:text-sm font-semibold text-slate-800 placeholder:text-slate-400 placeholder:opacity-100 focus:placeholder:opacity-75 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition" />
+                    <svg class="w-4 h-4 text-slate-400 absolute left-3.5 top-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+                    <button type="button" onclick="togglePasswordVisibility()" class="absolute inset-y-0 right-0 px-3.5 text-slate-500 hover:text-blue-700 text-xs font-bold transition flex items-center">
+                      Lihat
+                    </button>
+                  </div>
+                </div>
               </div>
 
-              <button type="submit" class="w-full py-3 px-4 rounded-xl bg-blue-700 hover:bg-blue-800 active:scale-[0.99] text-white font-bold text-sm shadow-md shadow-blue-700/20 transition flex items-center justify-center gap-2">
+              <!-- Field Pemilihan Peran Kerja -->
+              <div class="relative pt-1.5">
+                <div class="relative">
+                  <label for="login-role-select" class="absolute -top-2.5 left-3 z-10 bg-white px-2 py-0.5 rounded text-[11px] font-bold text-slate-700 border border-slate-200/90 shadow-2xs flex items-center gap-1.5 pointer-events-none">
+                    <svg class="w-3.5 h-3.5 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    <span>Pilih Unit / Peran Kerja</span>
+                  </label>
+                  <select id="login-role-select" class="w-full px-3.5 pt-3 pb-2.5 rounded-xl border border-slate-300 bg-white focus:bg-white text-xs sm:text-sm font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600/20 focus:border-blue-600 transition">
+                    <option value="admin_yanmed">Pelayanan Medik / Manajemen (Akses Penuh)</option>
+                    <option value="cathlab">Petugas Cathlab (Layanan Tindakan &amp; Intervensi Vaskular)</option>
+                    <option value="igd_admission">Petugas IGD &amp; Admisi (Antrean Pro MRS &amp; Inden)</option>
+                    <option value="nurse_dahlia">Perawat Ruang DAHLIA (Khusus Bangsal Dahlia)</option>
+                    <option value="nurse_teratai">Perawat Ruang TERATAI (Khusus Bangsal Teratai)</option>
+                    <option value="nurse_icu">Perawat Ruang ICU (Khusus Unit Intensif)</option>
+                    <option value="new_account">Akun Baru / Registrasi Google (Wajib Pilih Ruangan)</option>
+                  </select>
+                </div>
+              </div>
+
+              <button type="submit" class="w-full py-2.5 sm:py-3 px-4 rounded-xl bg-blue-700 hover:bg-blue-800 active:scale-[0.99] text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-700/25 transition duration-150 flex items-center justify-center gap-2">
                 <span>Masuk ke Dashboard SIIRS</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
               </button>
             </form>
 
             <!-- Akses Sekali Klik di Lokalhost & Demo -->
-            <div class="pt-3.5 border-t border-slate-100 space-y-2.5">
+            <div class="pt-3 border-t border-slate-100 space-y-2.5">
               <div class="flex items-center justify-between">
-                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Sekali Klik Masuk:</span>
+                <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Akses Cepat Pengujian:</span>
                 <button type="button" onclick="toggleDbMode()" id="btn-toggle-db-target" class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 transition border border-slate-200 flex items-center gap-1" title="Klik untuk beralih antara Cloud DB Supabase dan Docker Lokal">
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                   <span id="label-db-target">DB: Cloud</span>
@@ -362,26 +393,36 @@
               </div>
 
               <!-- Tombol Utama Sekali Klik Unit Cathlab Langsung Masuk -->
-              <button type="button" onclick="quickLoginAs('cathlab')" class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white text-xs font-extrabold shadow-sm transition flex items-center justify-center gap-2">
-                <svg class="w-4 h-4 text-cyan-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                <span>1-Klik Masuk Unit Cathlab (Layanan Tindakan)</span>
+              <button type="button" onclick="quickLoginAs('cathlab')" class="w-full py-2.5 px-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition flex items-center justify-between shadow-2xs group">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-cyan-400 status-pulse-dot"></span>
+                  <span>1-Klik Masuk Unit Cathlab (Layanan Tindakan)</span>
+                </div>
+                <svg class="w-4 h-4 text-slate-400 group-hover:text-cyan-300 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
               </button>
 
-              <div class="grid grid-cols-4 gap-1.5">
-                <button type="button" onclick="quickLoginAs('admin_yanmed')" class="px-2 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-[10px] font-bold transition text-center border border-blue-100">
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <button type="button" onclick="quickLoginAs('admin_yanmed')" class="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-blue-50/70 border border-slate-200/80 hover:border-blue-200 text-slate-700 hover:text-blue-800 text-xs sm:text-[11px] font-bold transition text-center shadow-2xs">
                   Admin Yanmed
                 </button>
-                <button type="button" onclick="quickLoginAs('igd_admission')" class="px-2 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-[10px] font-bold transition text-center border border-amber-100">
+                <button type="button" onclick="quickLoginAs('igd_admission')" class="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-amber-50/70 border border-slate-200/80 hover:border-amber-200 text-slate-700 hover:text-amber-800 text-xs sm:text-[11px] font-bold transition text-center shadow-2xs">
                   Petugas IGD
                 </button>
-                <button type="button" onclick="quickLoginAs('nurse_dahlia')" class="px-2 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 text-[10px] font-bold transition text-center border border-purple-100">
+                <button type="button" onclick="quickLoginAs('nurse_dahlia')" class="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-purple-50/70 border border-slate-200/80 hover:border-purple-200 text-slate-700 hover:text-purple-800 text-xs sm:text-[11px] font-bold transition text-center shadow-2xs">
                   Ruang Dahlia
                 </button>
-                <button type="button" onclick="quickLoginAs('new_account')" class="px-2 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 text-[10px] font-extrabold transition text-center border border-rose-200" title="Simulasi Masuk Akun Baru (Kunci Modul &amp; Wajib Pilih Ruangan)">
+                <button type="button" onclick="quickLoginAs('new_account')" class="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-rose-50/70 border border-slate-200/80 hover:border-rose-200 text-slate-700 hover:text-rose-800 text-xs sm:text-[11px] font-bold transition text-center shadow-2xs" title="Simulasi Masuk Akun Baru (Kunci Modul &amp; Wajib Pilih Ruangan)">
                   ⭐ Akun Baru
                 </button>
               </div>
             </div>
+
+            <!-- Footer Badge Keamanan -->
+            <div class="flex items-center justify-center gap-1.5 text-[10px] text-slate-400 font-medium pt-1">
+              <svg class="w-3 h-3 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+              <span>Proteksi TLS 1.3 • Google OAuth 2.0 • Row Level Security</span>
+            </div>
+
           </div>
         </div>
       </div>
@@ -397,7 +438,7 @@
   <!-- MODAL LOGIN CEPAT (SAAT KLIK TOMBOL LOGIN DI TOP BAR / DISPLAY PUBLIK)  -->
   <!-- ======================================================================= -->
   <div id="top-login-modal" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-6 shadow-2xl space-y-4 motion-view-enter">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-md w-full p-4 sm:p-6 shadow-2xl space-y-4 motion-view-enter">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div>
           <h4 class="text-base font-extrabold text-slate-900">Login Petugas RSUD</h4>
@@ -434,7 +475,7 @@
   <!-- ======================================================================= -->
   <!-- APLIKASI UTAMA (DASHBOARD OPERASIONAL SETELAH LOGIN / DISPLAY MODE)     -->
   <!-- ======================================================================= -->
-  <div id="main-app-shell" class="hidden min-h-screen bg-slate-50 flex">
+  <div id="main-app-shell" class="hidden min-h-screen bg-slate-50 flex flex-1 w-full overflow-x-hidden">
     
     <!-- Backdrop Mobile Drawer -->
     <div id="sidebar-backdrop" onclick="toggleSidebarMobile(false)" class="hidden fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs md:hidden"></div>
@@ -506,17 +547,17 @@
           </div>
         </div>
 
-        <!-- Section: 22 Ruang Rawat Inap (Scrollable) -->
-        <div>
+        <!-- Section: Ruang Rawat Inap / Penugasan Jaga (Scrollable) -->
+        <div id="sidebar-wards-section">
           <div class="sidebar-text-group flex items-center justify-between px-2 mb-1.5">
-            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">22 Ruang Rawat Inap</span>
-            <span class="text-[9px] font-bold text-slate-400">384 Bed</span>
+            <span id="sidebar-wards-heading" class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">22 Ruang Rawat Inap</span>
+            <span id="sidebar-wards-count" class="text-[9px] font-bold text-slate-400">384 Bed</span>
           </div>
           <!-- Filter cepat bangsal di sidebar -->
-          <div class="sidebar-text-group mb-2">
+          <div id="sidebar-ward-filter-wrapper" class="sidebar-text-group mb-2">
             <input type="text" id="sidebar-ward-filter" oninput="renderSidebarWards()" placeholder="Filter ruangan..." class="w-full px-2.5 py-1 text-[11px] rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500 font-normal" />
           </div>
-          <!-- Container daftar 22 bangsal -->
+          <!-- Container daftar bangsal -->
           <div id="sidebar-wards-list" class="space-y-1"></div>
         </div>
       </div>
@@ -561,11 +602,11 @@
     <!-- ===================================================================== -->
     <!-- WRAPPER KONTEN UTAMA (BERGESER DINAMIS SESUAI STATE SIDEBAR)          -->
     <!-- ===================================================================== -->
-    <div id="main-content-wrapper" class="flex-1 flex flex-col min-w-0 transition-all duration-300 md:ml-64">
+    <div id="main-content-wrapper" class="flex-1 flex flex-col min-w-0 transition-all duration-300 md:ml-64 w-full">
       
       <!-- Top Header Operasional -->
       <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="w-full px-4 sm:px-6 lg:px-8 2xl:px-10 py-3 flex flex-wrap items-center justify-between gap-3">
           
           <!-- Tombol Hamburger (Mobile) & Info Petugas -->
           <div class="flex items-center gap-2 sm:gap-3">
@@ -592,7 +633,7 @@
 
           <!-- Kontrol Kanan: Ganti Peran, Mode Nyaman, & Logout -->
           <div class="flex items-center gap-2 flex-wrap">
-            <select id="active-role-switcher" onchange="switchRole(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600" title="Simulasi Pergantian Peran">
+            <select id="active-role-switcher" onchange="switchRole(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600 max-w-[220px] sm:max-w-none truncate" title="Simulasi Pergantian Peran">
               <option value="admin_yanmed">Peran: Admin Yanmed</option>
               <option value="cathlab">Peran: Petugas Cathlab</option>
               <option value="igd_admission">Peran: Petugas IGD</option>
@@ -620,7 +661,7 @@
         </div>
 
         <!-- Navigasi Tab Utama (Pintas Horizontal) -->
-        <nav id="main-nav-tabs" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-slate-100 py-2">
+        <nav id="main-nav-tabs" class="w-full px-4 sm:px-6 lg:px-8 2xl:px-10 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-slate-100 py-2">
         <button onclick="switchTab('dashboard')" data-tab="dashboard" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-700 text-white whitespace-nowrap transition">
           Dashboard Keterisian
         </button>
@@ -641,7 +682,7 @@
     </header>
 
     <!-- Konten Utama Dashboard -->
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+    <main class="w-full px-4 sm:px-6 lg:px-8 2xl:px-10 py-6 space-y-6 flex-1">
       
       <!-- Banner Lockdown Akun Baru (Wajib Pilih Ruangan Terlebih Dahulu) -->
       <div id="new-account-lockdown-banner" class="hidden bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white rounded-2xl p-4 sm:p-5 shadow-lg flex flex-wrap items-center justify-between gap-4 border border-amber-300 motion-view-enter">
@@ -723,9 +764,9 @@
             <input type="text" id="search-ward-input" oninput="renderWardTable()" placeholder="Cari ruangan (misal: Dahlia, ICU)..." class="px-3 py-2 rounded-xl border border-slate-200 text-xs w-full sm:w-64 focus:outline-none focus:ring-2 focus:ring-blue-600" />
           </div>
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse min-w-[760px]">
               <thead>
-                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-extrabold text-slate-600 uppercase">
+                <tr class="bg-slate-50 border-b border-slate-200 text-[11px] font-extrabold text-slate-600 uppercase whitespace-nowrap">
                   <th class="py-3 px-4">Ruangan / Unit</th>
                   <th class="py-3 px-3 text-center">Total Bed</th>
                   <th class="py-3 px-3 text-center">Terisi</th>
@@ -753,7 +794,7 @@
             IGD: 19/25 Bed Terisi • 13 Pra Admisi • 6 Pra Rujukan
           </span>
         </div>
-        <div id="igd-queue-list" class="grid grid-cols-1 md:grid-cols-2 gap-3.5"></div>
+        <div id="igd-queue-list" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3.5"></div>
       </section>
 
       <!-- TAB 3: DENAH BED RUANGAN -->
@@ -787,7 +828,7 @@
           </div>
           <select id="ward-selector" onchange="renderBedBoard(this.value)" class="px-3.5 py-2 rounded-xl border border-slate-300 bg-slate-50 text-xs font-bold text-slate-800"></select>
         </div>
-        <div id="bed-board-grid" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3"></div>
+        <div id="bed-board-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-3"></div>
       </section>
 
       <!-- TAB KHUSUS: TINDAKAN CATHLAB (INSTALASI KATETERISASI JANTUNG) -->
@@ -897,9 +938,9 @@
         <!-- Tabel Lembar Kerja Tindakan Cathlab (Spreadsheet Lite View) -->
         <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs border-collapse">
+            <table class="w-full text-left text-xs border-collapse min-w-[1020px]">
               <thead>
-                <tr class="bg-slate-50 text-slate-700 font-extrabold border-b border-slate-200 uppercase text-[10px] tracking-wider">
+                <tr class="bg-slate-50 text-slate-700 font-extrabold border-b border-slate-200 uppercase text-[10px] tracking-wider whitespace-nowrap">
                   <th class="py-3 px-3 text-center w-12">#</th>
                   <th class="py-3 px-3 min-w-[110px]">Waktu &amp; Tanggal</th>
                   <th class="py-3 px-4 min-w-[200px]">Pasien &amp; No. RM</th>
@@ -941,7 +982,7 @@
             <h2 class="text-base font-extrabold text-slate-900">Formulir Laporan Kematian &amp; Pulang Paksa (PP)</h2>
             <p class="text-xs text-slate-500">Input terstandar menggantikan pencatatan manual pada tab LAPORAN KEMATIAN &amp; LAPORAN PP</p>
           </div>
-          <form onsubmit="submitSpecialReport(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <form onsubmit="submitSpecialReport(event)" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 text-xs">
             <div>
               <label class="block font-bold text-slate-700 mb-1">Jenis Laporan</label>
               <select id="rep-type" class="w-full px-3 py-2 rounded-xl border border-slate-300 font-semibold">
@@ -975,7 +1016,7 @@
               <label class="block font-bold text-slate-700 mb-1">DPJP</label>
               <input type="text" id="rep-dpjp" required placeholder="Nama dokter penanggung jawab" class="w-full px-3 py-2 rounded-xl border border-slate-300" />
             </div>
-            <div class="sm:col-span-3 flex justify-end">
+            <div class="sm:col-span-2 lg:col-span-3 flex justify-end">
               <button type="submit" class="px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold transition">
                 Simpan ke Rekap Yanmed
               </button>
@@ -991,8 +1032,8 @@
   <!-- ======================================================================= -->
   <!-- MODAL DETAIL REKAM TINDAKAN CATHLAB                                      -->
   <!-- ======================================================================= -->
-  <div id="modal-detail-tindakan" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-2xl w-full p-6 shadow-2xl space-y-4 my-8 motion-view-enter">
+  <div id="modal-detail-tindakan" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-2xl w-full p-4 sm:p-6 shadow-2xl space-y-4 my-6 sm:my-8 motion-view-enter">
       <div class="flex items-start justify-between border-b border-slate-100 pb-3">
         <div>
           <div class="flex items-center gap-2 mb-1">
@@ -1066,8 +1107,8 @@
   <!-- ======================================================================= -->
   <!-- MODAL INPUT / PENJADWALAN TINDAKAN BARU CATHLAB                          -->
   <!-- ======================================================================= -->
-  <div id="modal-tambah-tindakan" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-xl w-full p-6 shadow-2xl space-y-4 my-8 motion-view-enter">
+  <div id="modal-tambah-tindakan" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-xl w-full p-4 sm:p-6 shadow-2xl space-y-4 my-6 sm:my-8 motion-view-enter">
       <div class="flex items-center justify-between border-b border-slate-100 pb-3">
         <div>
           <h4 class="text-base font-extrabold text-slate-900 leading-tight">Jadwalkan Tindakan Cathlab</h4>
@@ -1161,8 +1202,8 @@
   <!-- ======================================================================= -->
   <!-- MODAL PANDUAN & SANDBOX GOOGLE WORKSPACE OAUTH (SUPABASE AUTH)          -->
   <!-- ======================================================================= -->
-  <div id="modal-google-config" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 my-8 motion-view-enter">
+  <div id="modal-google-config" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-4 sm:p-6 shadow-2xl space-y-4 my-6 sm:my-8 motion-view-enter">
       <div class="flex items-start justify-between border-b border-slate-100 pb-3">
         <div>
           <div class="flex items-center gap-2 mb-1">
@@ -1233,8 +1274,8 @@
   <!-- ======================================================================= -->
   <!-- MODAL PENGATURAN AKUN: PILIH RUANGAN JAGA & UBAH KATA SANDI             -->
   <!-- ======================================================================= -->
-  <div id="account-settings-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 my-8 motion-view-enter">
+  <div id="account-settings-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-4 sm:p-6 shadow-2xl space-y-4 my-6 sm:my-8 motion-view-enter">
       
       <!-- Header Modal -->
       <div class="flex items-start justify-between border-b border-slate-100 pb-3">
@@ -1340,8 +1381,8 @@
   <!-- ======================================================================= -->
   <!-- MODAL UBAH FOTO PROFIL (UPLOAD, PASTE CTRL+V, GOOGLE DRIVE, KOMPRES 150KB) -->
   <!-- ======================================================================= -->
-  <div id="profile-photo-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 my-8 motion-view-enter">
+  <div id="profile-photo-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-4 sm:p-6 shadow-2xl space-y-4 my-6 sm:my-8 motion-view-enter">
       
       <!-- Header Modal -->
       <div class="flex items-start justify-between border-b border-slate-100 pb-3">
