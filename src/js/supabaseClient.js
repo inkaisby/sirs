@@ -615,10 +615,12 @@ export async function signInWithGoogle(intendedRole = 'admin_yanmed') {
 
   try {
     const redirectUrl = window.location.origin + '/';
+    // Gunakan skipBrowserRedirect agar aplikasi dapat memverifikasi status provider terlebih dahulu
     const { data, error } = await client.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: redirectUrl,
+        skipBrowserRedirect: true,
         queryParams: {
           access_type: 'offline',
           prompt: 'select_account'
@@ -629,7 +631,30 @@ export async function signInWithGoogle(intendedRole = 'admin_yanmed') {
     if (error) {
       return { success: false, message: error.message };
     }
-    return { success: true, data };
+
+    if (data?.url) {
+      // Verifikasi awal apakah Supabase mengembalikan error 400 (provider belum diaktifkan di dashboard)
+      try {
+        const checkRes = await fetch(data.url);
+        if (checkRes.status === 400) {
+          const errData = await checkRes.json().catch(() => ({}));
+          if (errData.msg?.includes('not enabled') || errData.error_code === 'validation_failed') {
+            return {
+              success: false,
+              providerNotEnabled: true,
+              message: 'Google provider belum diaktifkan di Supabase Dashboard (Authentication > Providers > Google).'
+            };
+          }
+        }
+      } catch (checkErr) {
+        // Jika fetch tertahan policy CORS, lanjutkan navigasi browser normal
+      }
+
+      window.location.href = data.url;
+      return { success: true, data };
+    }
+
+    return { success: false, message: 'Tidak menerima tautan otentikasi dari Supabase.' };
   } catch (err) {
     return { success: false, message: err.message };
   }

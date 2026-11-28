@@ -1941,8 +1941,8 @@
         const res = await signInWithGoogle(selectedRole);
         if (!res.success) {
           // Jika Google provider belum dinyalakan di Supabase Console, munculkan panduan & sandbox
-          if (res.message && (res.message.includes('not enabled') || res.message.includes('provider') || res.message.includes('OAuth'))) {
-            showToast('Google OAuth belum aktif di Supabase. Buka panduan / sandbox demo.', 'warn');
+          if (res.providerNotEnabled || (res.message && (res.message.includes('not enabled') || res.message.includes('provider') || res.message.includes('OAuth')))) {
+            showToast('Google provider belum diaktifkan di Supabase Dashboard.', 'warn');
             openModalGoogleConfig();
           } else {
             showToast('Koneksi Google: ' + res.message, 'warn');
