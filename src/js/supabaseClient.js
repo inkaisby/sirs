@@ -720,10 +720,11 @@ export function simulateGoogleLogin(role = 'cathlab') {
     igd_admission: 'Petugas Triase IGD Soewandhie',
     nurse_dahlia: 'Ns. Siti Rahma, S.Kep (Dahlia)',
     nurse_teratai: 'Ns. Budi Santoso, S.Kep (Teratai)',
-    nurse_icu: 'Ns. Agus Wicaksono, S.Kep (ICU)'
+    nurse_icu: 'Ns. Agus Wicaksono, S.Kep (ICU)',
+    new_account: 'Staf Medis Baru RSUD (Belum Pilih Ruangan)'
   };
 
-  const email = `${role}.rsud@soewandhie.id`;
+  const email = role === 'new_account' ? 'petugas.baru@soewandhie.id' : `${role}.rsud@soewandhie.id`;
   const name = roleNames[role] || 'Petugas Medis RSUD';
 
   return {

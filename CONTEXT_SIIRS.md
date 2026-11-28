@@ -107,9 +107,21 @@ D:\website\sirs\
 │   └── PRD.md                # Spesifikasi kebutuhan teknis & user stories
 ├── src/
 │   ├── js/
+│   │   ├── app.js            # Entry point utama & registrasi window handler
 │   │   ├── config.js         # Konfigurasi Supabase, Logto OIDC, & port
+│   │   ├── state.js          # Reactive state store, data clone, & role metadata
 │   │   ├── logtoClient.js    # Modul client Logto SSO OIDC browser SDK
-│   │   └── supabaseClient.js # Client Supabase, auth security, session, dan sync DB
+│   │   ├── supabaseClient.js # Client Supabase, auth security, session, dan sync DB
+│   │   ├── ui/
+│   │   │   ├── toast.js      # Notifikasi toast feedback
+│   │   │   └── navigation.js # Tab switching, sidebar collapse/mobile, HUD
+│   │   └── modules/
+│   │       ├── auth.js       # Autentikasi RBAC, Google SSO, idle timeout 15m
+│   │       ├── wards.js      # Denah 384 bed, 22 bangsal, mutasi status bed
+│   │       ├── cathlab.js    # Manajemen prosedur & rekam tindakan Cathlab
+│   │       ├── igd.js        # Antrean Triage IGD & alokasi pro MRS
+│   │       ├── account.js    # Penugasan ruangan jaga & foto profil kompresi
+│   │       └── reports.js    # Pelaporan khusus pelayanan medik
 │   └── data/
 │       └── wardsSeed.js      # 22 bangsal & data cadangan offline/stand-alone
 └── sql/

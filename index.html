@@ -125,6 +125,27 @@
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
+
+    /* Sidebar collapse transition & styling */
+    #app-sidebar.sidebar-collapsed {
+      width: 5rem !important; /* 80px */
+    }
+    #app-sidebar.sidebar-collapsed .sidebar-text-group {
+      display: none !important;
+    }
+    #app-sidebar.sidebar-collapsed .sidebar-nav-item {
+      justify-content: center !important;
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+    }
+    #app-sidebar.sidebar-collapsed .sidebar-ward-item {
+      justify-content: center !important;
+      padding-left: 0.5rem !important;
+      padding-right: 0.5rem !important;
+    }
+    #app-sidebar.sidebar-collapsed .ward-badge-pill {
+      display: none !important;
+    }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased selection:bg-blue-100 selection:text-blue-900 pb-20 sm:pb-8 transition-colors duration-300">
@@ -320,6 +341,7 @@
                   <option value="nurse_dahlia">Perawat Ruang DAHLIA (Khusus Bangsal Dahlia)</option>
                   <option value="nurse_teratai">Perawat Ruang TERATAI (Khusus Bangsal Teratai)</option>
                   <option value="nurse_icu">Perawat Ruang ICU (Khusus Unit Intensif)</option>
+                  <option value="new_account">Akun Baru / Registrasi Google (Wajib Pilih Ruangan)</option>
                 </select>
               </div>
 
@@ -345,15 +367,18 @@
                 <span>1-Klik Masuk Unit Cathlab (Layanan Tindakan)</span>
               </button>
 
-              <div class="grid grid-cols-3 gap-2">
-                <button type="button" onclick="quickLoginAs('admin_yanmed')" class="px-2.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-[11px] font-bold transition text-center border border-blue-100">
+              <div class="grid grid-cols-4 gap-1.5">
+                <button type="button" onclick="quickLoginAs('admin_yanmed')" class="px-2 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-[10px] font-bold transition text-center border border-blue-100">
                   Admin Yanmed
                 </button>
-                <button type="button" onclick="quickLoginAs('igd_admission')" class="px-2.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold transition text-center border border-amber-100">
+                <button type="button" onclick="quickLoginAs('igd_admission')" class="px-2 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-[10px] font-bold transition text-center border border-amber-100">
                   Petugas IGD
                 </button>
-                <button type="button" onclick="quickLoginAs('nurse_dahlia')" class="px-2.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 text-[11px] font-bold transition text-center border border-purple-100">
+                <button type="button" onclick="quickLoginAs('nurse_dahlia')" class="px-2 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-800 text-[10px] font-bold transition text-center border border-purple-100">
                   Ruang Dahlia
+                </button>
+                <button type="button" onclick="quickLoginAs('new_account')" class="px-2 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-800 text-[10px] font-extrabold transition text-center border border-rose-200" title="Simulasi Masuk Akun Baru (Kunci Modul &amp; Wajib Pilih Ruangan)">
+                  ⭐ Akun Baru
                 </button>
               </div>
             </div>
@@ -396,6 +421,7 @@
             <option value="nurse_dahlia">Perawat Ruang DAHLIA</option>
             <option value="nurse_teratai">Perawat Ruang TERATAI</option>
             <option value="nurse_icu">Perawat Ruang ICU</option>
+            <option value="new_account">Akun Baru / Registrasi Google (Wajib Pilih Ruangan)</option>
           </select>
         </div>
         <button onclick="submitModalLogin()" class="w-full py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold text-sm transition">
@@ -408,24 +434,25 @@
   <!-- ======================================================================= -->
   <!-- APLIKASI UTAMA (DASHBOARD OPERASIONAL SETELAH LOGIN / DISPLAY MODE)     -->
   <!-- ======================================================================= -->
-  <div id="main-app-shell" class="hidden">
+  <div id="main-app-shell" class="hidden min-h-screen bg-slate-50 flex">
     
-    <!-- Top Header Operasional -->
-    <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
-        
-        <!-- Logo & Nama Instansi -->
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 shrink-0 flex items-center justify-center bg-slate-50 rounded-xl border border-slate-200 p-1">
+    <!-- Backdrop Mobile Drawer -->
+    <div id="sidebar-backdrop" onclick="toggleSidebarMobile(false)" class="hidden fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs md:hidden"></div>
+
+    <!-- ===================================================================== -->
+    <!-- SIDEBAR UTAMA (COLLAPSIBLE, SCROLLABLE, MULTI-ROLE & 22 BANGSAL)     -->
+    <!-- ===================================================================== -->
+    <aside id="app-sidebar" class="fixed inset-y-0 left-0 z-50 flex flex-col bg-white border-r border-slate-200 transition-all duration-300 w-64 -translate-x-full md:translate-x-0 shadow-lg md:shadow-none select-none">
+      
+      <!-- 1. Header Sidebar & Brand RSUD -->
+      <div class="h-16 px-3.5 flex items-center justify-between border-b border-slate-100 shrink-0">
+        <div class="flex items-center gap-2.5 overflow-hidden">
+          <div class="w-9 h-9 shrink-0 flex items-center justify-center bg-blue-50 rounded-xl border border-blue-200 p-1">
             <svg viewBox="0 0 220 250" class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
               <path d="M110 12 C138 35, 175 42, 206 42 C196 105, 196 155, 206 205 C172 205, 138 216, 110 238 C82 216, 48 205, 14 205 C24 155, 24 105, 14 42 C45 42, 82 35, 110 12 Z" fill="#0028FF" stroke="#FACC15" stroke-width="7" stroke-linejoin="round"/>
               <g fill="#FACC15" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
                 <path d="M104 92 C85 88, 65 95, 56 108 L46 92 L50 116 C56 128, 72 136, 86 138 L82 148 L95 140 C100 135, 104 128, 105 118 Z"/>
                 <path d="M115 92 C132 90, 148 92, 162 84 L172 76 L166 94 L174 104 L158 100 C144 104, 128 104, 115 102 Z"/>
-              </g>
-              <g fill="#FACC15" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
-                <path d="M116 130 L146 136 L146 142 L124 142 L124 147 L144 147 C154 152, 158 164, 152 176 L164 174 L162 182 L146 184 C140 192, 128 196, 116 194 Z"/>
-                <path d="M104 176 C84 178, 66 184, 52 194 C66 198, 86 196, 104 191 Z"/>
               </g>
               <g fill="#FFFFFF" stroke="#0F172A" stroke-width="2" stroke-linejoin="round">
                 <polygon points="110,34 114,52 106,52"/>
@@ -435,45 +462,165 @@
               </g>
             </svg>
           </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h1 class="text-sm sm:text-base font-extrabold text-slate-900 leading-tight">SIIRS RSUD Dr. M. Soewandhie</h1>
-              <span id="role-badge-header" class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-extrabold uppercase">Admin Yanmed</span>
-              <span id="header-db-pill" onclick="checkDbConnection()" class="hidden sm:inline-flex px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer" title="Status Basis Data (Klik untuk periksa ulang)">🔄 Memeriksa DB...</span>
-              <span class="hidden md:inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200" title="Keamanan Sesi Aktif">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                Auto-Lock 15m
-              </span>
-            </div>
-            <p class="text-[11px] text-slate-500">Sistem Informasi Integrasi • <span id="header-user-info" class="font-semibold text-slate-700">Pelayanan Medik</span></p>
+          <div class="sidebar-text-group flex flex-col leading-tight min-w-0">
+            <span class="text-xs font-black text-slate-900 tracking-tight truncate">SIIRS SOEWANDHIE</span>
+            <span class="text-[10px] text-blue-700 font-bold truncate">RSUD Dr. M. Soewandhie</span>
+          </div>
+        </div>
+        <!-- Tombol Ciutkan / Lebarkan (Collapse Toggle) -->
+        <button type="button" onclick="toggleSidebarCollapse()" id="btn-toggle-sidebar" class="hidden md:flex p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition" title="Ciutkan / Lebarkan Sidebar">
+          <svg id="sidebar-collapse-icon" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/></svg>
+        </button>
+        <!-- Tombol Tutup Mobile -->
+        <button type="button" onclick="toggleSidebarMobile(false)" class="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- 2. Navigasi Scrollable (overflow-y-auto) -->
+      <div class="flex-1 overflow-y-auto no-scrollbar px-3 py-3 space-y-4 text-xs font-semibold">
+        <!-- Section: Menu Utama -->
+        <div>
+          <span class="sidebar-text-group px-2 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block mb-1.5">Menu Utama</span>
+          <div class="space-y-1">
+            <button onclick="switchTab('dashboard')" data-sidebar-tab="dashboard" class="sidebar-nav-item w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-slate-700 hover:bg-slate-100 transition" title="Dashboard Keterisian RS">
+              <svg class="w-4 h-4 shrink-0 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/></svg>
+              <span class="sidebar-text-group truncate">Dashboard Keterisian</span>
+            </button>
+            <button onclick="switchTab('cathlab')" data-sidebar-tab="cathlab" class="sidebar-nav-item w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-slate-700 hover:bg-slate-100 transition" title="Tindakan Cathlab">
+              <svg class="w-4 h-4 shrink-0 text-cyan-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0zM12 4v4m0 8v4"/></svg>
+              <span class="sidebar-text-group truncate">Tindakan Cathlab</span>
+            </button>
+            <button onclick="switchTab('igd')" data-sidebar-tab="igd" class="sidebar-nav-item w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-slate-700 hover:bg-slate-100 transition" title="Antrean IGD Pro MRS">
+              <svg class="w-4 h-4 shrink-0 text-amber-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+              <span class="sidebar-text-group truncate">Antrean Triage IGD</span>
+            </button>
+            <button onclick="switchTab('wards')" data-sidebar-tab="wards" class="sidebar-nav-item w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-slate-700 hover:bg-slate-100 transition" title="Denah Bed Ruangan">
+              <svg class="w-4 h-4 shrink-0 text-indigo-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+              <span class="sidebar-text-group truncate">Denah Bed Ruangan</span>
+            </button>
+            <button onclick="switchTab('reports')" data-sidebar-tab="reports" class="sidebar-nav-item w-full flex items-center gap-3 px-2.5 py-2 rounded-xl text-slate-700 hover:bg-slate-100 transition" title="Laporan Kematian & PP">
+              <svg class="w-4 h-4 shrink-0 text-rose-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span class="sidebar-text-group truncate">Laporan Kematian &amp; PP</span>
+            </button>
           </div>
         </div>
 
-        <!-- Kontrol Kanan: Ganti Peran, Mode Nyaman, & Logout -->
-        <div class="flex items-center gap-2 flex-wrap">
-          <select id="active-role-switcher" onchange="switchRole(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600" title="Simulasi Pergantian Peran">
-            <option value="admin_yanmed">Peran: Admin Yanmed</option>
-            <option value="cathlab">Peran: Petugas Cathlab</option>
-            <option value="igd_admission">Peran: Petugas IGD</option>
-            <option value="nurse_dahlia">Peran: Ruang Dahlia</option>
-            <option value="nurse_teratai">Peran: Ruang Teratai</option>
-            <option value="nurse_icu">Peran: Ruang ICU</option>
-            <option value="public_display">Mode: Display Publik Web RS</option>
-          </select>
-
-          <button onclick="toggleComfortMode()" id="btn-comfort-mode" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition" title="Mode Nyaman Mata">
-            ☀️ Nyaman
-          </button>
-
-          <button onclick="logoutToPortal()" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-            <span>Keluar</span>
-          </button>
+        <!-- Section: 22 Ruang Rawat Inap (Scrollable) -->
+        <div>
+          <div class="sidebar-text-group flex items-center justify-between px-2 mb-1.5">
+            <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">22 Ruang Rawat Inap</span>
+            <span class="text-[9px] font-bold text-slate-400">384 Bed</span>
+          </div>
+          <!-- Filter cepat bangsal di sidebar -->
+          <div class="sidebar-text-group mb-2">
+            <input type="text" id="sidebar-ward-filter" oninput="renderSidebarWards()" placeholder="Filter ruangan..." class="w-full px-2.5 py-1 text-[11px] rounded-lg border border-slate-200 bg-slate-50 focus:outline-none focus:ring-1 focus:ring-blue-500 font-normal" />
+          </div>
+          <!-- Container daftar 22 bangsal -->
+          <div id="sidebar-wards-list" class="space-y-1"></div>
         </div>
       </div>
 
-      <!-- Navigasi Tab Utama -->
-      <nav id="main-nav-tabs" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-slate-100 py-2">
+      <!-- 3. Footer Sidebar: Identitas Petugas & Menu Akun -->
+      <div class="p-3 border-t border-slate-200/80 bg-slate-50/70 shrink-0 space-y-2">
+        <!-- Kartu Profil Petugas -->
+        <div class="flex items-center gap-2.5 overflow-hidden">
+          <div class="relative shrink-0 cursor-pointer" onclick="openProfilePhotoModal()" title="Klik untuk ubah foto profil">
+            <img id="sidebar-avatar-img" src="" alt="Avatar" class="w-9 h-9 rounded-full object-cover border-2 border-blue-600 shadow-2xs hidden" />
+            <div id="sidebar-avatar-fallback" class="w-9 h-9 rounded-full bg-blue-100 text-blue-800 font-black text-xs flex items-center justify-center border-2 border-blue-400 shadow-2xs">
+              PS
+            </div>
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 border-2 border-white absolute -bottom-0.5 -right-0.5" title="Sesi Aktif Online"></span>
+          </div>
+          <div class="sidebar-text-group flex-1 min-w-0">
+            <div id="sidebar-user-name" class="text-xs font-bold text-slate-900 truncate">Petugas Medis</div>
+            <div id="sidebar-user-role-badge" class="text-[10px] text-blue-700 font-extrabold truncate">Ruang DAHLIA</div>
+          </div>
+        </div>
+
+        <!-- Tombol Aksi Bawah: Foto & Pengaturan Akun -->
+        <div class="sidebar-text-group grid grid-cols-2 gap-1.5 pt-0.5">
+          <button type="button" onclick="openProfilePhotoModal()" class="px-2 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-bold transition flex items-center justify-center gap-1 shadow-2xs">
+            <svg class="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            <span>Ubah Foto</span>
+          </button>
+          <button type="button" id="btn-sidebar-settings" onclick="openAccountSettingsModal()" class="px-2 py-1.5 rounded-lg bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-bold transition flex items-center justify-center gap-1 shadow-2xs">
+            <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span>Pengaturan</span>
+          </button>
+        </div>
+
+        <!-- Tombol Keluar Sistem -->
+        <button type="button" onclick="logoutToPortal()" class="w-full px-2 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center justify-center gap-1.5">
+          <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <span class="sidebar-text-group">Keluar Sistem</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ===================================================================== -->
+    <!-- WRAPPER KONTEN UTAMA (BERGESER DINAMIS SESUAI STATE SIDEBAR)          -->
+    <!-- ===================================================================== -->
+    <div id="main-content-wrapper" class="flex-1 flex flex-col min-w-0 transition-all duration-300 md:ml-64">
+      
+      <!-- Top Header Operasional -->
+      <header class="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-2xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
+          
+          <!-- Tombol Hamburger (Mobile) & Info Petugas -->
+          <div class="flex items-center gap-2 sm:gap-3">
+            <button type="button" onclick="toggleSidebarMobile(true)" class="md:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100 border border-slate-200 transition" aria-label="Buka Menu Sidebar">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            </button>
+            <button type="button" onclick="toggleSidebarCollapse()" class="hidden md:flex p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 border border-slate-200 transition" title="Ciutkan / Lebarkan Navigasi Sidebar">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h16"/></svg>
+            </button>
+            
+            <div>
+              <div class="flex items-center gap-2">
+                <h1 class="text-sm sm:text-base font-extrabold text-slate-900 leading-tight">SIIRS RSUD Dr. M. Soewandhie</h1>
+                <span id="role-badge-header" class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-extrabold uppercase">Admin Yanmed</span>
+                <span id="header-db-pill" onclick="checkDbConnection()" class="hidden sm:inline-flex px-2 py-0.5 rounded-md text-[10px] font-extrabold bg-slate-100 text-slate-700 border border-slate-200 transition cursor-pointer" title="Status Basis Data (Klik untuk periksa ulang)">🔄 Memeriksa DB...</span>
+                <span class="hidden lg:inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-800 border border-emerald-200" title="Keamanan Sesi Aktif">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Auto-Lock 15m
+                </span>
+              </div>
+              <p class="text-[11px] text-slate-500">Sistem Informasi Integrasi • <span id="header-user-info" class="font-semibold text-slate-700">Pelayanan Medik</span></p>
+            </div>
+          </div>
+
+          <!-- Kontrol Kanan: Ganti Peran, Mode Nyaman, & Logout -->
+          <div class="flex items-center gap-2 flex-wrap">
+            <select id="active-role-switcher" onchange="switchRole(this.value)" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-600" title="Simulasi Pergantian Peran">
+              <option value="admin_yanmed">Peran: Admin Yanmed</option>
+              <option value="cathlab">Peran: Petugas Cathlab</option>
+              <option value="igd_admission">Peran: Petugas IGD</option>
+              <option value="nurse_dahlia">Peran: Ruang Dahlia</option>
+              <option value="nurse_teratai">Peran: Ruang Teratai</option>
+              <option value="nurse_icu">Peran: Ruang ICU</option>
+              <option value="new_account">Peran: Akun Baru (Wajib Pilih Ruangan)</option>
+              <option value="public_display">Mode: Display Publik Web RS</option>
+            </select>
+
+            <button onclick="openAccountSettingsModal()" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition flex items-center gap-1 shadow-2xs" title="Pengaturan Akun &amp; Sandi">
+              <svg class="w-3.5 h-3.5 text-slate-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+              <span class="hidden sm:inline">Pengaturan</span>
+            </button>
+
+            <button onclick="toggleComfortMode()" id="btn-comfort-mode" class="px-2.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-semibold text-slate-700 transition" title="Mode Nyaman Mata">
+              ☀️ Nyaman
+            </button>
+
+            <button onclick="logoutToPortal()" class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+              <span>Keluar</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Navigasi Tab Utama (Pintas Horizontal) -->
+        <nav id="main-nav-tabs" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-1.5 overflow-x-auto no-scrollbar border-t border-slate-100 py-2">
         <button onclick="switchTab('dashboard')" data-tab="dashboard" class="nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-700 text-white whitespace-nowrap transition">
           Dashboard Keterisian
         </button>
@@ -496,6 +643,27 @@
     <!-- Konten Utama Dashboard -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
       
+      <!-- Banner Lockdown Akun Baru (Wajib Pilih Ruangan Terlebih Dahulu) -->
+      <div id="new-account-lockdown-banner" class="hidden bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 text-white rounded-2xl p-4 sm:p-5 shadow-lg flex flex-wrap items-center justify-between gap-4 border border-amber-300 motion-view-enter">
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-white/20 backdrop-blur-xs flex items-center justify-center shrink-0 border border-white/30 shadow-xs">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-md bg-white/20 text-white font-extrabold text-[10px] uppercase">Akun Baru Terdeteksi</span>
+              <span class="text-xs font-bold text-amber-100">• Wajib Konfigurasi</span>
+            </div>
+            <h3 class="text-sm sm:text-base font-black tracking-tight mt-0.5">Penugasan Ruangan Belum Dipilih</h3>
+            <p class="text-xs text-amber-100 mt-0.5 max-w-2xl leading-relaxed">Seluruh modul operasional lainnya dinonaktifkan sementara demi kepatuhan regulasi. Silakan pilih ruangan jaga Anda di menu Pengaturan Sidebar terlebih dahulu.</p>
+          </div>
+        </div>
+        <button type="button" onclick="openAccountSettingsModal(true)" class="px-4 py-2.5 rounded-xl bg-white hover:bg-amber-50 text-amber-950 font-extrabold text-xs shadow-md transition flex items-center gap-2 active:scale-95 shrink-0">
+          <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span>Pilih Ruangan di Pengaturan</span>
+        </button>
+      </div>
+
       <!-- Banner Info Mode Display Publik -->
       <div id="public-mode-banner" class="hidden bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3">
         <div class="flex items-center gap-2.5">
@@ -590,6 +758,28 @@
 
       <!-- TAB 3: DENAH BED RUANGAN -->
       <section id="tab-wards" class="hidden space-y-4 motion-view-enter">
+        <!-- Room HUD Banner Khusus Admin Ruangan -->
+        <div id="ward-admin-hud" class="bg-gradient-to-r from-blue-900 to-indigo-900 text-white rounded-2xl p-4 sm:p-5 shadow-sm flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="px-2.5 py-0.5 rounded-full bg-blue-500/30 text-blue-200 border border-blue-400/30 text-[10px] font-extrabold uppercase tracking-wide">
+                Dashboard Admin Ruangan
+              </span>
+              <span id="ward-hud-access-badge" class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-[10px] font-extrabold">
+                Akses Penuh Edit
+              </span>
+            </div>
+            <h2 id="ward-hud-title" class="text-lg sm:text-xl font-black tracking-tight">Ruang Rawat Inap DAHLIA</h2>
+            <p id="ward-hud-desc" class="text-xs text-blue-200 mt-0.5">Kapasitas: 28 Bed • Terisi: 22 • Inden: 3 • Tersedia: 3 Bed</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" onclick="openAccountSettingsModal()" class="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-bold transition flex items-center gap-1.5">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+              <span>Pindah Ruangan</span>
+            </button>
+          </div>
+        </div>
+
         <div class="bg-white rounded-2xl border border-slate-200 p-4 sm:p-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="text-base font-extrabold text-slate-900">Visual Bed Board Interaktif</h2>
@@ -795,6 +985,7 @@
       </section>
 
     </main>
+    </div>
   </div>
 
   <!-- ======================================================================= -->
@@ -1011,7 +1202,7 @@
         <div class="p-3 bg-emerald-50/70 border border-emerald-200 rounded-xl space-y-2">
           <span class="text-[11px] font-extrabold text-emerald-950 block">Uji Coba Langsung Masuk Akun Google (Sandbox Demo):</span>
           <p class="text-[10px] text-emerald-800">Gunakan simulasi ini untuk langsung mencoba alur masuk Google ke unit terkait tanpa menunggu konfigurasi Google Cloud Console:</p>
-          <div class="grid grid-cols-3 gap-2">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
             <button type="button" onclick="testSimulateGoogleLogin('cathlab')" class="px-2 py-2 rounded-lg bg-white border border-emerald-300 hover:bg-emerald-100 text-emerald-950 font-bold text-[11px] transition text-center shadow-2xs">
               Google: Cathlab
             </button>
@@ -1020,6 +1211,9 @@
             </button>
             <button type="button" onclick="testSimulateGoogleLogin('igd_admission')" class="px-2 py-2 rounded-lg bg-white border border-emerald-300 hover:bg-emerald-100 text-emerald-950 font-bold text-[11px] transition text-center shadow-2xs">
               Google: IGD
+            </button>
+            <button type="button" onclick="testSimulateGoogleLogin('new_account')" class="px-2 py-2 rounded-lg bg-amber-50 border border-amber-300 hover:bg-amber-100 text-amber-950 font-bold text-[11px] transition text-center shadow-2xs">
+              Google: Akun Baru ⭐
             </button>
           </div>
         </div>
@@ -1035,1047 +1229,198 @@
       </div>
     </div>
   </div>
-      </form>
+
+  <!-- ======================================================================= -->
+  <!-- MODAL PENGATURAN AKUN: PILIH RUANGAN JAGA & UBAH KATA SANDI             -->
+  <!-- ======================================================================= -->
+  <div id="account-settings-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 my-8 motion-view-enter">
+      
+      <!-- Header Modal -->
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-extrabold uppercase">Workstation Medis</span>
+            <span id="acc-modal-badge" class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">Akun Petugas</span>
+          </div>
+          <h4 id="acc-modal-title" class="text-base font-extrabold text-slate-900 leading-tight">Pengaturan Akun Petugas Jaga</h4>
+          <p id="acc-modal-desc" class="text-xs text-slate-500">Kelola preferensi ruangan jaga aktif dan kredensial keamanan</p>
+        </div>
+        <button type="button" id="btn-close-acc-settings" onclick="closeAccountSettingsModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Alert Onboarding Akun Baru -->
+      <div id="acc-new-user-alert" class="hidden p-3 bg-amber-500 text-white rounded-xl text-xs font-bold flex items-center gap-2.5 shadow-sm">
+        <svg class="w-5 h-5 shrink-0 text-amber-100" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+        <span>Akun Baru: Pilih salah satu dari 22 bangsal penugasan Anda untuk mengaktifkan seluruh modul sistem SIIRS.</span>
+      </div>
+
+      <!-- Tab Navigasi Modal -->
+      <div class="flex border-b border-slate-200 gap-2 text-xs font-bold">
+        <button type="button" id="tab-btn-acc-ward" onclick="switchAccountModalTab('ward')" class="pb-2.5 px-3 border-b-2 border-blue-600 text-blue-700 transition">
+          🏢 Ruangan Jaga Aktif
+        </button>
+        <button type="button" id="tab-btn-acc-pass" onclick="switchAccountModalTab('password')" class="pb-2.5 px-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 transition">
+          🔒 Ubah Kata Sandi
+        </button>
+      </div>
+
+      <!-- TAB 1: PILIH RUANGAN JAGA AKTIF -->
+      <div id="modal-acc-tab-ward" class="space-y-4 text-xs">
+        <div id="acc-ward-info-box" class="p-3 bg-blue-50/60 border border-blue-100 rounded-xl space-y-1">
+          <span class="font-bold text-blue-900 block">Pilih Bangsal Penugasan Shift Hari Ini</span>
+          <p class="text-[11px] text-blue-700 leading-relaxed">
+            Perpindahan ruangan akan langsung menyesuaikan visual bed board, hak input reservasi, serta tercatat di buku audit log sistem SIIRS.
+          </p>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1.5">Pilih Ruangan / Bangsal (22 Unit RSUD):</label>
+          <select id="acc-ward-select" class="w-full px-3 py-2.5 rounded-xl border border-slate-300 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-600">
+            <!-- Diisi secara dinamis oleh JavaScript -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1.5">Catatan Operan / Serah Terima Shift (Opsional):</label>
+          <input type="text" id="acc-ward-notes" placeholder="Contoh: Operan jaga shift pagi, bertukar bangsal dengan Ners Budi..." class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs" />
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" id="btn-cancel-acc-settings" onclick="closeAccountSettingsModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">
+            Batal
+          </button>
+          <button type="button" id="btn-apply-acc-ward" onclick="applyWardDutySwitch()" class="px-5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold transition shadow-sm flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+            <span id="btn-apply-acc-ward-text">Terapkan &amp; Buka Ruangan</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 2: UBAH KATA SANDI -->
+      <div id="modal-acc-tab-password" class="hidden space-y-4 text-xs">
+        <div class="p-3 bg-amber-50/70 border border-amber-200 rounded-xl space-y-1">
+          <span class="font-bold text-amber-900 block">Standar Keamanan Sandi Medis</span>
+          <p class="text-[11px] text-amber-800 leading-relaxed">
+            Minimal 8 karakter. Wajib memasukkan kata sandi saat ini untuk mencegah perubahan tanpa izin di komputer bangsal bersama.
+          </p>
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Kata Sandi Saat Ini</label>
+          <input type="password" id="acc-current-pass" required placeholder="Masukkan kata sandi lama" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Kata Sandi Baru (Min. 8 Karakter)</label>
+          <input type="password" id="acc-new-pass" required placeholder="Minimal 8 karakter alfanumerik" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        </div>
+
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Konfirmasi Kata Sandi Baru</label>
+          <input type="password" id="acc-confirm-pass" required placeholder="Ulangi kata sandi baru" class="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600" />
+        </div>
+
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeAccountSettingsModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">
+            Batal
+          </button>
+          <button type="button" onclick="applyPasswordChange()" class="px-5 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold transition shadow-sm flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <span>Simpan Kata Sandi Baru</span>
+          </button>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <script type="module">
-    import { SIIRS_CONFIG, toggleDbTarget, setDbTarget, LOGTO_CONFIG } from './src/js/config.js';
-    import {
-      initLogtoClient,
-      signInWithLogto,
-      signOutFromLogto,
-      getCurrentLogtoUser,
-      saveLogtoSettings
-    } from './src/js/logtoClient.js';
-    import {
-      initSupabase,
-      getSupabase,
-      getConnectionState,
-      updateBedStatusDb,
-      authenticatePetugas,
-      createSecureSession,
-      getActiveSession,
-      destroySession,
-      logSecurityAudit,
-      checkRateLimit,
-      sanitizeInput,
-      fetchTindakanFromDb,
-      updateTindakanStatusDb,
-      createTindakanDb,
-      signInWithGoogle,
-      handleGoogleOAuthCallback,
-      simulateGoogleLogin
-    } from './src/js/supabaseClient.js';
-    import { INITIAL_WARDS_DATA, INITIAL_IGD_QUEUE } from './src/data/wardsSeed.js';
-
-    // Salin data master lokal untuk fallback offline & performa render cepat
-    const WARDS_DATA = [...INITIAL_WARDS_DATA];
-    const IGD_QUEUE = [...INITIAL_IGD_QUEUE];
-
-    const ROLE_META = {
-      admin_yanmed: { label: 'Admin Yanmed', user: 'Pelayanan Medik (Akses Penuh)', allowedWard: 'ALL' },
-      cathlab: { label: 'Petugas Cathlab', user: 'Instalasi Kateterisasi Jantung (Cathlab)', allowedWard: 'CATHLAB' },
-      igd_admission: { label: 'Petugas IGD', user: 'Instalasi Gawat Darurat & Admisi', allowedWard: 'IGD' },
-      nurse_dahlia: { label: 'Perawat Dahlia', user: 'Ruang Rawat Inap DAHLIA', allowedWard: 'DAHLIA' },
-      nurse_teratai: { label: 'Perawat Teratai', user: 'Ruang Rawat Inap TERATAI', allowedWard: 'TERATAI' },
-      nurse_icu: { label: 'Perawat ICU', user: 'Instalasi Perawatan Intensif (ICU)', allowedWard: 'ICU' },
-      public_display: { label: 'Display Publik', user: 'Layar Informasi Web RS (Read-Only)', allowedWard: 'NONE' }
-    };
-
-    let currentRole = 'admin_yanmed';
-    let currentTab = 'dashboard';
-    let currentNip = '199204152020121004';
-
-    function showToast(message, type = 'info') {
-      const container = document.getElementById('toast-container');
-      if (!container) return;
-      const toast = document.createElement('div');
-      const colors = type === 'success'
-        ? 'bg-emerald-800 text-white border-emerald-700'
-        : type === 'warn'
-        ? 'bg-amber-800 text-white border-amber-700'
-        : 'bg-slate-900 text-white border-slate-700';
-      toast.className = `${colors} border px-4 py-3 rounded-xl shadow-lg text-xs font-semibold pointer-events-auto motion-view-enter`;
-      toast.textContent = message;
-      container.appendChild(toast);
-      setTimeout(() => toast.remove(), 3400);
-    }
-
-    async function checkDbConnection(silent = false) {
-      if (!silent) showToast('Memeriksa koneksi basis data Supabase...', 'info');
-      try {
-        await initSupabase();
-        updateDbBadges();
-        const conn = getConnectionState();
-        if (!silent) {
-          if (conn.isConnected && conn.mode !== 'migration_needed') {
-            showToast(conn.mode === 'cloud' ? 'Terhubung ke Supabase Cloud (Shared IDIK).' : 'Terhubung ke Docker Lokal (54321).', 'success');
-          } else if (conn.mode === 'migration_needed') {
-            showToast('Supabase terhubung. Tabel siirs_beds siap dimigrasi via SQL.', 'warn');
-          } else {
-            showToast('Database offline, beralih ke mode mandiri lokal.', 'info');
-          }
-        }
-      } catch (e) {
-        updateDbBadges();
-      }
-    }
-
-    function updateDbBadges() {
-      const conn = getConnectionState();
-      const portalBadge = document.getElementById('portal-db-badge');
-      const headerPill = document.getElementById('header-db-pill');
-
-      let label = '⚪ Mode Mandiri (Offline)';
-      let badgeClass = 'bg-slate-100 text-slate-700 border-slate-200';
-      let titleTooltip = 'Menggunakan cache data lokal';
-
-      if (conn.isConnected) {
-        if (conn.mode === 'local') {
-          label = '🟢 DB Lokal (Docker: 54321)';
-          badgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-300';
-          titleTooltip = `Terhubung ke PostgreSQL Docker (${conn.endpoint || '127.0.0.1:54321'})`;
-        } else if (conn.mode === 'cloud') {
-          label = '🟢 DB Cloud (Supabase)';
-          badgeClass = 'bg-emerald-50 text-emerald-800 border-emerald-300';
-          titleTooltip = `Terhubung ke Supabase Cloud (${conn.endpoint || 'whbinarvynbyemvqbfjg.supabase.co'})`;
-        } else if (conn.mode === 'migration_needed') {
-          label = '🟡 DB Terhubung (Perlu Migrasi SQL)';
-          badgeClass = 'bg-amber-50 text-amber-800 border-amber-300';
-          titleTooltip = 'Supabase terhubung. Eksekusi file SQL di supabase/migrations untuk mengaktifkan tabel siirs_beds.';
-        }
-      } else if (conn.mode === 'checking') {
-        label = '🔄 Memeriksa DB...';
-        badgeClass = 'bg-blue-50 text-blue-700 border-blue-200 animate-pulse';
-        titleTooltip = 'Sedang menguji koneksi jaringan ke basis data...';
-      }
-
-      if (portalBadge) {
-        portalBadge.textContent = label;
-        portalBadge.className = `px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border transition cursor-pointer ${badgeClass}`;
-        portalBadge.title = `${titleTooltip} — Klik untuk periksa ulang`;
-      }
-      if (headerPill) {
-        headerPill.textContent = label;
-        headerPill.className = `hidden sm:inline-flex px-2.5 py-0.5 rounded-md text-[10px] font-extrabold border transition cursor-pointer ${badgeClass}`;
-        headerPill.title = `${titleTooltip} — Klik untuk periksa ulang`;
-      }
-    }
-
-    function togglePasswordVisibility() {
-      const input = document.getElementById('login-password');
-      if (input) input.type = input.type === 'password' ? 'text' : 'password';
-    }
-
-    // =========================================================================
-    // IDLE ACTIVITY WATCHER & SESSION TIMEOUT (15 MENIT)
-    // =========================================================================
-    let idleTimer = null;
-    const IDLE_LIMIT_MS = 15 * 60 * 1000; // 15 menit
-
-    function resetIdleTimer() {
-      if (idleTimer) clearTimeout(idleTimer);
-      const isDashboardActive = !document.getElementById('main-app-shell')?.classList.contains('hidden');
-      if (isDashboardActive && currentRole !== 'public_display') {
-        idleTimer = setTimeout(() => {
-          logoutToPortal('Sesi dinonaktifkan otomatis demi keamanan workstation (15 menit tanpa aktivitas).');
-        }, IDLE_LIMIT_MS);
-      }
-    }
-
-    ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(evt => {
-      window.addEventListener(evt, resetIdleTimer, { passive: true });
-    });
-
-    async function handlePortalLogin(e) {
-      e.preventDefault();
-      const nipInput = document.getElementById('login-nip')?.value;
-      const passInput = document.getElementById('login-password')?.value;
-      const role = document.getElementById('login-role-select')?.value;
-      const submitBtn = e.target.querySelector('button[type="submit"]');
-
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>Memverifikasi Keamanan...</span>';
-      }
-
-      try {
-        const authResult = await authenticatePetugas(nipInput, passInput, role);
-        if (!authResult.success) {
-          showToast(authResult.message, 'warn');
-          return;
-        }
-
-        const effectiveRole = authResult.role || role;
-        createSecureSession({
-          user: ROLE_META[effectiveRole].user,
-          nip: authResult.nip,
-          role: effectiveRole,
-          allowedWard: ROLE_META[effectiveRole].allowedWard
-        });
-
-        enterDashboardWithRole(effectiveRole, authResult.nip);
-      } finally {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = `<span>Masuk ke Dashboard SIIRS</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>`;
-        }
-      }
-    }
-
-    async function quickLoginAs(role) {
-      let nip = '199204152020121004';
-      let pass = 'soewandhie2026';
-      if (role === 'cathlab') {
-        nip = 'cathlab';
-        pass = '123456';
-      } else {
-        nip = document.getElementById('login-nip')?.value.trim() || '199204152020121004';
-      }
-
-      const authResult = await authenticatePetugas(nip, pass, role);
-      if (!authResult.success) {
-        showToast(authResult.message, 'warn');
-        return;
-      }
-
-      const effectiveRole = authResult.role || role;
-      createSecureSession({
-        user: ROLE_META[effectiveRole].user,
-        nip: authResult.nip,
-        role: effectiveRole,
-        allowedWard: ROLE_META[effectiveRole].allowedWard
-      });
-
-      enterDashboardWithRole(effectiveRole, authResult.nip);
-    }
-
-    function openTopLoginModal() {
-      document.getElementById('top-login-modal')?.classList.remove('hidden');
-    }
-
-    function closeTopLoginModal() {
-      document.getElementById('top-login-modal')?.classList.add('hidden');
-    }
-
-    async function submitModalLogin() {
-      const nip = document.getElementById('modal-nip')?.value.trim() || '199204152020121004';
-      const role = document.getElementById('modal-role')?.value || 'admin_yanmed';
-      const pass = nip.toLowerCase() === 'cathlab' ? '123456' : 'soewandhie2026';
+  <!-- ======================================================================= -->
+  <!-- MODAL UBAH FOTO PROFIL (UPLOAD, PASTE CTRL+V, GOOGLE DRIVE, KOMPRES 150KB) -->
+  <!-- ======================================================================= -->
+  <div id="profile-photo-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-white rounded-2xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 my-8 motion-view-enter">
       
-      const authResult = await authenticatePetugas(nip, pass, role);
-      if (!authResult.success) {
-        showToast(authResult.message, 'warn');
-        return;
-      }
-
-      closeTopLoginModal();
-      const effectiveRole = authResult.role || role;
-      createSecureSession({
-        user: ROLE_META[effectiveRole].user,
-        nip: authResult.nip,
-        role: effectiveRole,
-        allowedWard: ROLE_META[effectiveRole].allowedWard
-      });
-
-      enterDashboardWithRole(effectiveRole, authResult.nip);
-    }
-
-    function enterPublicDisplay() {
-      destroySession();
-      enterDashboardWithRole('public_display', 'PUBLIK');
-    }
-
-    function enterDashboardWithRole(role, nip) {
-      currentNip = nip;
-      document.getElementById('landing-login-gateway')?.classList.add('hidden');
-      document.getElementById('main-app-shell')?.classList.remove('hidden');
-      switchRole(role, nip);
-      resetIdleTimer();
-      updateDbBadges();
-      showToast(`Berhasil masuk sebagai ${ROLE_META[role].label}`, 'success');
-    }
-
-    async function logoutToPortal(customMsg) {
-      if (idleTimer) clearTimeout(idleTimer);
-      await logSecurityAudit('AUTH_LOGOUT', currentNip, currentRole, {
-        reason: customMsg || 'User logged out voluntarily'
-      });
-      await signOutFromLogto();
-      destroySession();
-      document.getElementById('main-app-shell')?.classList.add('hidden');
-      document.getElementById('landing-login-gateway')?.classList.remove('hidden');
-      showToast(customMsg || 'Anda telah keluar dari sesi operasional SIIRS.', 'info');
-    }
-
-    function switchRole(role, nip = currentNip) {
-      currentRole = role;
-      const meta = ROLE_META[role];
-      const activeSwitcher = document.getElementById('active-role-switcher');
-      if (activeSwitcher) activeSwitcher.value = role;
-
-      const badgeHeader = document.getElementById('role-badge-header');
-      if (badgeHeader) badgeHeader.textContent = meta.label;
-
-      const userInfo = document.getElementById('header-user-info');
-      if (userInfo) userInfo.textContent = `${meta.user} (${nip})`;
-
-      const isPublic = role === 'public_display';
-      document.getElementById('public-mode-banner')?.classList.toggle('hidden', !isPublic);
-      document.getElementById('main-nav-tabs')?.classList.toggle('hidden', isPublic);
-
-      if (isPublic) {
-        switchTab('dashboard');
-      } else if (role === 'cathlab') {
-        switchTab('cathlab');
-      } else if (meta.allowedWard !== 'ALL' && meta.allowedWard !== 'IGD') {
-        const wardSelector = document.getElementById('ward-selector');
-        if (wardSelector) wardSelector.value = meta.allowedWard;
-      }
-
-      renderWardTable();
-      renderIgdQueue();
-      const currentWard = document.getElementById('ward-selector')?.value || 'DAHLIA';
-      renderBedBoard(currentWard);
-    }
-
-    function switchTab(tabName) {
-      currentTab = tabName;
-      ['dashboard', 'cathlab', 'igd', 'wards', 'reports'].forEach(t => {
-        document.getElementById(`tab-${t}`)?.classList.toggle('hidden', t !== tabName);
-      });
-      document.querySelectorAll('.nav-tab-btn').forEach(btn => {
-        const active = btn.dataset.tab === tabName;
-        btn.className = active
-          ? 'nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold bg-blue-700 text-white whitespace-nowrap transition'
-          : 'nav-tab-btn px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100 whitespace-nowrap transition';
-      });
-
-      if (tabName === 'cathlab') {
-        loadTindakanData();
-      }
-    }
-
-    // =========================================================================
-    // MODUL TINDAKAN CATHLAB (SHARED DENGAN IDIK-APP & SUPABASE)
-    // =========================================================================
-    let tindakanDataList = [];
-    let isTindakanLoading = false;
-
-    async function loadTindakanData(forceToast = false) {
-      if (isTindakanLoading) return;
-      isTindakanLoading = true;
-      const syncIcon = document.getElementById('sync-tindakan-icon');
-      if (syncIcon) syncIcon.classList.add('animate-spin');
-
-      try {
-        const data = await fetchTindakanFromDb({ limit: 120 });
-        if (data && Array.isArray(data) && data.length > 0) {
-          tindakanDataList = data;
-        } else if (tindakanDataList.length === 0) {
-          // Fallback data demo klinis jika offline
-          tindakanDataList = [
-            {
-              id: 4471,
-              tanggal: '2026-11-26',
-              waktu: '09:15',
-              nama: 'NY. AMINATUN',
-              dokter: 'dr. Lely P Candra, SpJP(K), FIHA, FAPSIC, FAPS',
-              tindakan: 'PPCI',
-              kategori: 'PCI',
-              status: 'Selesai',
-              ruangan: 'IGD - ICCU',
-              no_rm: '939094',
-              asisten: 'ADI',
-              sirkuler: 'BIRAWA',
-              logger: 'AZIZA',
-              fluoro_time: 1420,
-              dap_dose: 185.4,
-              temuan_pembuluh: 'LM: Normal\nLAD: Total occlusion at mid\nLCx: Normal\nRCA: Calcified 40%',
-              kesimpulan_laporan: 'SUCCESSFUL PRIMARY PCI 1 DES TO MID LAD'
-            },
-            {
-              id: 4470,
-              tanggal: '2026-11-26',
-              waktu: '11:00',
-              nama: 'TINNEKE',
-              dokter: 'dr. M. Faishal Riza, SpJP(K), FIHA, FAPSC, FAPSIC, FAsCC, FSC',
-              tindakan: 'PPCI',
-              kategori: 'PCI',
-              status: 'Selesai',
-              ruangan: 'ICCU',
-              no_rm: '939012',
-              asisten: 'ADI',
-              sirkuler: 'BIRAWA',
-              logger: 'AZIZA',
-              fluoro_time: 2100,
-              dap_dose: 210.2,
-              temuan_pembuluh: 'LM: Normal\nLAD: 90% stenosis\nLCx: Normal\nRCA: 60% mid',
-              kesimpulan_laporan: 'SUCCESSFUL PROCEDURE 1 DES TO PROX-MID LAD'
-            },
-            {
-              id: 4469,
-              tanggal: '2026-11-25',
-              waktu: '13:30',
-              nama: 'SALAMA',
-              dokter: 'dr. Andrianus Oktovianto, SpJP, FIHA',
-              tindakan: 'PPM GANTI BATERRY',
-              kategori: 'PPM',
-              status: 'Selesai',
-              ruangan: 'SAFIR HCU',
-              no_rm: '938935',
-              fluoro_time: 450,
-              dap_dose: 45.1,
-              kesimpulan_laporan: 'SUCCESSFUL PACEMAKER GENERATOR REPLACEMENT'
-            },
-            {
-              id: 4466,
-              tanggal: '2026-11-25',
-              waktu: '15:10',
-              nama: 'SOEPRIYADI',
-              dokter: 'dr. Deo Idarto,M.Biomed, SpJP (K), FIHA,FAPSC',
-              tindakan: 'PPCI',
-              kategori: 'PCI',
-              status: 'Proses',
-              ruangan: 'TULIP - SAFIR HCU',
-              no_rm: '429519',
-              fluoro_time: 1800,
-              dap_dose: 195.0,
-              kesimpulan_laporan: 'PROCEDURE ONGOING'
-            },
-            {
-              id: 4459,
-              tanggal: '2026-11-25',
-              waktu: '16:45',
-              nama: 'SAYONAH',
-              dokter: 'dr. Andrianus Oktovianto, SpJP, FIHA',
-              tindakan: 'EP STUDY',
-              kategori: 'EP',
-              status: 'Menunggu',
-              ruangan: 'ASTER',
-              no_rm: '687237',
-              kesimpulan_laporan: 'PRE-PROCEDURE PREPARATION'
-            }
-          ];
-        }
-
-        updateTindakanStats();
-        filterTindakanData();
-        if (forceToast) {
-          showToast(`Berhasil menyinkronkan ${tindakanDataList.length} rekam tindakan dari database.`, 'success');
-        }
-      } catch (err) {
-        console.error('Error loadTindakanData:', err);
-        showToast('Gagal memuat tindakan dari DB, menggunakan data lokal.', 'warn');
-      } finally {
-        isTindakanLoading = false;
-        if (syncIcon) syncIcon.classList.remove('animate-spin');
-      }
-    }
-
-    function updateTindakanStats() {
-      const total = tindakanDataList.length;
-      const selesai = tindakanDataList.filter(t => (t.status || '').toLowerCase() === 'selesai').length;
-      const proses = tindakanDataList.filter(t => (t.status || '').toLowerCase() === 'proses').length;
-      const menunggu = tindakanDataList.filter(t => (t.status || '').toLowerCase() === 'menunggu').length;
-
-      const elTotal = document.getElementById('stat-tindakan-total');
-      const elSelesai = document.getElementById('stat-tindakan-selesai');
-      const elProses = document.getElementById('stat-tindakan-proses');
-      const elMenunggu = document.getElementById('stat-tindakan-menunggu');
-
-      if (elTotal) elTotal.textContent = total;
-      if (elSelesai) elSelesai.textContent = selesai;
-      if (elProses) elProses.textContent = proses;
-      if (elMenunggu) elMenunggu.textContent = menunggu;
-    }
-
-    function filterTindakanData() {
-      const q = (document.getElementById('tindakan-search-input')?.value || '').toLowerCase().trim();
-      const statusFilter = document.getElementById('tindakan-filter-status')?.value || 'ALL';
-      const dokterFilter = document.getElementById('tindakan-filter-dokter')?.value || 'ALL';
-      const ruanganFilter = document.getElementById('tindakan-filter-ruangan')?.value || 'ALL';
-
-      const filtered = tindakanDataList.filter(item => {
-        // Query search
-        if (q) {
-          const matchNama = (item.nama || item.nama_pasien || '').toLowerCase().includes(q);
-          const matchRm = String(item.no_rm || '').toLowerCase().includes(q);
-          const matchDokter = (item.dokter || '').toLowerCase().includes(q);
-          const matchTindakan = (item.tindakan || '').toLowerCase().includes(q);
-          if (!matchNama && !matchRm && !matchDokter && !matchTindakan) return false;
-        }
-
-        // Status
-        if (statusFilter !== 'ALL') {
-          if ((item.status || '').toLowerCase() !== statusFilter.toLowerCase()) return false;
-        }
-
-        // Dokter
-        if (dokterFilter !== 'ALL') {
-          if (!(item.dokter || '').toLowerCase().includes(dokterFilter.toLowerCase())) return false;
-        }
-
-        // Ruangan
-        if (ruanganFilter !== 'ALL') {
-          if (!(item.ruangan || '').toLowerCase().includes(ruanganFilter.toLowerCase())) return false;
-        }
-
-        return true;
-      });
-
-      renderTindakanTable(filtered);
-    }
-
-    function renderTindakanTable(rows) {
-      const tbody = document.getElementById('tindakan-tbody');
-      const countInfo = document.getElementById('tindakan-count-info');
-      if (!tbody) return;
-
-      if (countInfo) {
-        countInfo.textContent = `Menampilkan ${rows.length} dari ${tindakanDataList.length} total prosedur`;
-      }
-
-      if (rows.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="9" class="py-12 text-center text-slate-400">
-              <div class="flex flex-col items-center justify-center gap-1.5">
-                <span class="text-sm font-semibold text-slate-600">Tidak ada tindakan yang cocok dengan filter.</span>
-                <span class="text-xs text-slate-400">Coba ubah kata kunci atau pilih opsi filter lain.</span>
-              </div>
-            </td>
-          </tr>
-        `;
-        return;
-      }
-
-      tbody.innerHTML = '';
-      rows.forEach((row, idx) => {
-        const id = row.id;
-        const no = idx + 1;
-        const nama = row.nama || row.nama_pasien || '—';
-        const norm = row.no_rm || '—';
-        const tgl = row.tanggal || '—';
-        const waktu = row.waktu || '—';
-        const dokter = row.dokter || '—';
-        const ruangan = row.ruangan || '—';
-        const tindakan = row.tindakan || '—';
-        const status = row.status || 'Menunggu';
-        const fluoro = row.fluoro_time ? `${row.fluoro_time}s` : '—';
-        const dose = row.dap_dose || row.dose ? `${row.dap_dose || row.dose} mGy` : '—';
-
-        let statusClass = 'bg-amber-100 text-amber-800 border-amber-300';
-        if (status.toLowerCase() === 'selesai') {
-          statusClass = 'bg-emerald-100 text-emerald-800 border-emerald-300';
-        } else if (status.toLowerCase() === 'proses') {
-          statusClass = 'bg-cyan-100 text-cyan-800 border-cyan-300';
-        } else if (status.toLowerCase() === 'meninggal' || status.toLowerCase() === 'batal') {
-          statusClass = 'bg-rose-100 text-rose-800 border-rose-300';
-        }
-
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-cyan-50/40 transition duration-150 border-b border-slate-100';
-        tr.innerHTML = `
-          <td class="py-3 px-3 text-center font-mono text-[11px] text-slate-400 font-bold">${no}</td>
-          <td class="py-3 px-3 whitespace-nowrap">
-            <div class="font-mono text-xs font-bold text-slate-800">${tgl}</div>
-            <div class="font-mono text-[11px] text-slate-500">${waktu}</div>
-          </td>
-          <td class="py-3 px-4">
-            <div class="flex items-center gap-2">
-              <span class="font-extrabold text-slate-900 leading-tight">${nama}</span>
-              <span class="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-700 font-mono text-[10px] font-bold">RM: ${norm}</span>
-            </div>
-            ${row.kelas_pembiayaan ? `<span class="text-[10px] text-slate-400 font-medium">${row.kelas_pembiayaan}</span>` : ''}
-          </td>
-          <td class="py-3 px-3">
-            <span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[11px] font-semibold">${ruangan}</span>
-          </td>
-          <td class="py-3 px-4">
-            <span class="text-xs font-bold text-slate-800 block leading-snug">${dokter}</span>
-            ${row.asisten ? `<span class="text-[10px] text-slate-400 block mt-0.5">Asist: ${row.asisten}</span>` : ''}
-          </td>
-          <td class="py-3 px-3">
-            <span class="px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-900 font-extrabold text-[11px] tracking-wide uppercase inline-block">
-              ${tindakan}
-            </span>
-          </td>
-          <td class="py-3 px-3 text-center whitespace-nowrap">
-            <select onchange="handleInlineStatusChange(${id}, this.value)" class="px-2.5 py-1 rounded-xl text-xs font-extrabold border ${statusClass} focus:outline-none cursor-pointer">
-              <option value="Menunggu" ${status === 'Menunggu' ? 'selected' : ''}>⏳ Menunggu</option>
-              <option value="Proses" ${status === 'Proses' ? 'selected' : ''}>⚡ Proses</option>
-              <option value="Selesai" ${status === 'Selesai' ? 'selected' : ''}>✅ Selesai</option>
-              <option value="Meninggal" ${status === 'Meninggal' ? 'selected' : ''}>🥀 Meninggal</option>
-              <option value="Batal" ${status === 'Batal' ? 'selected' : ''}>❌ Batal</option>
-            </select>
-          </td>
-          <td class="py-3 px-3 text-center whitespace-nowrap font-mono text-[11px]">
-            <span class="text-slate-700 font-semibold block">${fluoro}</span>
-            <span class="text-slate-400 text-[10px] block">${dose}</span>
-          </td>
-          <td class="py-3 px-3 text-center whitespace-nowrap">
-            <button type="button" onclick="openDetailTindakan(${id})" class="px-2.5 py-1.5 rounded-xl bg-cyan-50 hover:bg-cyan-100 text-cyan-800 border border-cyan-200 font-bold text-[11px] transition shadow-2xs">
-              Detail
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    async function handleInlineStatusChange(tindakanId, newStatus) {
-      const idx = tindakanDataList.findIndex(t => t.id === tindakanId);
-      if (idx !== -1) {
-        tindakanDataList[idx].status = newStatus;
-        tindakanDataList[idx].updated_at = new Date().toISOString();
-      }
-      updateTindakanStats();
-      filterTindakanData();
-
-      showToast(`Mengubah status ID #${tindakanId} menjadi '${newStatus}'...`, 'info');
-      try {
-        const res = await updateTindakanStatusDb(tindakanId, newStatus, currentNip);
-        if (res.success) {
-          showToast(`Status berhasil diperbarui ke database Supabase.`, 'success');
-        } else if (res.offline) {
-          showToast(`Status diperbarui di memori lokal (Mode Offline).`, 'info');
-        } else {
-          showToast(`Gagal update DB: ${res.error}`, 'warn');
-        }
-      } catch (err) {
-        console.error('Error handleInlineStatusChange:', err);
-      }
-    }
-
-    function openDetailTindakan(id) {
-      const item = tindakanDataList.find(t => t.id === id);
-      if (!item) return;
-
-      document.getElementById('dtl-tindakan-badge').textContent = item.tindakan || 'TINDAKAN';
-      document.getElementById('dtl-status-badge').textContent = item.status || 'Menunggu';
-      document.getElementById('dtl-pasien-nama').textContent = item.nama || item.nama_pasien || '—';
-      document.getElementById('dtl-pasien-rm').textContent = item.no_rm || '—';
-      document.getElementById('dtl-ruangan').textContent = item.ruangan || '—';
-      document.getElementById('dtl-dokter').textContent = item.dokter || '—';
-      document.getElementById('dtl-tanggal').textContent = item.tanggal || '—';
-      document.getElementById('dtl-waktu').textContent = item.waktu || '—';
-      document.getElementById('dtl-tim').textContent = `Asist: ${item.asisten || '—'}, Sirkuler: ${item.sirkuler || '—'}, Logger: ${item.logger || '—'}`;
-      document.getElementById('dtl-fluoro').textContent = item.fluoro_time ? `${item.fluoro_time} Detik` : '—';
-      document.getElementById('dtl-dose').textContent = item.dap_dose || item.dose ? `${item.dap_dose || item.dose} mGy/cm²` : '—';
-      document.getElementById('dtl-temuan').textContent = item.temuan_pembuluh || 'Tidak ada catatan temuan pembuluh khusus.';
-      document.getElementById('dtl-kesimpulan').textContent = item.kesimpulan_laporan || 'SUCCESSFUL PROCEDURE';
-
-      const pciLinkContainer = document.getElementById('dtl-pci-link-container');
-      const pciLink = document.getElementById('dtl-pci-link');
-      if (item.pci_report_link) {
-        pciLink.href = item.pci_report_link;
-        pciLinkContainer?.classList.remove('hidden');
-      } else {
-        pciLinkContainer?.classList.add('hidden');
-      }
-
-      document.getElementById('modal-detail-tindakan')?.classList.remove('hidden');
-    }
-
-    function closeDetailTindakan() {
-      document.getElementById('modal-detail-tindakan')?.classList.add('hidden');
-    }
-
-    function openModalTambahTindakan() {
-      const today = new Date().toISOString().split('T')[0];
-      const tglInput = document.getElementById('tb-tanggal');
-      if (tglInput) tglInput.value = today;
-      document.getElementById('modal-tambah-tindakan')?.classList.remove('hidden');
-    }
-
-    function closeModalTambahTindakan() {
-      document.getElementById('modal-tambah-tindakan')?.classList.add('hidden');
-    }
-
-    async function submitTambahTindakan(e) {
-      e.preventDefault();
-      const submitBtn = document.getElementById('tb-submit-btn');
-      if (submitBtn) {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span>Menyimpan ke DB...</span>';
-      }
-
-      const payload = {
-        tanggal: document.getElementById('tb-tanggal')?.value,
-        waktu: document.getElementById('tb-waktu')?.value || null,
-        no_rm: document.getElementById('tb-norm')?.value.trim(),
-        nama: document.getElementById('tb-nama')?.value.trim(),
-        nama_pasien: document.getElementById('tb-nama')?.value.trim(),
-        ruangan: document.getElementById('tb-ruangan')?.value,
-        dokter: document.getElementById('tb-dokter')?.value,
-        tindakan: document.getElementById('tb-tindakan')?.value.trim().toUpperCase(),
-        kategori: 'PCI',
-        status: document.getElementById('tb-status')?.value || 'Menunggu',
-        keterangan: document.getElementById('tb-keterangan')?.value || null
-      };
-
-      try {
-        const res = await createTindakanDb(payload, currentNip);
-        if (res.success && res.data) {
-          tindakanDataList.unshift(res.data);
-          showToast(`Tindakan untuk ${payload.nama} berhasil dijadwalkan ke DB Supabase!`, 'success');
-        } else {
-          // Local fallback jika offline
-          const mockId = Date.now();
-          tindakanDataList.unshift({ id: mockId, ...payload });
-          showToast(`Tindakan disimpan ke memori operasional (Mode Offline).`, 'info');
-        }
-        updateTindakanStats();
-        filterTindakanData();
-        closeModalTambahTindakan();
-        e.target.reset();
-      } catch (err) {
-        console.error('Error submitTambahTindakan:', err);
-        showToast('Gagal menyimpan tindakan: ' + err.message, 'warn');
-      } finally {
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.innerHTML = '<span>Simpan ke Database</span>';
-        }
-      }
-    }
-
-    function exportTindakanCsv() {
-      if (tindakanDataList.length === 0) {
-        showToast('Tidak ada data tindakan untuk diekspor.', 'warn');
-        return;
-      }
-      let csv = 'ID,Tanggal,Waktu,No RM,Nama Pasien,Ruangan,Dokter,Tindakan,Status,Fluoro Time (s),DAP Dose\n';
-      tindakanDataList.forEach(r => {
-        csv += `"${r.id}","${r.tanggal || ''}","${r.waktu || ''}","${r.no_rm || ''}","${(r.nama || r.nama_pasien || '').replace(/"/g, '""')}","${r.ruangan || ''}","${(r.dokter || '').replace(/"/g, '""')}","${r.tindakan || ''}","${r.status || ''}","${r.fluoro_time || ''}","${r.dap_dose || r.dose || ''}"\n`;
-      });
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.setAttribute('href', url);
-      link.setAttribute('download', `siirs_cathlab_tindakan_${new Date().toISOString().split('T')[0]}.csv`);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      showToast('Berkas CSV Rekam Tindakan Cathlab berhasil diunduh.', 'success');
-    }
-
-    function toggleComfortMode() {
-      document.body.classList.toggle('comfort-warm-mode');
-      const isWarm = document.body.classList.contains('comfort-warm-mode');
-      const btn = document.getElementById('btn-comfort-mode');
-      if (btn) btn.textContent = isWarm ? '🌙 Hangat' : '☀️ Nyaman';
-    }
-
-    function openBriefingPlayer() {
-      showToast('Mode Tour Sistem SIIRS: Pilih peran pada kartu login untuk mencoba hak akses RBAC.');
-    }
-
-    function renderWardTable() {
-      const query = (document.getElementById('search-ward-input')?.value || '').toLowerCase();
-      const tbody = document.getElementById('ward-summary-tbody');
-      if (!tbody) return;
-      tbody.innerHTML = '';
-
-      WARDS_DATA.filter(w => w.name.toLowerCase().includes(query)).forEach(w => {
-        const pct = w.total > 0 ? Math.round((w.occupied / w.total) * 100) : 0;
-        const barColor = pct >= 85 ? 'bg-rose-500' : pct >= 65 ? 'bg-amber-500' : 'bg-emerald-500';
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50/90 transition';
-        tr.innerHTML = `
-          <td class="py-3 px-4 font-extrabold text-slate-900">${w.name}</td>
-          <td class="py-3 px-3 text-center font-semibold">${w.total}</td>
-          <td class="py-3 px-3 text-center font-bold text-rose-600">${w.occupied}</td>
-          <td class="py-3 px-3 text-center font-bold text-amber-600">${w.inden}</td>
-          <td class="py-3 px-3 text-center font-semibold text-indigo-600">${w.prereferral}</td>
-          <td class="py-3 px-3 text-center font-extrabold text-emerald-600">${w.available}</td>
-          <td class="py-3 px-4">
-            <div class="flex items-center gap-2">
-              <div class="w-20 h-2 rounded-full bg-slate-100 overflow-hidden">
-                <div class="h-full ${barColor}" style="width:${pct}%"></div>
-              </div>
-              <span class="font-bold text-[11px] text-slate-600">${pct}%</span>
-            </div>
-          </td>
-          <td class="py-3 px-4 text-right">
-            <button onclick="openWardDetail('${w.id}')" class="px-2.5 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-[11px] transition">
-              Lihat Bed
-            </button>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-
-    function openWardDetail(wardId) {
-      if (currentRole === 'public_display') {
-        showToast('Mode Publik bersifat baca-saja. Silakan login petugas untuk membuka detail bed.', 'warn');
-        return;
-      }
-      const sel = document.getElementById('ward-selector');
-      if (sel) sel.value = wardId;
-      switchTab('wards');
-      renderBedBoard(wardId);
-    }
-
-    function renderIgdQueue() {
-      const container = document.getElementById('igd-queue-list');
-      if (!container) return;
-      container.innerHTML = '';
-      const isPublic = currentRole === 'public_display';
-
-      IGD_QUEUE.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'bg-white rounded-2xl border border-slate-200 p-4 space-y-2 shadow-2xs';
-        
-        // Proteksi privasi pasien untuk layar publik
-        const displayName = isPublic ? 'Pasien Anonim (***)' : item.name;
-        const displayDiag = isPublic ? 'Kondisi Medis Dilindungi (Mode Publik)' : item.diag;
-        const displayConsult = isPublic ? 'Tim Dokter Jaga RSUD' : `Konsul: ${item.consult}`;
-
-        card.innerHTML = `
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="px-2.5 py-1 rounded-lg bg-blue-700 text-white text-xs font-extrabold">${item.bed}</span>
-              <h4 class="text-sm font-extrabold text-slate-900">${displayName}</h4>
-            </div>
-            <span class="px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-[11px] font-bold">Tujuan: ${item.target}</span>
+      <!-- Header Modal -->
+      <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="px-2 py-0.5 rounded-md bg-blue-100 text-blue-800 text-[10px] font-extrabold uppercase">Foto Identitas</span>
+            <span id="photo-size-badge" class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-bold">Auto-Kompres ≤ 150 KB</span>
           </div>
-          <p class="text-xs text-slate-700 leading-relaxed">${displayDiag}</p>
-          <p class="text-[11px] text-slate-500 font-medium">${displayConsult}</p>
-        `;
-        container.appendChild(card);
-      });
-    }
+          <h4 class="text-base font-extrabold text-slate-900 leading-tight">Ubah Foto Profil Petugas Jaga</h4>
+          <p class="text-xs text-slate-500">Unggah berkas, tempel langsung (Ctrl+V), atau ambil dari Google Drive</p>
+        </div>
+        <button type="button" onclick="closeProfilePhotoModal()" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
 
-    function initWardSelector() {
-      const sel = document.getElementById('ward-selector');
-      if (!sel) return;
-      sel.innerHTML = '';
-      WARDS_DATA.forEach(w => {
-        const opt = document.createElement('option');
-        opt.value = w.id;
-        opt.textContent = `Ruang ${w.name} (${w.available} Tersedia / ${w.total} Bed)`;
-        sel.appendChild(opt);
-      });
-      sel.value = 'DAHLIA';
-    }
+      <!-- Preview Avatar & Info Ukuran -->
+      <div class="flex items-center gap-4 p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
+        <div class="relative shrink-0">
+          <img id="photo-modal-preview" src="" alt="Preview Foto" class="w-20 h-20 rounded-full object-cover border-2 border-blue-600 shadow-md hidden" />
+          <div id="photo-modal-preview-placeholder" class="w-20 h-20 rounded-full bg-blue-100 text-blue-800 font-black text-xl flex items-center justify-center border-2 border-blue-400 shadow-xs">
+            PS
+          </div>
+        </div>
+        <div class="flex-1 min-w-0 space-y-1 text-xs">
+          <span class="font-bold text-slate-800 block" id="photo-modal-user-label">Petugas RSUD Dr. M. Soewandhie</span>
+          <div id="photo-compression-info" class="text-[11px] text-slate-500">
+            Sistem otomatis mengompres foto berukuran besar menjadi &le; 150 KB sebelum disimpan ke cache &amp; database.
+          </div>
+          <div class="flex items-center gap-2 pt-0.5">
+            <button type="button" onclick="resetProfilePhotoToDefault()" class="text-[10px] font-bold text-rose-600 hover:text-rose-800 hover:underline">
+              Hapus Foto (Gunakan Inisial)
+            </button>
+          </div>
+        </div>
+      </div>
 
-    function renderBedBoard(wardId) {
-      const ward = WARDS_DATA.find(w => w.id === wardId) || WARDS_DATA[1];
-      const grid = document.getElementById('bed-board-grid');
-      const meta = ROLE_META[currentRole];
-      const canEdit = meta.allowedWard === 'ALL' || meta.allowedWard === ward.id;
+      <!-- METODE 1: PASTE GAMBAR (CTRL + V) & DRAG-AND-DROP -->
+      <div id="photo-paste-zone" onclick="document.getElementById('photo-file-input').click()" class="border-2 border-dashed border-blue-300 hover:border-blue-500 bg-blue-50/40 hover:bg-blue-50/70 rounded-2xl p-4 text-center cursor-pointer transition space-y-1.5">
+        <input type="file" id="photo-file-input" accept="image/*" class="hidden" onchange="handleFilePhotoSelected(event)" />
+        <div class="w-10 h-10 mx-auto rounded-full bg-blue-100 text-blue-700 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        </div>
+        <div class="text-xs font-bold text-slate-800">
+          <span>Klik untuk pilih file foto</span> atau tekan <kbd class="px-1.5 py-0.5 bg-white border border-slate-300 rounded text-slate-700 font-mono text-[10px]">Ctrl + V</kbd> untuk Paste
+        </div>
+        <p class="text-[10px] text-slate-500">Mendukung format JPG, PNG, WebP (Tarik &amp; lepas file ke kotak ini)</p>
+      </div>
 
-      const permNote = document.getElementById('ward-permission-note');
-      if (permNote) {
-        permNote.textContent = canEdit
-          ? `Akses Edit Aktif untuk Ruang ${ward.name}. Klik kartu bed untuk memperbarui status.`
-          : `Mode Baca-Saja (RBAC): Akun ${meta.label} tidak memiliki izin mengubah bed di Ruang ${ward.name}.`;
-      }
+      <!-- METODE 2: AMBIL DARI GOOGLE DRIVE -->
+      <div class="p-3.5 bg-slate-50 border border-slate-200 rounded-2xl space-y-2">
+        <div class="flex items-center gap-1.5">
+          <svg class="w-4 h-4 text-emerald-600" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"/></svg>
+          <span class="text-xs font-extrabold text-slate-800">Ambil dari Google Drive</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <input type="text" id="drive-link-input" placeholder="Tempelkan link berbagi Google Drive (contoh: https://drive.google.com/file/d/...)" class="flex-1 px-3 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-blue-600" />
+          <button type="button" onclick="fetchPhotoFromGoogleDrive()" class="px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold transition shrink-0 shadow-2xs">
+            Ambil Foto
+          </button>
+        </div>
+        <p class="text-[10px] text-slate-500">Pastikan link Google Drive disetel ke <em>'Siapa saja yang memiliki link dapat melihat'</em>.</p>
+      </div>
 
-      if (!grid) return;
-      grid.innerHTML = '';
-      for (let i = 1; i <= ward.total; i++) {
-        let status = 'Tersedia';
-        let style = 'bg-emerald-50 border-emerald-200 text-emerald-800';
-        if (i <= ward.occupied) {
-          status = 'Terisi';
-          style = 'bg-rose-50 border-rose-200 text-rose-800';
-        } else if (i <= ward.occupied + ward.inden) {
-          status = 'Inden IGD';
-          style = 'bg-amber-50 border-amber-200 text-amber-800';
-        }
+      <!-- Aksi Simpan -->
+      <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+        <button type="button" onclick="closeProfilePhotoModal()" class="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition">
+          Batal
+        </button>
+        <button type="button" id="btn-save-photo" onclick="saveCompressedPhoto()" class="px-5 py-2 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-bold transition shadow-sm flex items-center gap-1.5">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          <span>Simpan Foto Profil</span>
+        </button>
+      </div>
 
-        const bedCode = `${ward.id}-${String(i).padStart(2, '0')}`;
-        const btn = document.createElement('button');
-        btn.className = `p-3.5 rounded-2xl border text-left transition ${style} ${canEdit ? 'hover:shadow-sm cursor-pointer' : 'opacity-80 cursor-not-allowed'}`;
-        btn.innerHTML = `
-          <span class="text-[11px] font-extrabold block">${bedCode}</span>
-          <span class="text-xs font-bold mt-1 block">${status}</span>
-        `;
-        btn.onclick = async () => {
-          if (!canEdit) {
-            showToast(`Ditolak (RBAC): ${meta.label} hanya dapat mengubah ruangannya sendiri.`, 'warn');
-            return;
-          }
-          
-          // Simpan ke Supabase jika terhubung
-          const conn = getConnectionState();
-          if (conn.isConnected) {
-            showToast(`Menyimpan perubahan ${bedCode} ke basis data Supabase...`);
-            // Mock ID bed untuk demo
-            const res = await updateBedStatusDb(bedCode, status === 'Tersedia' ? 'occupied' : 'available', currentNip, currentRole, { bed_code: bedCode });
-            if (res.success) {
-              showToast(`Status Bed ${bedCode} berhasil diperbarui & tercatat di siirs_audit_logs!`, 'success');
-            } else {
-              showToast(`Status Bed ${bedCode} diperbarui di cache lokal.`, 'info');
-            }
-          } else {
-            showToast(`Status Bed ${bedCode} diperbarui (Mode Mandiri/Lokal).`, 'success');
-          }
-        };
-        grid.appendChild(btn);
-      }
-    }
+    </div>
+  </div>
 
-    function submitSpecialReport(e) {
-      e.preventDefault();
-      const type = document.getElementById('rep-type')?.value;
-      const name = document.getElementById('rep-name')?.value;
-      showToast(`${type} atas nama ${name} berhasil disimpan ke sistem Yanmed SIIRS.`, 'success');
-      e.target.reset();
-    }
-
-    // =========================================================================
-    // INTEGRASI GOOGLE WORKSPACE OAUTH & SSO (VIA SUPABASE AUTH)
-    // =========================================================================
-    async function handleGoogleSignIn() {
-      const selectedRole = document.getElementById('login-role-select')?.value || 'cathlab';
-      showToast('Menghubungkan ke layanan Google OAuth...', 'info');
-
-      try {
-        const res = await signInWithGoogle(selectedRole);
-        if (!res.success) {
-          // Jika Google provider belum dinyalakan di Supabase Console, munculkan panduan & sandbox
-          if (res.providerNotEnabled || (res.message && (res.message.includes('not enabled') || res.message.includes('provider') || res.message.includes('OAuth')))) {
-            showToast('Google provider belum diaktifkan di Supabase Dashboard.', 'warn');
-            openModalGoogleConfig();
-          } else {
-            showToast('Koneksi Google: ' + res.message, 'warn');
-          }
-        }
-      } catch (err) {
-        showToast('Koneksi Google bermasalah: ' + err.message, 'warn');
-      }
-    }
-
-    function openModalGoogleConfig() {
-      document.getElementById('modal-google-config')?.classList.remove('hidden');
-    }
-
-    function closeModalGoogleConfig() {
-      document.getElementById('modal-google-config')?.classList.add('hidden');
-    }
-
-    function copySupabaseCallbackUri() {
-      const uri = 'https://whbinarvynbyemvqbfjg.supabase.co/auth/v1/callback';
-      navigator.clipboard.writeText(uri).then(() => {
-        showToast('Supabase Callback URI disalin ke clipboard!', 'success');
-      }).catch(() => {
-        showToast(`URI: ${uri}`, 'info');
-      });
-    }
-
-    function testSimulateGoogleLogin(role) {
-      closeModalGoogleConfig();
-      const mockUser = simulateGoogleLogin(role);
-      createSecureSession({
-        user: mockUser.user,
-        nip: mockUser.nip,
-        role: mockUser.role,
-        allowedWard: ROLE_META[mockUser.role]?.allowedWard || 'ALL',
-        authProvider: 'GOOGLE_OAUTH_SIMULATION'
-      });
-      enterDashboardWithRole(mockUser.role, mockUser.nip);
-      showToast(`Berhasil masuk via Google RSUD: ${mockUser.user}`, 'success');
-    }
-
-    // Expose handlers ke window untuk kompatibilitas atribut onclick inline HTML
-    window.switchTab = switchTab;
-    window.handlePortalLogin = handlePortalLogin;
-    window.quickLoginAs = quickLoginAs;
-    window.openTopLoginModal = openTopLoginModal;
-    window.closeTopLoginModal = closeTopLoginModal;
-    window.submitModalLogin = submitModalLogin;
-    window.enterPublicDisplay = enterPublicDisplay;
-    window.logoutToPortal = logoutToPortal;
-    window.switchRole = switchRole;
-    window.openWardDetail = openWardDetail;
-    window.toggleComfortMode = toggleComfortMode;
-    window.openBriefingPlayer = openBriefingPlayer;
-    window.submitSpecialReport = submitSpecialReport;
-    window.togglePasswordVisibility = togglePasswordVisibility;
-    window.checkDbConnection = checkDbConnection;
-    window.updateDbBadges = updateDbBadges;
-    window.loadTindakanData = loadTindakanData;
-    window.filterTindakanData = filterTindakanData;
-    window.handleInlineStatusChange = handleInlineStatusChange;
-    window.openDetailTindakan = openDetailTindakan;
-    window.closeDetailTindakan = closeDetailTindakan;
-    window.openModalTambahTindakan = openModalTambahTindakan;
-    window.closeModalTambahTindakan = closeModalTambahTindakan;
-    window.submitTambahTindakan = submitTambahTindakan;
-    window.exportTindakanCsv = exportTindakanCsv;
-    window.toggleDbMode = () => toggleDbTarget();
-    window.handleGoogleSignIn = handleGoogleSignIn;
-    window.openModalGoogleConfig = openModalGoogleConfig;
-    window.closeModalGoogleConfig = closeModalGoogleConfig;
-    window.copySupabaseCallbackUri = copySupabaseCallbackUri;
-    window.testSimulateGoogleLogin = testSimulateGoogleLogin;
-
-    // Inisialisasi saat halaman dimuat
-    window.addEventListener('DOMContentLoaded', async () => {
-      // Perbarui label target database
-      const labelTarget = document.getElementById('label-db-target');
-      if (labelTarget) {
-        labelTarget.textContent = SIIRS_CONFIG.dbTarget === 'local' ? 'DB: Docker (54321)' : 'DB: Cloud Supabase';
-      }
-
-      initWardSelector();
-      renderWardTable();
-      renderIgdQueue();
-      renderBedBoard('DAHLIA');
-      updateDbBadges();
-
-      // Hubungkan ke Supabase (Docker lokal atau Cloud)
-      try {
-        await initSupabase();
-        updateDbBadges();
-      } catch (err) {
-        console.warn('Inisialisasi Supabase gagal, menggunakan mode mandiri:', err);
-      }
-
-      // 1. Cek sesi Google OAuth yang kembali dari alur autentikasi Supabase
-      try {
-        const googleUser = await handleGoogleOAuthCallback();
-        if (googleUser && googleUser.role) {
-          createSecureSession({
-            user: googleUser.user,
-            nip: googleUser.nip,
-            role: googleUser.role,
-            allowedWard: ROLE_META[googleUser.role]?.allowedWard || 'ALL',
-            authProvider: 'GOOGLE_SUPABASE'
-          });
-          enterDashboardWithRole(googleUser.role, googleUser.nip);
-          showToast(`Berhasil masuk dengan Google: ${googleUser.user}`, 'success');
-          return;
-        }
-      } catch (gErr) {
-        console.warn('Google auth check error:', gErr);
-      }
-
-      // 2. Deteksi parameter URL untuk 1-Klik Masuk Otomatis (misal: ?login=cathlab)
-      const urlParams = new URLSearchParams(window.location.search);
-      const autoLogin = urlParams.get('login') || urlParams.get('role');
-      if (autoLogin) {
-        const targetRole = (autoLogin.toLowerCase() === 'cath' || autoLogin.toLowerCase() === 'cathlab') ? 'cathlab' : autoLogin;
-        if (ROLE_META[targetRole]) {
-          quickLoginAs(targetRole);
-          return;
-        }
-      }
-
-      // 3. Periksa pemulihan sesi aktif yang valid
-      const existingSession = getActiveSession();
-      if (existingSession && existingSession.role) {
-        enterDashboardWithRole(existingSession.role, existingSession.nip);
-        showToast(`Sesi aktif dipulihkan: ${existingSession.user}`, 'info');
-      }
-    });
-  </script>
+  <!-- Modul Aplikasi Terpadu SIIRS (Modular Architecture) -->
+  <script type="module" src="./src/js/app.js"></script>
 </body>
 </html>
